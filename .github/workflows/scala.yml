@@ -1,6 +1,7 @@
 name: Scala CI
 
 on:
+  workflow_dispatch:
   push:
 
 jobs:
@@ -42,5 +43,22 @@ jobs:
         java-version: 11
     - name: Test
       run: sbt test
+  mutation-testing:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+    - name: Run stryker
+      run: |
+        echo 'stryker4s{reporters=["console","dashboard"]}' > stryker4s.conf
+        sbt 'project WeaponRegeXJVM; stryker'
+      env:
+          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
+
     
       
