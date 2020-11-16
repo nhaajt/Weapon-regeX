@@ -1,7 +1,7 @@
-package WeaponRegeX
+package weaponregex
 
-import model.RegexTree._
-import model._
+import weaponregex.model.RegexTree._
+import weaponregex.model._
 
 /** Main facade of Weapon regeX
   */

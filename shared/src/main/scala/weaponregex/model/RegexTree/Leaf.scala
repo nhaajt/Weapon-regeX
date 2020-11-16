@@ -1,6 +1,6 @@
-package WeaponRegeX.model.RegexTree
+package weaponregex.model.RegexTree
 
-import WeaponRegeX.model.Location
+import weaponregex.model.Location
 
 abstract class Leaf[A](val value: A)(override val location: Location)(implicit
     override val prefix: String = "",

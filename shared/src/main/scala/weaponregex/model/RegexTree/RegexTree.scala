@@ -1,6 +1,6 @@
-package WeaponRegeX.model.RegexTree
+package weaponregex.model.RegexTree
 
-import WeaponRegeX.model.Location
+import weaponregex.model.Location
 
 trait RegexTree {
   val children: Seq[RegexTree]

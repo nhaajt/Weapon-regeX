@@ -1,7 +1,7 @@
-package WeaponRegeX
+package weaponregex
 
-import model._
-import model.RegexTree._
+import weaponregex.model._
+import weaponregex.model.RegexTree._
 
 class RegexTreeSuite extends munit.FunSuite {
   test("RegexTree build") {
