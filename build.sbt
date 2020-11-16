@@ -1,10 +1,23 @@
-lazy val WeaponRegeX = crossProject(JSPlatform, JVMPlatform)
+ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / version := "0.1-SNAPSHOT"
+
+// Skip publish root
+skip in publish := true
+
+inThisBuild(
+  List(
+    organization := "io.stryker-mutator",
+    homepage := Some(url("https://github.com/Nhaajt/Weapon-regeX")),
+    licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+    developers := List()
+  )
+)
+
+lazy val WeaponRegeX = crossProject(JVMPlatform, JSPlatform)
   .in(file("."))
   .settings(
-    scalaVersion := "2.13.3",
     crossScalaVersions := List("2.13.3", "2.12.12"),
     name := "weapon-regex",
-    version := "0.1",
     // libraryDependencies += "com.lihaoyi" %%% "pprint" % "0.6.0",
     // libraryDependencies += "com.kyleu" %% "reftree" % "1.4.1", // Unofficial fork that works with Scala 2.13
     libraryDependencies += "com.lihaoyi" %%% "fastparse" % "2.3.0",
@@ -17,6 +30,5 @@ lazy val WeaponRegeX = crossProject(JSPlatform, JVMPlatform)
   )
   .jsSettings(
     // Add JS-specific settings here
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-    scalaJSUseMainModuleInitializer := true
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
   )
