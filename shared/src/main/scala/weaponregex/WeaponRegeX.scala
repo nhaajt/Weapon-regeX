@@ -1,6 +1,6 @@
 package weaponregex
 
-import weaponregex.model.RegexTree._
+import weaponregex.model.regextree._
 import weaponregex.model._
 
 import scala.scalajs.js.annotation._

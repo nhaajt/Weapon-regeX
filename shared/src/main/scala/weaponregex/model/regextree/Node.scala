@@ -1,4 +1,4 @@
-package weaponregex.model.RegexTree
+package weaponregex.model.regextree
 
 import weaponregex.model.Location
 
