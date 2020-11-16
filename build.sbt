@@ -25,6 +25,5 @@ lazy val WeaponRegeX = crossProject(JVMPlatform, JSPlatform)
   )
   .jsSettings(
     // Add JS-specific settings here
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-    scalaJSUseMainModuleInitializer := true
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
   )
