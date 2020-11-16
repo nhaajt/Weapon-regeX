@@ -1,11 +1,9 @@
-ThisBuild / scalaVersion := "2.13.3"
-ThisBuild / version := "0.1-SNAPSHOT"
-
 // Skip publish root
 skip in publish := true
 
 inThisBuild(
   List(
+    version := "0.1-SNAPSHOT",
     organization := "io.stryker-mutator",
     homepage := Some(url("https://github.com/Nhaajt/Weapon-regeX")),
     licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
@@ -13,10 +11,9 @@ inThisBuild(
   )
 )
 
-lazy val WeaponRegeX = crossProject(JVMPlatform, JSPlatform)
-  .in(file("."))
+lazy val WeaponRegeX = projectMatrix
+  .in(file("shared"))
   .settings(
-    crossScalaVersions := List("2.13.3", "2.12.12"),
     name := "weapon-regex",
     // libraryDependencies += "com.lihaoyi" %%% "pprint" % "0.6.0",
     // libraryDependencies += "com.kyleu" %% "reftree" % "1.4.1", // Unofficial fork that works with Scala 2.13
@@ -24,11 +21,17 @@ lazy val WeaponRegeX = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies += "org.scalameta" %%% "munit" % "0.7.16" % Test,
     testFrameworks += new TestFramework("munit.Framework")
   )
-  .jvmSettings(
-    // Add JVM-specific settings here
-    libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
+  .jvmPlatform(
+    scalaVersions = List("2.13.3", "2.12.12"),
+    settings = Seq(
+      // Add JVM-specific settings here
+      libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
+    )
   )
-  .jsSettings(
-    // Add JS-specific settings here
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
+  .jsPlatform(
+    scalaVersions = List("2.13.3", "2.12.12"),
+    settings = Seq(
+      // Add JS-specific settings here
+      scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
+    )
   )
