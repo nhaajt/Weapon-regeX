@@ -16,6 +16,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - uses: olafurpg/setup-gpg@v3
       - name: Publish code
         run: |
           echo $PGP_SECRET | base64 --decode | gpg --import
