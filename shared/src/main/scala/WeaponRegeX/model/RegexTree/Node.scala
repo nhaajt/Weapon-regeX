@@ -1,16 +1,17 @@
 package WeaponRegeX.model.RegexTree
+
 import WeaponRegeX.model.Location
 
 abstract class Node(override val children: RegexTree*)(override val location: Location)(implicit
-    val prefix: String = "",
-    val postfix: String = "",
+    override val prefix: String = "",
+    override val postfix: String = "",
     val sep: String = ""
 ) extends RegexTree {
   override def build: String = prefix + children.map(_.build).mkString(sep = sep) + postfix
 }
 
 case class CharacterClass(nodes: Seq[RegexTree], override val location: Location, isPositive: Boolean = true)
-    extends Node(nodes: _*)(location)(prefix = if (isPositive) "[" else "[^", postfix = "]") {}
+    extends Node(nodes: _*)(location)(if (isPositive) "[" else "[^", "]") {}
 
 case class Range(from: Character, to: Character, override val location: Location)
     extends Node(from, to)(location)(sep = "-")
@@ -18,14 +19,28 @@ case class Range(from: Character, to: Character, override val location: Location
 case class Group(
     expr: RegexTree,
     isCapturing: Boolean,
-    onFlags: String,
-    hasDash: Boolean,
-    offFlags: String,
     override val location: Location
-) extends Node(expr)(location)(if (isCapturing) "(" else s"(?$onFlags${if (hasDash) "-" else ""}$offFlags:", ")")
+) extends Node(expr)(location)(if (isCapturing) "(" else "(?:", ")")
 
 case class NamedGroup(expr: RegexTree, name: String, override val location: Location)
     extends Node(expr)(location)(s"(?<$name>", ")")
+
+case class FlagNCGroup(
+    flagToggle: FlagToggle,
+    expr: RegexTree,
+    override val location: Location
+) extends Node(flagToggle, expr)(location)("(?", ")", ":")
+
+case class FlagGroup(flagToggle: FlagToggle, override val location: Location)
+    extends Node(flagToggle)(location)("(?", ")")
+
+// Non-capturing group with flags
+case class FlagToggle(onFlags: Flags, hasDash: Boolean, offFlags: Flags, override val location: Location)
+    extends Node(onFlags, offFlags)(location) {
+  override def build: String = onFlags.build + (if (hasDash) "-" else "") + offFlags.build
+}
+
+case class Flags(flags: Seq[Character], override val location: Location) extends Node(flags: _*)(location)
 
 case class Lookaround(expr: RegexTree, isPositive: Boolean, isLookahead: Boolean, override val location: Location)
     extends Node(expr)(location)(

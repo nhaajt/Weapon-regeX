@@ -1,7 +1,8 @@
-lazy val WeaponRegeX = crossProject(JSPlatform, JVMPlatform)
+ThisBuild / scalaVersion := "2.13.3"
+
+lazy val WeaponRegeX = crossProject(JVMPlatform, JSPlatform)
   .in(file("."))
   .settings(
-    scalaVersion := "2.13.3",
     crossScalaVersions := List("2.13.3", "2.12.12"),
     name := "weapon-regex",
     version := "0.1",
