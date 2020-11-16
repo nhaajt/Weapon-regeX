@@ -18,7 +18,7 @@ jobs:
           java-version: 11
       - name: Publish code
         run: |
-          echo ${{ secrets.PGP_SECRET }} | base64 --decode | gpg --import
+          echo $PGP_SECRET | base64 --decode | gpg --import
           sbt +publishSigned
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
