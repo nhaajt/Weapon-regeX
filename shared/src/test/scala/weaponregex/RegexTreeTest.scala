@@ -1,9 +1,9 @@
 package weaponregex
 
 import weaponregex.model._
-import weaponregex.model.RegexTree._
+import weaponregex.model.regextree._
 
-class RegexTreeSuite extends munit.FunSuite {
+class RegexTreeTest extends munit.FunSuite {
   test("RegexTree build") {
     val pattern: String = """^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$"""
     val loc = Location(Position(0, 0), Position(0, 1))
