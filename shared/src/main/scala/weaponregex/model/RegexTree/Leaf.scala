@@ -34,7 +34,7 @@ case class EOL(override val location: Location) extends Leaf('$')(location)
   */
 case class Boundary(boundary: String, override val location: Location) extends Leaf(boundary)(location)
 
-case class NameReference(name: String, override val location: Location) extends Leaf(name)(location)("""\<k""", ">")
+case class NameReference(name: String, override val location: Location) extends Leaf(name)(location)("""\k<""", ">")
 
 case class NumberReference(num: Int, override val location: Location) extends Leaf(num)(location)("""\""")
 
