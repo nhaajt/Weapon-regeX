@@ -13,4 +13,6 @@ trait RegexTree {
   lazy val pattern: String = build
 
   def build: String
+
+  def buildWith(child: RegexTree, childString: String): String
 }

@@ -3,13 +3,13 @@ package weaponregex
 import fastparse._, NoWhitespace._
 import weaponregex.model._
 import weaponregex.model.regextree._
-import weaponregex.extension.IntExtension.IndexPairExtension
+import weaponregex.extension.StringExtension.StringIndexExtension
 
 object Parser {
-  private var currentPattern: String = ""
+  private var currentPattern: String = _
 
   def Indexed[_: P, T](p: => P[T]): P[(Location, T)] = P(Index ~ p ~ Index)
-    .map { case (i, t, j) => ((i, j) locationIn currentPattern, t) }
+    .map { case (i, t, j) => (currentPattern.locationOf(i, j), t) }
 
   def character[_: P]: P[Character] = Indexed(AnyChar.!)
     .map { case (loc, c) => Character(c.head, loc) }
@@ -23,8 +23,29 @@ object Parser {
   def eol[_: P]: P[EOL] = Indexed(P("$"))
     .map { case (loc, _) => EOL(loc) }
 
+  def boundary[_: P]: P[RegexTree] = P(bol | eol)
+
+  def range[_: P]: P[Range] = Indexed(character ~ "-" ~ character)
+    .map { case (loc, (from, to)) => Range(from, to, loc) }
+
+  // !! unsupported (yet)
+  // Character class item intersection is Scala/Java only
+  def classItemIntersection[_: P]: P[ClassItemIntersection] = Indexed(classItem.rep(2, sep = "&&"))
+    .map { case (loc, nodes) => ClassItemIntersection(nodes, loc) }
+
+  // Nested character class is Scala/Java only
+  def classItem[_: P]: P[RegexTree] = P(range | charClass | character)
+
+  def positiveCharClass[_: P]: P[CharacterClass] = Indexed("[" ~ classItem.rep(1) ~ "]")
+    .map { case (loc, nodes) => CharacterClass(nodes, loc) }
+
+  def negativeCharClass[_: P]: P[CharacterClass] = Indexed("[^" ~ classItem.rep(1) ~ "]")
+    .map { case (loc, nodes) => CharacterClass(nodes, loc, isPositive = false) }
+
+  def charClass[_: P]: P[CharacterClass] = P(positiveCharClass | negativeCharClass)
+
   // ! unfinished
-  def elementaryRE[_: P]: P[RegexTree] = P(character | bol | eol)
+  def elementaryRE[_: P]: P[RegexTree] = P(boundary | charClass | character)
 
   // ! missing quantifier
   def basicRE[_: P]: P[RegexTree] = P(elementaryRE)

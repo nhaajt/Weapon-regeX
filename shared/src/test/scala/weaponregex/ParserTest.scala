@@ -42,9 +42,34 @@ class ParserTest extends munit.FunSuite {
       } map (_.location.start.line),
       0 to 5
     )
+    assertEquals(pattern, buildPattern)
+  }
 
-//    assertEquals(parsedTree.children.head.location.start.line, 0)
-//    assertEquals(parsedTree.children.last.location.start.line, 3)
+  test("Parse character class with characters") {
+    val pattern = "[abc]"
+    val parsedTree = Parser.parseOrError(pattern)
+    val buildPattern: String = parsedTree.build
+    assertEquals(pattern, buildPattern)
+  }
+
+  test("Parse negative character class with characters") {
+    val pattern = "[^abc]"
+    val parsedTree = Parser.parseOrError(pattern)
+    val buildPattern: String = parsedTree.build
+    assertEquals(pattern, buildPattern)
+  }
+
+  test("Parse character class with ranges") {
+    val pattern = "[a-zA-Z0-9]"
+    val parsedTree = Parser.parseOrError(pattern)
+    val buildPattern: String = parsedTree.build
+    assertEquals(pattern, buildPattern)
+  }
+
+  test("Parse character class with nested character classes") {
+    val pattern = "[[a-z][^A-Z0-9][01234]]"
+    val parsedTree = Parser.parseOrError(pattern)
+    val buildPattern: String = parsedTree.build
     assertEquals(pattern, buildPattern)
   }
 }

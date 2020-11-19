@@ -7,7 +7,9 @@ abstract class Leaf[A](val value: A)(override val location: Location)(implicit
     override val postfix: String = ""
 ) extends RegexTree {
   override val children: Seq[RegexTree] = Nil
-  def build: String = prefix + value + postfix
+  override def build: String = prefix + value + postfix
+
+  override def buildWith(child: RegexTree, childString: String): String = build
 }
 
 case class Character(char: Char, override val location: Location) extends Leaf(char)(location)
