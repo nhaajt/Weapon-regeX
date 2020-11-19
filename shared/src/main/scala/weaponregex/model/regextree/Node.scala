@@ -8,6 +8,10 @@ abstract class Node(override val children: RegexTree*)(override val location: Lo
     val sep: String = ""
 ) extends RegexTree {
   override def build: String = prefix + children.map(_.build).mkString(sep = sep) + postfix
+
+  // must use `eq` instead of `==`, as `eq` will only succeed on the same instance of the class
+  override def buildWith(child: RegexTree, childString: String): String =
+    prefix + children.map(c => if (c eq child) childString else c.build).mkString(sep = sep) + postfix
 }
 
 case class CharacterClass(nodes: Seq[RegexTree], override val location: Location, isPositive: Boolean = true)
