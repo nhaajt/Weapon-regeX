@@ -20,6 +20,9 @@ case class CharacterClass(nodes: Seq[RegexTree], override val location: Location
 case class Range(from: Character, to: Character, override val location: Location)
     extends Node(from, to)(location)(sep = "-")
 
+case class ClassItemIntersection(nodes: Seq[RegexTree], override val location: Location)
+    extends Node(nodes: _*)(location)(sep = "&&")
+
 case class Group(
     expr: RegexTree,
     isCapturing: Boolean,

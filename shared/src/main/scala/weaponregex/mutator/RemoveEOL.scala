@@ -9,9 +9,8 @@ object RemoveEOL extends TokenMutator {
 
   override def apply(tree: RegexTree): Seq[String] = tree.children.foldLeft(Seq.empty[String])((results, child) =>
     child match {
-      case _: EOL =>
-        results :+ tree.buildWith(child, "")
-      case _ => results
+      case _: EOL => results :+ tree.buildWith(child, "")
+      case _      => results
     }
   )
 }

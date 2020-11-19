@@ -9,9 +9,8 @@ object RemoveBOL extends TokenMutator {
 
   override def apply(tree: RegexTree): Seq[String] = tree.children.foldLeft(Seq.empty[String])((results, child) =>
     child match {
-      case _: BOL =>
-        results :+ tree.buildWith(child, "")
-      case _ => results
+      case _: BOL => results :+ tree.buildWith(child, "")
+      case _      => results
     }
   )
 }
