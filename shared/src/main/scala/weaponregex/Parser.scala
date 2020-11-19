@@ -3,13 +3,13 @@ package weaponregex
 import fastparse._, NoWhitespace._
 import weaponregex.model._
 import weaponregex.model.regextree._
-import weaponregex.extension.IntExtension.IndexPairExtension
+import weaponregex.extension.StringExtension.StringIndexExtension
 
 object Parser {
-  private var currentPattern: String = ""
+  private var currentPattern: String = _
 
   def Indexed[_: P, T](p: => P[T]): P[(Location, T)] = P(Index ~ p ~ Index)
-    .map { case (i, t, j) => ((i, j) locationIn currentPattern, t) }
+    .map { case (i, t, j) => (currentPattern.locationOf(i, j), t) }
 
   def character[_: P]: P[Character] = Indexed(AnyChar.!)
     .map { case (loc, c) => Character(c.head, loc) }
@@ -24,7 +24,7 @@ object Parser {
     .map { case (loc, _) => EOL(loc) }
 
   // ! unfinished
-  def elementaryRE[_: P]: P[RegexTree] = P(character | bol | eol)
+  def elementaryRE[_: P]: P[RegexTree] = P(bol | eol | character)
 
   // ! missing quantifier
   def basicRE[_: P]: P[RegexTree] = P(elementaryRE)

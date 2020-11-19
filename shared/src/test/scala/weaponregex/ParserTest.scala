@@ -42,9 +42,6 @@ class ParserTest extends munit.FunSuite {
       } map (_.location.start.line),
       0 to 5
     )
-
-//    assertEquals(parsedTree.children.head.location.start.line, 0)
-//    assertEquals(parsedTree.children.last.location.start.line, 3)
     assertEquals(pattern, buildPattern)
   }
 }
