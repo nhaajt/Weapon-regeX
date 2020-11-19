@@ -56,7 +56,7 @@ case class Lookaround(expr: RegexTree, isPositive: Boolean, isLookahead: Boolean
     )
 
 // Independent non-capturing group
-case class INCGroup(expr: RegexTree, override val location: Location) extends Node(expr)(location)("(?>", "")
+case class INCGroup(expr: RegexTree, override val location: Location) extends Node(expr)(location)("(?>", ")")
 
 // Infinity will be represented as -1
 case class Quantifier(
