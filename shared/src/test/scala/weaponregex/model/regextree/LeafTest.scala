@@ -1,7 +1,6 @@
 package weaponregex.model.regextree
 
 import weaponregex.model._
-import weaponregex.model.regextree._
 
 class LeafTest extends munit.FunSuite {
   var locStub: Location = Location(Position(0, 0), Position(0, 1))
@@ -21,18 +20,18 @@ class LeafTest extends munit.FunSuite {
 
   test("MetaChar build") {
     val node1 = MetaChar("a", locStub)
-    assertEquals(node1.build, "\\a")
+    assertEquals(node1.build, """\a""")
 
     val node2 = MetaChar("0123", locStub)
-    assertEquals(node2.build, "\\0123")
+    assertEquals(node2.build, """\0123""")
   }
 
   test("PredefinedCharClass build") {
-    val node1 = PredefinedCharClass("w", true, locStub)
-    assertEquals(node1.build, "\\w")
+    val node1 = PredefinedCharClass("w", isPositive = true, locStub)
+    assertEquals(node1.build, """\w""")
 
-    val node2 = PredefinedCharClass("w", false, locStub)
-    assertEquals(node2.build, "\\W")
+    val node2 = PredefinedCharClass("w", isPositive = false, locStub)
+    assertEquals(node2.build, """\W""")
   }
 
   test("BOL build") {
@@ -46,36 +45,36 @@ class LeafTest extends munit.FunSuite {
   }
 
   test("Boundary build") {
-    val node1 = Boundary("\\G", locStub)
-    assertEquals(node1.build, "\\G")
+    val node1 = Boundary("""\G""", locStub)
+    assertEquals(node1.build, """\G""")
   }
 
   test("NameReference build") {
     val node1 = NameReference("name", locStub)
-    assertEquals(node1.build, "\\k<name>")
+    assertEquals(node1.build, """\k<name>""")
   }
 
   test("NumberReference build") {
     val node1 = NumberReference(4, locStub)
-    assertEquals(node1.build, "\\4")
+    assertEquals(node1.build, """\4""")
   }
 
   test("QuoteChar build") {
     val node1 = QuoteChar('y', locStub)
-    assertEquals(node1.build, "\\y")
+    assertEquals(node1.build, """\y""")
   }
 
   test("QuoteChar build") {
     val node1 = QuoteChar('y', locStub)
-    assertEquals(node1.build, "\\y")
+    assertEquals(node1.build, """\y""")
   }
 
   test("Quote build") {
-    val node1 = Quote("qwertyasdf", false, locStub)
-    assertEquals(node1.build, "\\Qqwertyasdf")
+    val node1 = Quote("some quote", hasEnd = false, locStub)
+    assertEquals(node1.build, """\Qsome quote""")
 
-    val node2 = Quote("qwertyasdf", true, locStub)
-    assertEquals(node2.build, "\\Qqwertyasdf\\E")
+    val node2 = Quote("some quote", hasEnd = true, locStub)
+    assertEquals(node2.build, """\Qsome quote\E""")
   }
 
   test("RegexTree build") {

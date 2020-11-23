@@ -26,19 +26,19 @@ class ParserTest extends munit.FunSuite {
 
   test("Parse multiple lines with location") {
     val pattern =
-      """0
-        |1
-        |2
-        |3
-        |4
-        |5""".stripMargin
+      """a
+        |a
+        |a
+        |a
+        |a
+        |a""".stripMargin
     val parsedTree = Parser.parseOrError(pattern)
     val buildPattern: String = parsedTree.build
 
     assertEquals(
       parsedTree.children filter {
-        case Character(c, _) if c.isDigit => true
-        case _                            => false
+        case Character('a', _) => true
+        case _                 => false
       } map (_.location.start.line),
       0 to 5
     )
