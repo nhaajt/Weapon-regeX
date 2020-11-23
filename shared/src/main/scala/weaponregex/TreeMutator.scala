@@ -2,11 +2,16 @@ package weaponregex
 
 import weaponregex.model.mutation._
 import weaponregex.model.regextree.RegexTree
+import weaponregex.mutator.BuiltinMutators
 
 object TreeMutator {
   implicit class RegexTreeMutator(tree: RegexTree) {
-    def mutate(mutators: Seq[TokenMutator]): Seq[Mutant] = {
-      mutators
+    def mutate(mutationLevel: Int): Seq[Mutant] = mutate(BuiltinMutators(mutationLevel))
+
+    def mutate(mutators: Seq[TokenMutator]): Seq[Mutant] = mutate(mutators, -1)
+
+    def mutate(mutators: Seq[TokenMutator], mutationLevel: Int): Seq[Mutant] =
+      (if (mutationLevel == -1) mutators else mutators.filter(_.levels.contains(mutationLevel)))
         .flatMap(mutator =>
           mutator(
             tree,
@@ -17,6 +22,5 @@ object TreeMutator {
           mutant.copy(pattern = tree.buildWith(child, mutatedPattern))
         }
       )
-    }
   }
 }
