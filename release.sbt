@@ -1,7 +1,6 @@
 import scala.sys.process.Process
 
 commands ++= List(
-  Command.command("WeaponRegeXPublish")("fullOptJS" :: "+publish" :: "writePackageJson" :: "publishNpmNext" :: _),
   Command.command("WeaponRegeXPublishSigned")(
     "fullOptJS" :: "+publishSigned" :: "writePackageJson" :: "publishNpmLatest" :: _
   )
