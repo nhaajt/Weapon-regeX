@@ -3,9 +3,9 @@ name: Release CI
 on:
   workflow_dispatch:
   push:
+    tags: ["*"]
     branches:
       - main
-      - develop
 
 jobs:
   release:
@@ -18,6 +18,8 @@ jobs:
           java-version: 11
       - run: git fetch --tags
       - uses: olafurpg/setup-gpg@v3
+      - name: Set NPM Env
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
       - name: Publish code
         run: sbt ci-release
         env:
@@ -25,5 +27,7 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          CI_SNAPSHOT_RELEASE: WeaponRegeXPublish
+          CI_SONATYPE_RELEASE: WeaponRegeXPublishSigned
 
 
