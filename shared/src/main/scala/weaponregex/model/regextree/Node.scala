@@ -7,7 +7,7 @@ abstract class Node(override val children: RegexTree*)(override val location: Lo
     override val postfix: String = "",
     val sep: String = ""
 ) extends RegexTree {
-  override def build: String = prefix + children.map(_.build).mkString(sep = sep) + postfix
+  override protected def _build: String = prefix + children.map(_.build).mkString(sep = sep) + postfix
 
   // must use `eq` instead of `==`, as `eq` will only succeed on the same instance of the class
   override def buildWith(child: RegexTree, childString: String): String =
@@ -44,7 +44,7 @@ case class FlagGroup(flagToggle: FlagToggle, override val location: Location)
 // Non-capturing group with flags
 case class FlagToggle(onFlags: Flags, hasDash: Boolean, offFlags: Flags, override val location: Location)
     extends Node(onFlags, offFlags)(location) {
-  override def build: String = onFlags.build + (if (hasDash) "-" else "") + offFlags.build
+  override protected def _build: String = onFlags.build + (if (hasDash) "-" else "") + offFlags.build
 }
 
 case class Flags(flags: Seq[Character], override val location: Location) extends Node(flags: _*)(location)

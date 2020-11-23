@@ -10,9 +10,11 @@ trait RegexTree {
 
   val location: Location
 
-  lazy val pattern: String = build
+  final lazy val pattern: String = _build
 
-  def build: String
+  final def build: String = pattern
+
+  protected def _build: String
 
   def buildWith(child: RegexTree, childString: String): String
 }
