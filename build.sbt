@@ -3,8 +3,9 @@ skip in publish := true
 
 inThisBuild(
   List(
-    version := "0.1-SNAPSHOT",
+    version := "0.1.0-SNAPSHOT",
     organization := "io.stryker-mutator",
+    description := "A regular expresion mutator library",
     homepage := Some(url("https://github.com/Nhaajt/Weapon-regeX")),
     licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
     developers := List()
