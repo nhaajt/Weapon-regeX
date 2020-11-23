@@ -33,6 +33,6 @@ jobs:
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           CI_SNAPSHOT_RELEASE: WeaponRegeXPublish
-          CI_SONATYPE_RELEASE: WeaponRegeXPublishSigned
+          CI_RELEASE: WeaponRegeXPublishSigned
 
 

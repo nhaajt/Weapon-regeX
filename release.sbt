@@ -1,8 +1,10 @@
 import scala.sys.process.Process
 
 commands ++= List(
-  Command.command("WeaponRegeXPublish")("+publish" :: "writePackageJson" :: "publishNpmNext" :: _),
-  Command.command("WeaponRegeXPublishSigned")("+publish" :: "writePackageJson" :: "publishNpmLatest" :: _)
+  Command.command("WeaponRegeXPublish")("fullOptJS" :: "+publish" :: "writePackageJson" :: "publishNpmNext" :: _),
+  Command.command("WeaponRegeXPublishSigned")(
+    "fullOptJS" :: "+publishSigned" :: "writePackageJson" :: "publishNpmLatest" :: _
+  )
 )
 
 lazy val publishNpmNext = taskKey[Unit]("Publish to npm with next tag")
