@@ -1,7 +1,7 @@
 package weaponregex.mutator
 
-import weaponregex.Parser
-import weaponregex.TreeMutator._
+import weaponregex.run.Parser
+import weaponregex.run.TreeMutator._
 import weaponregex.model.mutation._
 
 class MutatorTest extends munit.FunSuite {

@@ -1,4 +1,4 @@
-package weaponregex
+package weaponregex.run
 
 import fastparse._, NoWhitespace._
 import weaponregex.model._

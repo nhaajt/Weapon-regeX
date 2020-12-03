@@ -63,9 +63,9 @@ case class INCGroup(expr: RegexTree, override val location: Location) extends No
 object QuantifierType extends Enumeration {
   type QuantifierType = Value
 
-  val Greedy: QuantifierType.Value = Value("")
-  val Reluctant: QuantifierType.Value = Value("?")
-  val Possessive: QuantifierType.Value = Value("+")
+  val Greedy: QuantifierType = Value("")
+  val Reluctant: QuantifierType = Value("?")
+  val Possessive: QuantifierType = Value("+")
 }
 
 // Infinity will be represented as negatives, preferably -1
