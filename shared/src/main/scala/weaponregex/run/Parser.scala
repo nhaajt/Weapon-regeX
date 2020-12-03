@@ -28,8 +28,9 @@ object Parser {
 
   // \c is not supported yet
   // \a an \e is JVM only
-  def escapeChar[_: P]: P[MetaChar] = Indexed("""\""" ~ CharIn("\\\\tnrf").!) // fastparse needs //// for a single backslash
-    .map { case (loc, c) => MetaChar(c, loc) }
+  def escapeChar[_: P]: P[MetaChar] =
+    Indexed("""\""" ~ CharIn("\\\\tnrf").!) // fastparse needs //// for a single backslash
+      .map { case (loc, c) => MetaChar(c, loc) }
 
   def charOct[_: P]: P[MetaChar] = Indexed("""\0""" ~ CharIn("0-7").!.rep(min = 1, max = 3))
     .map { case (loc, octDigits) => MetaChar("0" + octDigits.mkString, loc) }
@@ -37,7 +38,7 @@ object Parser {
   def charHex[_: P]: P[MetaChar] = Indexed("""\x""" ~ CharIn("0-9a-zA-Z").!.rep(exactly = 2))
     .map { case (loc, hexDigits) => MetaChar("x" + hexDigits.mkString, loc) }
 
-  def charUnicode[_: P]: P[MetaChar] = Indexed("""\u""" ~ CharIn("0-9a-zA-Z").!.rep(exactly = 4))
+  def charUnicode[_: P]: P[MetaChar] = Indexed("\\u" ~ CharIn("0-9a-zA-Z").!.rep(exactly = 4))
     .map { case (loc, hexDigits) => MetaChar("u" + hexDigits.mkString, loc) }
 
   def charHexBrace[_: P]: P[MetaChar] = Indexed("""\x{""" ~ CharIn("0-9a-zA-Z").!.rep(1) ~ "}")
@@ -63,10 +64,10 @@ object Parser {
   def charClass[_: P]: P[CharacterClass] = P(positiveCharClass | negativeCharClass)
 
   def any[_: P]: P[Any] = Indexed(P("."))
-      .map { case (loc, _) => Any(loc) }
+    .map { case (loc, _) => Any(loc) }
 
-  def preDefinedCharClass[_: P]: P[PredefinedCharClass] =  Indexed("""\""" ~ CharIn("dDsSwW").!)
-      .map { case (loc, c) => PredefinedCharClass(c, loc)}
+  def preDefinedCharClass[_: P]: P[PredefinedCharClass] = Indexed("""\""" ~ CharIn("dDsSwW").!)
+    .map { case (loc, c) => PredefinedCharClass(c, loc) }
 
   // ! unfinished
   def elementaryRE[_: P]: P[RegexTree] = P(any | preDefinedCharClass | boundary | charClass | character)
