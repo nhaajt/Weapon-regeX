@@ -51,7 +51,9 @@ case class Flags(flags: Seq[Character], override val location: Location) extends
 
 case class Lookaround(expr: RegexTree, isPositive: Boolean, isLookahead: Boolean, override val location: Location)
     extends Node(expr)(location)(
-      s"(?${if (isLookahead) "" else "<"}${if (isPositive) "=" else "!"}",
+      "(?"
+        + (if (isLookahead) "" else "<")
+        + (if (isPositive) "=" else "!"),
       ")"
     )
 

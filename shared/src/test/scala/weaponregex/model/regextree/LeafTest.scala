@@ -27,10 +27,10 @@ class LeafTest extends munit.FunSuite {
   }
 
   test("PredefinedCharClass build") {
-    val node1 = PredefinedCharClass("w", isPositive = true, locStub)
+    val node1 = PredefinedCharClass("w", locStub)
     assertEquals(node1.build, """\w""")
 
-    val node2 = PredefinedCharClass("w", isPositive = false, locStub)
+    val node2 = PredefinedCharClass("W", locStub)
     assertEquals(node2.build, """\W""")
   }
 
@@ -119,6 +119,6 @@ class LeafTest extends munit.FunSuite {
       loc
     )
     val buildResult = tree.build
-    assertEquals(pattern, buildResult)
+    assertEquals(buildResult, pattern)
   }
 }

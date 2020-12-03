@@ -27,9 +27,8 @@ object TreeMutator {
       */
     def mutate(mutators: Seq[TokenMutator]): Seq[Mutant] =
       mutators.flatMap(mutator =>
-        mutator(
-          tree,
-          mutatedPattern => Mutant(mutatedPattern, MutationData(mutator.name, tree.location, mutator.levels.min))
+        mutator(tree) map (mutatedPattern =>
+          Mutant(mutatedPattern, MutationData(mutator.name, tree.location, mutator.levels.min))
         )
       ) ++ tree.children.flatMap(child =>
         child.mutate(mutators) map { case mutant @ Mutant(mutatedPattern, _) =>

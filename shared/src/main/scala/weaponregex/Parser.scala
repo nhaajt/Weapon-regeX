@@ -60,7 +60,9 @@ object Parser {
 
   def RE[_: P]: P[RegexTree] = P(or | simpleRE)
 
-  def apply(pattern: String): Option[RegexTree] = {
+  final def apply(pattern: String): Option[RegexTree] = parse(pattern)
+
+  def parse(pattern: String): Option[RegexTree] = {
     currentPattern = pattern
 
     fastparse.parse(pattern, RE(_)) match {
@@ -69,9 +71,6 @@ object Parser {
     }
   }
 
-  def parse(pattern: String): Option[RegexTree] = apply(pattern)
-
-  def parseOrError(pattern: String): RegexTree = {
+  def parseOrError(pattern: String): RegexTree =
     parse(pattern).getOrElse(throw new RuntimeException("Failed to parse regex"))
-  }
 }

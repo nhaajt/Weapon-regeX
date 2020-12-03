@@ -7,10 +7,9 @@ trait TokenMutator {
   val levels: Seq[Int]
   val description: String = name
 
-  def apply(tree: RegexTree): Seq[String]
+  final def apply(token: RegexTree): Seq[String] = mutate(token)
 
-  def apply[A](tree: RegexTree, transformer: String => A): Seq[A] =
-    apply(tree) map transformer
+  def mutate(token: RegexTree): Seq[String]
 
   override def toString: String = name
 }

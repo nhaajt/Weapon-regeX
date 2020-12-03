@@ -22,8 +22,8 @@ case class Any(override val location: Location) extends Leaf('.')(location)
   */
 case class MetaChar(metaChar: String, override val location: Location) extends Leaf(metaChar)(location)("""\""")
 
-case class PredefinedCharClass(charClass: String, isPositive: Boolean, override val location: Location)
-    extends Leaf(if (isPositive) charClass.toLowerCase else charClass.toUpperCase)(location)("""\""")
+case class PredefinedCharClass(charClass: String, override val location: Location)
+    extends Leaf(charClass)(location)("""\""")
 
 case class BOL(override val location: Location) extends Leaf('^')(location)
 
