@@ -10,10 +10,10 @@ class MutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(BOLRemoval))
-    assertEquals(mutants.length, 3)
+    assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq("abc^def^", "^abcdef^", "^abc^def").sorted
-    assertEquals(mutants.map(_.pattern).sorted, expected)
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
 
   test("Remove EOL") {
@@ -21,9 +21,9 @@ class MutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(EOLRemoval))
-    assertEquals(mutants.length, 3)
+    assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq("abc$def$", "$abcdef$", "$abc$def").sorted
-    assertEquals(mutants.map(_.pattern).sorted, expected)
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
 }

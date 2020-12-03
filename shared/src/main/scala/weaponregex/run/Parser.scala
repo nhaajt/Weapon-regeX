@@ -7,12 +7,15 @@ import weaponregex.extension.StringExtension.StringIndexExtension
 
 object Parser {
   private var currentPattern: String = _
+  private val specialChars: String = """[](){}\.^$|?*+"""
 
   def Indexed[_: P, T](p: => P[T]): P[(Location, T)] = P(Index ~ p ~ Index)
     .map { case (i, t, j) => (currentPattern.locationOf(i, j), t) }
 
-  def character[_: P]: P[Character] = Indexed(AnyChar.!)
+  def charLiteral[_: P]: P[Character] = Indexed(CharPred(!specialChars.contains(_)).!)
     .map { case (loc, c) => Character(c.head, loc) }
+
+  def character[_: P]: P[RegexTree] = P(metaCharacter | charLiteral)
 
   def any[_: P]: P[Any] = Indexed(P("."))
     .map { case (loc, _) => Any(loc) }
@@ -25,7 +28,26 @@ object Parser {
 
   def boundary[_: P]: P[RegexTree] = P(bol | eol)
 
-  def range[_: P]: P[Range] = Indexed(character ~ "-" ~ character)
+  def metaCharacter[_: P]: P[RegexTree] = P(charOct | charHex | charUnicode | charHexBrace | escapeChar)
+
+  // \c is not supported yet
+  // \a an \e is JVM only
+  def escapeChar[_: P]: P[MetaChar] = Indexed("""\""" ~ CharIn("\\\\tnrf").!) // fastparse needs //// for a single backslash
+    .map { case (loc, c) => MetaChar(c, loc) }
+
+  def charOct[_: P]: P[MetaChar] = Indexed("""\0""" ~ CharIn("0-7").!.rep(min = 1, max = 3))
+    .map { case (loc, octDigits) => MetaChar("0" + octDigits.mkString, loc) }
+
+  def charHex[_: P]: P[MetaChar] = Indexed("""\x""" ~ CharIn("0-9a-zA-Z").!.rep(exactly = 2))
+    .map { case (loc, hexDigits) => MetaChar("x" + hexDigits.mkString, loc) }
+
+  def charUnicode[_: P]: P[MetaChar] = Indexed("""\u""" ~ CharIn("0-9a-zA-Z").!.rep(exactly = 4))
+    .map { case (loc, hexDigits) => MetaChar("u" + hexDigits.mkString, loc) }
+
+  def charHexBrace[_: P]: P[MetaChar] = Indexed("""\x{""" ~ CharIn("0-9a-zA-Z").!.rep(1) ~ "}")
+    .map { case (loc, hexDigits) => MetaChar("x{" + hexDigits.mkString + "}", loc) }
+
+  def range[_: P]: P[Range] = Indexed(charLiteral ~ "-" ~ charLiteral)
     .map { case (loc, (from, to)) => Range(from, to, loc) }
 
   // !! unsupported (yet)
@@ -34,7 +56,7 @@ object Parser {
     .map { case (loc, nodes) => ClassItemIntersection(nodes, loc) }
 
   // Nested character class is Scala/Java only
-  def classItem[_: P]: P[RegexTree] = P(range | charClass | character)
+  def classItem[_: P]: P[RegexTree] = P(range | charClass | charLiteral)
 
   def positiveCharClass[_: P]: P[CharacterClass] = Indexed("[" ~ classItem.rep(1) ~ "]")
     .map { case (loc, nodes) => CharacterClass(nodes, loc) }
