@@ -5,7 +5,8 @@ import weaponregex.model.mutation.TokenMutator
 object BuiltinMutators {
   val all: Seq[TokenMutator] = Seq(
     BOLRemoval,
-    EOLRemoval
+    EOLRemoval,
+    QuantifierRemoval
   )
 
   lazy val levels: Map[Int, Seq[TokenMutator]] =

@@ -4,7 +4,6 @@ import fastparse._, NoWhitespace._
 import weaponregex.model._
 import weaponregex.model.regextree._
 import weaponregex.extension.StringExtension.StringIndexExtension
-
 object Parser {
   private var currentPattern: String = _
   private val specialChars: String = """[](){}\.^$|?*+"""
@@ -16,9 +15,6 @@ object Parser {
     .map { case (loc, c) => Character(c.head, loc) }
 
   def character[_: P]: P[RegexTree] = P(metaCharacter | charLiteral)
-
-  def any[_: P]: P[Any] = Indexed(P("."))
-    .map { case (loc, _) => Any(loc) }
 
   def bol[_: P]: P[BOL] = Indexed(P("^"))
     .map { case (loc, _) => BOL(loc) }
@@ -66,8 +62,14 @@ object Parser {
 
   def charClass[_: P]: P[CharacterClass] = P(positiveCharClass | negativeCharClass)
 
+  def any[_: P]: P[Any] = Indexed(P("."))
+      .map { case (loc, _) => Any(loc) }
+
+  def preDefinedCharClass[_: P]: P[PredefinedCharClass] =  Indexed("""\""" ~ CharIn("dDsSwW").!)
+      .map { case (loc, c) => PredefinedCharClass(c, loc)}
+
   // ! unfinished
-  def elementaryRE[_: P]: P[RegexTree] = P(boundary | charClass | character)
+  def elementaryRE[_: P]: P[RegexTree] = P(any | preDefinedCharClass | boundary | charClass | character)
 
   // ! missing quantifier
   def basicRE[_: P]: P[RegexTree] = P(elementaryRE)
