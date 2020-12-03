@@ -18,7 +18,7 @@ case class Character(char: Char, override val location: Location) extends Leaf(c
 case class Any(override val location: Location) extends Leaf('.')(location)
 
 /** @param metaChar Can be any meta character as defined in the grammar
-  * @param location Location of the token in the regex string
+  * @param location [[weaponregex.model.Location]] of the token in the regex string
   */
 case class MetaChar(metaChar: String, override val location: Location) extends Leaf(metaChar)(location)("""\""")
 

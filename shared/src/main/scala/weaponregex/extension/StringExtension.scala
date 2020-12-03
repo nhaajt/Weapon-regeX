@@ -23,19 +23,19 @@ object StringExtension {
       (line, col)
     }
 
-    /** Convert an index into a [[Position]] in the given string.
+    /** Convert an index into a [[weaponregex.model.Position]] in the given string.
       * @param index An index
-      * @return A [[Position]]
+      * @return A [[weaponregex.model.Position]]
       */
     final def positionOf(index: Int): Position = {
       val (line, column) = string toLineCol index
       Position(line, column)
     }
 
-    /** Convert a pair of start and end indices into a [[Location]] in the given string.
+    /** Convert a pair of start and end indices into a [[weaponregex.model.Location]] in the given string.
       * @param start Start index
       * @param end End index
-      * @return A [[Location]]
+      * @return A [[weaponregex.model.Location]]
       */
     final def locationOf(start: Int, end: Int): Location = Location(string positionOf start, string positionOf end)
   }

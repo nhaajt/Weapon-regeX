@@ -7,7 +7,26 @@ inThisBuild(
     organization := "io.stryker-mutator",
     homepage := Some(url("https://github.com/Nhaajt/Weapon-regeX")),
     licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
-    developers := List()
+    developers := List(
+//      Developer(
+//        id = "nhat",
+//        name = "Nhat",
+//        email = "",
+//        url = url("")
+//      ),
+//      Developer(
+//        id = "jan",
+//        name = "Jan",
+//        email = "",
+//        url = url("")
+//      ),
+//      Developer(
+//        id = "wijtse",
+//        name = "Wijtse",
+//        email = "",
+//        url = url("")
+//      )
+    )
   )
 )
 
