@@ -1,7 +1,7 @@
 package weaponregex.mutator
 
-import weaponregex.Parser
-import weaponregex.TreeMutator._
+import weaponregex.run.Parser
+import weaponregex.run.TreeMutator._
 import weaponregex.model.mutation._
 
 class MutatorTest extends munit.FunSuite {
@@ -9,7 +9,7 @@ class MutatorTest extends munit.FunSuite {
     val pattern = "^abc^def^"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(RemoveBOL))
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(BOLRemoval))
     assertEquals(mutants.length, 3)
 
     val expected: Seq[String] = Seq("abc^def^", "^abcdef^", "^abc^def").sorted
@@ -20,7 +20,7 @@ class MutatorTest extends munit.FunSuite {
     val pattern = "$abc$def$"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(RemoveEOL))
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(EOLRemoval))
     assertEquals(mutants.length, 3)
 
     val expected: Seq[String] = Seq("abc$def$", "$abcdef$", "$abc$def").sorted

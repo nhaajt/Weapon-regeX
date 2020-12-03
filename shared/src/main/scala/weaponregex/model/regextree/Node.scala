@@ -7,7 +7,7 @@ abstract class Node(override val children: RegexTree*)(override val location: Lo
     override val postfix: String = "",
     val sep: String = ""
 ) extends RegexTree {
-  override def build: String = prefix + children.map(_.build).mkString(sep = sep) + postfix
+  override protected def _build: String = prefix + children.map(_.build).mkString(sep = sep) + postfix
 
   // must use `eq` instead of `==`, as `eq` will only succeed on the same instance of the class
   override def buildWith(child: RegexTree, childString: String): String =
@@ -44,60 +44,81 @@ case class FlagGroup(flagToggle: FlagToggle, override val location: Location)
 // Non-capturing group with flags
 case class FlagToggle(onFlags: Flags, hasDash: Boolean, offFlags: Flags, override val location: Location)
     extends Node(onFlags, offFlags)(location) {
-  override def build: String = onFlags.build + (if (hasDash) "-" else "") + offFlags.build
+  override protected def _build: String = onFlags.build + (if (hasDash) "-" else "") + offFlags.build
 }
 
 case class Flags(flags: Seq[Character], override val location: Location) extends Node(flags: _*)(location)
 
 case class Lookaround(expr: RegexTree, isPositive: Boolean, isLookahead: Boolean, override val location: Location)
     extends Node(expr)(location)(
-      s"(?${if (isLookahead) "" else "<"}${if (isPositive) "=" else "!"}",
+      "(?"
+        + (if (isLookahead) "" else "<")
+        + (if (isPositive) "=" else "!"),
       ")"
     )
 
 // Independent non-capturing group
 case class INCGroup(expr: RegexTree, override val location: Location) extends Node(expr)(location)("(?>", ")")
 
-// Infinity will be represented as -1
-case class Quantifier(
+object QuantifierType extends Enumeration {
+  type QuantifierType = Value
+
+  val Greedy: QuantifierType = Value("")
+  val Reluctant: QuantifierType = Value("?")
+  val Possessive: QuantifierType = Value("+")
+}
+
+// Infinity will be represented as negatives, preferably -1
+case class Quantifier private (
     expr: RegexTree,
     min: Int,
-    hasComma: Boolean,
     max: Int,
     override val location: Location,
-    isReluctant: Boolean = false,
-    isPossessive: Boolean = false
+    quantifierType: QuantifierType.Value,
+    isExact: Boolean
 ) extends Node(expr)(location)(
-      postfix = s"{$min${if (hasComma) "," else ""}$max}${if (isReluctant) "?" else if (isPossessive) "+" else ""}"
+      postfix = s"{$min"
+        + (if (isExact) "" else ",")
+        + (if (max < 0) "" else max)
+        + s"}$quantifierType"
     )
-// multiline syntax alternative:
-//    extends Node(expr)(location)(postfix = {
-//  var quantifier = s"{$min${if (hasComma) "," else ""}$max}"
-//  if (isReluctant) quantifier += "?"
-//  if (isPossessive) quantifier += "+"
-//  quantifier
-//})
+
+object Quantifier {
+  // Exact quantifier {n} factory method
+  def apply(
+      expr: RegexTree,
+      exact: Int,
+      location: Location,
+      quantifierType: QuantifierType.Value
+  ): Quantifier = Quantifier(expr, exact, -1, location, quantifierType, isExact = true)
+
+  // Range quantifier {min,max} factory method
+  def apply(
+      expr: RegexTree,
+      min: Int,
+      max: Int,
+      location: Location,
+      quantifierType: QuantifierType.Value
+  ): Quantifier = Quantifier(expr, min, max, location, quantifierType, isExact = false)
+}
 
 case class ZeroOrOne(
     expr: RegexTree,
     override val location: Location,
-    isReluctant: Boolean = false,
-    isPossessive: Boolean = false
-) extends Node(expr)(location)(postfix = s"?${if (isReluctant) "?" else if (isPossessive) "+" else ""}")
+    quantifierType: QuantifierType.Value
+) extends Node(expr)(location)(postfix = s"?$quantifierType")
 
 case class ZeroOrMore(
     expr: RegexTree,
     override val location: Location,
-    isReluctant: Boolean = false,
-    isPossessive: Boolean = false
-) extends Node(expr)(location)(postfix = s"*${if (isReluctant) "?" else if (isPossessive) "+" else ""}")
+    quantifierType: QuantifierType.Value
+) extends Node(expr)(location)(postfix = s"*$quantifierType")
 
 case class OneOrMore(
     expr: RegexTree,
     override val location: Location,
-    isReluctant: Boolean = false,
-    isPossessive: Boolean = false
-) extends Node(expr)(location)(postfix = s"+${if (isReluctant) "?" else if (isPossessive) "+" else ""}")
+    quantifierType: QuantifierType.Value
+) extends Node(expr)(location)(postfix = s"+$quantifierType")
 
 case class Concat(nodes: Seq[RegexTree], override val location: Location) extends Node(nodes: _*)(location)
 

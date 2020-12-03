@@ -1,148 +1,175 @@
 package weaponregex.model.regextree
 
 import weaponregex.model._
-import weaponregex.model.regextree._
 
 class NodeTest extends munit.FunSuite {
-  var locStub: Location = Location(Position(0, 0), Position(0, 1))
-  var leafStubA: Character = Character('A', locStub)
-  var leafStubB: Character = Character('B', locStub)
-  var leafStubC: Character = Character('C', locStub)
+  val locStub: Location = Location(Position(0, 0), Position(0, 1))
+  val leafStubA: Character = Character('A', locStub)
+  val leafStubB: Character = Character('B', locStub)
+  val leafStubC: Character = Character('C', locStub)
 
   test("CharacterClass build") {
-    var node1 = CharacterClass(Seq(leafStubA, leafStubB, leafStubC), locStub)
+    val node1 = CharacterClass(Seq(leafStubA, leafStubB, leafStubC), locStub)
     assertEquals(node1.build, "[ABC]")
 
-    var node2 = CharacterClass(Seq(leafStubA, leafStubB, leafStubC), locStub, false)
+    val node2 = CharacterClass(Seq(leafStubA, leafStubB, leafStubC), locStub, isPositive = false)
     assertEquals(node2.build, "[^ABC]")
   }
 
   test("Range build") {
-    var node1 = Range(leafStubA, leafStubC, locStub)
+    val node1 = Range(leafStubA, leafStubC, locStub)
     assertEquals(node1.build, "A-C")
   }
 
   test("Group build") {
-    var node1 = Group(leafStubA, true, locStub)
+    val node1 = Group(leafStubA, isCapturing = true, locStub)
     assertEquals(node1.build, "(A)")
 
-    var node2 = Group(leafStubA, false, locStub)
+    val node2 = Group(leafStubA, isCapturing = false, locStub)
     assertEquals(node2.build, "(?:A)")
   }
 
   test("NamedGroup build") {
-    var node1 = NamedGroup(leafStubA, "name", locStub)
+    val node1 = NamedGroup(leafStubA, "name", locStub)
     assertEquals(node1.build, "(?<name>A)")
   }
 
   test("FlagNCGroup build") {
-    var charSeq = Seq(leafStubA, leafStubB, leafStubC)
-    var node1 =
-      FlagNCGroup(FlagToggle(Flags(charSeq, locStub), true, Flags(charSeq, locStub), locStub), leafStubA, locStub)
+    val charSeq = Seq(leafStubA, leafStubB, leafStubC)
+    val node1 =
+      FlagNCGroup(
+        FlagToggle(Flags(charSeq, locStub), hasDash = true, Flags(charSeq, locStub), locStub),
+        leafStubA,
+        locStub
+      )
     assertEquals(node1.build, "(?ABC-ABC:A)")
 
-    var node2 =
-      FlagNCGroup(FlagToggle(Flags(Seq(), locStub), true, Flags(charSeq, locStub), locStub), leafStubA, locStub)
+    val node2 =
+      FlagNCGroup(
+        FlagToggle(Flags(Seq(), locStub), hasDash = true, Flags(charSeq, locStub), locStub),
+        leafStubA,
+        locStub
+      )
     assertEquals(node2.build, "(?-ABC:A)")
 
-    var node3 =
-      FlagNCGroup(FlagToggle(Flags(charSeq, locStub), false, Flags(Seq(), locStub), locStub), leafStubA, locStub)
+    val node3 =
+      FlagNCGroup(
+        FlagToggle(Flags(charSeq, locStub), hasDash = false, Flags(Seq(), locStub), locStub),
+        leafStubA,
+        locStub
+      )
     assertEquals(node3.build, "(?ABC:A)")
   }
 
   test("FlagGroup build") {
-    var charSeq = Seq(leafStubA, leafStubB, leafStubC)
-    var node1 =
-      FlagGroup(FlagToggle(Flags(charSeq, locStub), true, Flags(charSeq, locStub), locStub), locStub)
+    val charSeq = Seq(leafStubA, leafStubB, leafStubC)
+    val node1 =
+      FlagGroup(FlagToggle(Flags(charSeq, locStub), hasDash = true, Flags(charSeq, locStub), locStub), locStub)
     assertEquals(node1.build, "(?ABC-ABC)")
 
-    var node2 =
-      FlagGroup(FlagToggle(Flags(Seq(), locStub), true, Flags(charSeq, locStub), locStub), locStub)
+    val node2 =
+      FlagGroup(FlagToggle(Flags(Seq(), locStub), hasDash = true, Flags(charSeq, locStub), locStub), locStub)
     assertEquals(node2.build, "(?-ABC)")
 
-    var node3 =
-      FlagGroup(FlagToggle(Flags(charSeq, locStub), false, Flags(Seq(), locStub), locStub), locStub)
+    val node3 =
+      FlagGroup(FlagToggle(Flags(charSeq, locStub), hasDash = false, Flags(Seq(), locStub), locStub), locStub)
     assertEquals(node3.build, "(?ABC)")
   }
 
   test("Lookaround build") {
-    var node1 = Lookaround(leafStubA, false, false, locStub)
+    val node1 = Lookaround(leafStubA, isPositive = false, isLookahead = false, locStub)
     assertEquals(node1.build, "(?<!A)")
 
-    var node2 = Lookaround(leafStubA, true, false, locStub)
+    val node2 = Lookaround(leafStubA, isPositive = true, isLookahead = false, locStub)
     assertEquals(node2.build, "(?<=A)")
 
-    var node3 = Lookaround(leafStubA, false, true, locStub)
+    val node3 = Lookaround(leafStubA, isPositive = false, isLookahead = true, locStub)
     assertEquals(node3.build, "(?!A)")
 
-    var node4 = Lookaround(leafStubA, true, true, locStub)
+    val node4 = Lookaround(leafStubA, isPositive = true, isLookahead = true, locStub)
     assertEquals(node4.build, "(?=A)")
   }
 
   test("INCGroup build") {
-    var node1 = INCGroup(leafStubA, locStub)
+    val node1 = INCGroup(leafStubA, locStub)
     assertEquals(node1.build, "(?>A)")
   }
 
   test("Quantifier build") {
-    //TODO test reworked stuff
+    val node1 = Quantifier(leafStubA, 1, locStub, QuantifierType.Greedy)
+    assertEquals(node1.build, "A{1}")
 
-    var node1 = Quantifier(leafStubA, 1, true, 3, locStub)
-    assertEquals(node1.build, "A{1,3}")
+    val node2 = Quantifier(leafStubA, 1, locStub, QuantifierType.Reluctant)
+    assertEquals(node2.build, "A{1}?")
 
-    var node2 = Quantifier(leafStubA, 1, true, 3, locStub, true, false)
-    assertEquals(node2.build, "A{1,3}?")
+    val node3 = Quantifier(leafStubA, 1, locStub, QuantifierType.Possessive)
+    assertEquals(node3.build, "A{1}+")
 
-    var node3 = Quantifier(leafStubA, 1, true, 3, locStub, false, true)
-    assertEquals(node3.build, "A{1,3}+")
+    val node4 = Quantifier(leafStubA, 1, 3, locStub, QuantifierType.Greedy)
+    assertEquals(node4.build, "A{1,3}")
+
+    val node5 = Quantifier(leafStubA, 1, 3, locStub, QuantifierType.Reluctant)
+    assertEquals(node5.build, "A{1,3}?")
+
+    val node6 = Quantifier(leafStubA, 1, 3, locStub, QuantifierType.Possessive)
+    assertEquals(node6.build, "A{1,3}+")
+
+    val node7 = Quantifier(leafStubA, 1, -1, locStub, QuantifierType.Greedy)
+    assertEquals(node7.build, "A{1,}")
+
+    val node8 = Quantifier(leafStubA, 1, -1, locStub, QuantifierType.Reluctant)
+    assertEquals(node8.build, "A{1,}?")
+
+    val node9 = Quantifier(leafStubA, 1, -1, locStub, QuantifierType.Possessive)
+    assertEquals(node9.build, "A{1,}+")
   }
 
   test("ZeroOrOne build") {
-    var node1 = ZeroOrOne(leafStubA, locStub)
+    val node1 = ZeroOrOne(leafStubA, locStub, QuantifierType.Greedy)
     assertEquals(node1.build, "A?")
 
-    var node2 = ZeroOrOne(leafStubA, locStub, true, false)
+    val node2 = ZeroOrOne(leafStubA, locStub, QuantifierType.Reluctant)
     assertEquals(node2.build, "A??")
 
-    var node3 = ZeroOrOne(leafStubA, locStub, false, true)
+    val node3 = ZeroOrOne(leafStubA, locStub, QuantifierType.Possessive)
     assertEquals(node3.build, "A?+")
   }
 
   test("ZeroOrMore build") {
-    var node1 = ZeroOrMore(leafStubA, locStub)
+    val node1 = ZeroOrMore(leafStubA, locStub, QuantifierType.Greedy)
     assertEquals(node1.build, "A*")
 
-    var node2 = ZeroOrMore(leafStubA, locStub, true, false)
+    val node2 = ZeroOrMore(leafStubA, locStub, QuantifierType.Reluctant)
     assertEquals(node2.build, "A*?")
 
-    var node3 = ZeroOrMore(leafStubA, locStub, false, true)
+    val node3 = ZeroOrMore(leafStubA, locStub, QuantifierType.Possessive)
     assertEquals(node3.build, "A*+")
   }
 
   test("OneOrMore build") {
-    var node1 = OneOrMore(leafStubA, locStub)
+    val node1 = OneOrMore(leafStubA, locStub, QuantifierType.Greedy)
     assertEquals(node1.build, "A+")
 
-    var node2 = OneOrMore(leafStubA, locStub, true, false)
+    val node2 = OneOrMore(leafStubA, locStub, QuantifierType.Reluctant)
     assertEquals(node2.build, "A+?")
 
-    var node3 = OneOrMore(leafStubA, locStub, false, true)
+    val node3 = OneOrMore(leafStubA, locStub, QuantifierType.Possessive)
     assertEquals(node3.build, "A++")
   }
 
   test("Concat build") {
-    var node1 = Concat(Seq(leafStubA, leafStubB), locStub)
+    val node1 = Concat(Seq(leafStubA, leafStubB), locStub)
     assertEquals(node1.build, "AB")
 
-    var node2 = Concat(Seq(leafStubA, leafStubB, leafStubC), locStub)
+    val node2 = Concat(Seq(leafStubA, leafStubB, leafStubC), locStub)
     assertEquals(node2.build, "ABC")
   }
 
   test("Or build") {
-    var node1 = Or(Seq(leafStubA, leafStubB), locStub)
+    val node1 = Or(Seq(leafStubA, leafStubB), locStub)
     assertEquals(node1.build, "A|B")
 
-    var node2 = Or(Seq(leafStubA, leafStubB, leafStubC), locStub)
+    val node2 = Or(Seq(leafStubA, leafStubB, leafStubC), locStub)
     assertEquals(node2.build, "A|B|C")
   }
 

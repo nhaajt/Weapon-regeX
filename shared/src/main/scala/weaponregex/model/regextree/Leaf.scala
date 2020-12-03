@@ -7,7 +7,7 @@ abstract class Leaf[A](val value: A)(override val location: Location)(implicit
     override val postfix: String = ""
 ) extends RegexTree {
   override val children: Seq[RegexTree] = Nil
-  override def build: String = prefix + value + postfix
+  override protected def _build: String = prefix + value + postfix
 
   override def buildWith(child: RegexTree, childString: String): String = build
 }
@@ -18,12 +18,12 @@ case class Character(char: Char, override val location: Location) extends Leaf(c
 case class Any(override val location: Location) extends Leaf('.')(location)
 
 /** @param metaChar Can be any meta character as defined in the grammar
-  * @param location Location of the token in the regex string
+  * @param location [[weaponregex.model.Location]] of the token in the regex string
   */
 case class MetaChar(metaChar: String, override val location: Location) extends Leaf(metaChar)(location)("""\""")
 
-case class PredefinedCharClass(charClass: String, isPositive: Boolean, override val location: Location)
-    extends Leaf(if (isPositive) charClass.toLowerCase else charClass.toUpperCase)(location)("""\""")
+case class PredefinedCharClass(charClass: String, override val location: Location)
+    extends Leaf(charClass)(location)("""\""")
 
 case class BOL(override val location: Location) extends Leaf('^')(location)
 
