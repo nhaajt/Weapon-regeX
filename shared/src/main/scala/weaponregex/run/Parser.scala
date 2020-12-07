@@ -11,6 +11,8 @@ object Parser {
   def Indexed[_: P, T](p: => P[T]): P[(Location, T)] = P(Index ~ p ~ Index)
     .map { case (i, t, j) => (currentPattern.locationOf(i, j), t) }
 
+  def number[_: P]: P[Int] = P(CharIn("0-9").rep(1).!.map(_.toInt))
+
   def charLiteral[_: P]: P[Character] = Indexed(CharPred(!specialChars.contains(_)).!)
     .map { case (loc, c) => Character(c.head, loc) }
 
@@ -69,11 +71,101 @@ object Parser {
   def preDefinedCharClass[_: P]: P[PredefinedCharClass] = Indexed("""\""" ~ CharIn("dDsSwW").!)
     .map { case (loc, c) => PredefinedCharClass(c, loc) }
 
+  def quantifierType[_: P, T](p: => P[T]): P[(T, QuantifierType.Value)] = P(p ~ CharIn("?+").!.?)
+    .map { case (pp, optionQType) =>
+      (
+        pp,
+        optionQType match {
+          case Some("?") => QuantifierType.Reluctant
+          case Some("+") => QuantifierType.Possessive
+          case _         => QuantifierType.Greedy
+        }
+      )
+    }
+
+//  def zeroOrOne[_: P]: P[ZeroOrOne] = Indexed(quantifierType(elementaryRE ~ "?"))
+//    .map { case (loc, (expr, quantifierType)) => ZeroOrOne(expr, loc, quantifierType) }
+//
+//  def zeroOrMore[_: P]: P[ZeroOrMore] = Indexed(quantifierType(elementaryRE ~ "*"))
+//    .map { case (loc, (expr, quantifierType)) => ZeroOrMore(expr, loc, quantifierType) }
+//
+//  def oneOrMore[_: P]: P[OneOrMore] = Indexed(quantifierType(elementaryRE ~ "+"))
+//    .map { case (loc, (expr, quantifierType)) => OneOrMore(expr, loc, quantifierType) }
+//
+//  def quantifierShort[_: P]: P[RegexTree] = P(zeroOrOne | zeroOrMore | oneOrMore)
+
+  def quantifierShort[_: P]: P[RegexTree] = Indexed(quantifierType(elementaryRE ~ CharIn("?*+").!))
+    .map { case (loc, ((expr, q), quantifierType)) =>
+      q match {
+        case "?" => ZeroOrOne(expr, loc, quantifierType)
+        case "*" => ZeroOrMore(expr, loc, quantifierType)
+        case "+" => OneOrMore(expr, loc, quantifierType)
+      }
+    }
+
+//  def quantifierExact[_: P]: P[Quantifier] = Indexed(quantifierType(elementaryRE ~ "{" ~ number ~ "}"))
+//    .map { case (loc, ((expr, exact), quantifierType)) => Quantifier(expr, exact, loc, quantifierType) }
+//
+//  def quantifierOnlyMin[_: P]: P[Quantifier] = Indexed(quantifierType(elementaryRE ~ "{" ~ number ~ ",}"))
+//    .map { case (loc, ((expr, min), quantifierType)) => Quantifier(expr, min, -1, loc, quantifierType) }
+//
+//  def quantifierRange[_: P]: P[Quantifier] = Indexed(quantifierType(elementaryRE ~ "{" ~ number ~ "," ~ number ~ "}"))
+//    .map { case (loc, ((expr, min, max), quantifierType)) => Quantifier(expr, min, max, loc, quantifierType) }
+//
+//  def quantifierNum[_: P]: P[Quantifier] = P(quantifierExact | quantifierOnlyMin | quantifierRange)
+
+  def quantifierNum[_: P]: P[Quantifier] =
+    Indexed(quantifierType(elementaryRE ~ "{" ~ number ~ ("," ~ number.?).? ~ "}"))
+      .map { case (loc, ((expr, num, optionMax), quantifierType)) =>
+        optionMax match {
+          case None            => Quantifier(expr, num, loc, quantifierType)
+          case Some(None)      => Quantifier(expr, num, -1, loc, quantifierType)
+          case Some(Some(max)) => Quantifier(expr, num, max, loc, quantifierType)
+        }
+      }
+
+  def quantifier[_: P]: P[RegexTree] = P(quantifierShort | quantifierNum)
+
+  // x? + * "quantifierAlias"
+
+  //[abc]{3}
+  //[abc]{3,}
+  //[abc]{3,6}
+  // (expr: RegexTree, quantifier: String)
+//  def quantifierAll[_: P]: P[RegexTree] = Indexed(
+//    P(
+//      elementaryRE ~ (
+//        CharIn("?*+").! |
+//          ("{" ~ number ~ "}").! |
+//          ("{" ~ number ~ ",}").! |
+//          ("{" ~ number.rep(exactly = 2, sep = ",") ~ "}").!
+//      )
+//    )
+//  ) map { case (loc, (expr, pattern)) =>
+//    pattern match {
+//      case '?' +: _ => ZeroOrOne(expr, loc, QuantifierType.Greedy)
+//      case '+' +: _ => OneOrMore(expr, loc, QuantifierType.Greedy)
+//      case '*' +: _ => ZeroOrMore(expr, loc, QuantifierType.Greedy)
+//      case pattern if !pattern.contains(',') => {
+//        val n = pattern.toList.filter(_.isDigit).toString.toInt
+//        Quantifier(expr, exact = n, loc, QuantifierType.Greedy)
+//      }
+//      case _ :+ ",}" => {
+//        val n = pattern.toList.filter(_.isDigit).toString.toInt
+//        Quantifier(expr, min = n, max = -1, loc, QuantifierType.Greedy)
+//      }
+//      case pattern if pattern.contains(',') && !pattern.endsWith(",}") => {
+//        val nums = pattern.split(",").map(_.toList.filter(_.isDigit).toString.toInt)
+//        Quantifier(expr, min = nums(0), max = nums(1), loc, QuantifierType.Greedy)
+//      }
+//    }
+//  }
+
   // ! unfinished
   def elementaryRE[_: P]: P[RegexTree] = P(any | preDefinedCharClass | boundary | charClass | character)
 
   // ! missing quantifier
-  def basicRE[_: P]: P[RegexTree] = P(elementaryRE)
+  def basicRE[_: P]: P[RegexTree] = P(quantifier | elementaryRE)
 
   def concat[_: P]: P[Concat] = Indexed(basicRE.rep(2))
     .map { case (loc, nodes) => Concat(nodes, loc) }
