@@ -5,7 +5,14 @@ import weaponregex.model.mutation.TokenMutator
 object BuiltinMutators {
   val all: Seq[TokenMutator] = Seq(
     BOLRemoval,
-    EOLRemoval
+    EOLRemoval,
+    CharClassNegation,
+    CharClassChildRemoval,
+    CharClassAnyChar,
+    CharClassRangeModification,
+    PredefCharClassNegation,
+    PredefCharClassNullification,
+    PredefCharClassAnyChar
   )
 
   lazy val levels: Map[Int, Seq[TokenMutator]] =
