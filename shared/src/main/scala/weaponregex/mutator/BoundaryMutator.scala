@@ -14,3 +14,15 @@ object BOLRemoval extends TokenMutator {
     }
   )
 }
+
+object EOLRemoval extends TokenMutator {
+  override val name: String = "End of line character `$` removal"
+  override val levels: Seq[Int] = Seq(1, 2, 3)
+
+  override def mutate(token: RegexTree): Seq[String] = token.children.foldLeft(Seq.empty[String])((results, child) =>
+    child match {
+      case _: EOL => results :+ token.buildWith(child, "")
+      case _      => results
+    }
+  )
+}
