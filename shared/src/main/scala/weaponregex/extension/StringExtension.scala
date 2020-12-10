@@ -62,5 +62,7 @@ object StringExtension {
     final def bold: String = style(Console.BOLD)
 
     final def underlined: String = style(Console.UNDERLINED)
+
+    final def toggleCase: String = string map (char => if (char.isUpper) char.toLower else char.toUpper)
   }
 }

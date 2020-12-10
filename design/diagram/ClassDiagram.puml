@@ -1,0 +1,193 @@
+@startuml
+
+'skinparam monochrome true
+skinparam backgroundcolor white
+skinparam shadowing false
+skinparam class {
+    BackgroundColor transparent
+    BorderColor black
+    ArrowColor black
+}
+skinparam note {
+    BackgroundColor business
+    BorderColor black
+}
+
+'left to right direction
+
+'title Class Diagram
+
+' ===================== Package structure =====================
+package "weaponregex" {
+    class WeaponRegeX <<object>> <<(O, darksalmon)>>
+    note right: Main facade\n <color: red>[NOT FINAL]</color>
+
+    package "run" {
+        class Parser <<object>> <<(O, darksalmon)>>
+        class TreeMutator <<object>> <<(O, darksalmon)>>
+    }
+
+    package "model" {
+        class Location
+        class Position
+
+        package "regextree" {
+            interface RegexTree <<trait>> << (T, thistle) >>
+            abstract class Node
+            abstract class "Leaf [A]"
+
+            class ConcreteNode
+            class "ConcreteNode " <<object>> <<(O, darksalmon)>>
+
+            class ConcreteLeaf
+            class "ConcreteLeaf " <<object>> <<(O, darksalmon)>>
+        }
+
+        package "mutation" {
+            class Mutant
+            class MutationData
+            interface TokenMutator <<trait>> << (T, thistle) >>
+        }
+    }
+
+    package "mutator" {
+        class BuiltinMutators <<object>> <<(O, darksalmon)>>
+        class ConcreteTokenMutator <<object>> <<(O, darksalmon)>>
+    }
+}
+
+' ===================== Main facade =====================
+WeaponRegeX -- Parser :> use
+WeaponRegeX -- TreeMutator :> use
+
+class WeaponRegeX {
+'    -- Parsing --
+'    + parse(pattern : String) : Option[RegexTree]
+'    + parseOrError(pattern : String) : RegexTree
+'    -- Mutating --
+    + mutate(pattern : String, mutationLevel : Int) : Seq[Mutant]
+    + mutate(pattern : String, mutators : Seq[TokenMutator], mutationLevel : Int) : Seq[Mutant]
+    + mutate(pattern : String, mutators : Seq[TokenMutator]) : Seq[Mutant]
+}
+
+' ===================== Data models =====================
+Location "1" *-- "2" Position
+class Location {
+    + start : Position
+    + end : Position
+}
+
+class Position {
+   + line : Int
+   + column : Int
+}
+
+Mutant *-- MutationData
+class Mutant {
+    + pattern : String
+    + data : MutationData
+}
+
+MutationData *-u- Location
+class MutationData {
+    + name : String
+    + location : Location
+    + level : Int
+    + description : String
+}
+
+' ===================== RegexTree =====================
+RegexTree "1" *-- "*" RegexTree
+RegexTree <|.. Node
+RegexTree <|.. "Leaf [A]"
+RegexTree *-u- Location
+
+interface RegexTree {
+    + {abstract} children : Seq[RegexTree]
+    + {abstract} location : Location
+    ..
+    + prefix : String
+    + postfix : String
+    ..
+    + <<lazy>> pattern : String
+    __
+    # {abstract} _build() : String
+    + build() : String
+    + {abstract} buildWith(child : RegexTree, childString : String) : String
+}
+
+abstract class Node {
+    + children : Seq[RegexTree]
+    + location : Location
+    + sep : String
+
+    # _build() : String
+    + buildWith(child : RegexTree, childString : String) : String
+}
+
+abstract class "Leaf [A]" {
+    + children : Seq[RegexTree]
+    + location : Location
+    + value : A
+
+    # _build() : String
+    + buildWith(child : RegexTree, childString : String) : String
+}
+
+ConcreteNode --|> Node
+ConcreteNode <..> "ConcreteNode ": [optional]\n companion
+class ConcreteNode
+class "ConcreteNode "
+
+ConcreteLeaf --|> "Leaf [A]"
+ConcreteLeaf <..> "ConcreteLeaf ": [optional]\n companion
+class ConcreteLeaf
+class "ConcreteLeaf "
+
+' ===================== Parser =====================
+Parser -- RegexTree :> generate
+class Parser {
+    .. production rule methods ..
+
+    + apply(pattern : String) : Option[RegexTree]
+    + parse(pattern : String) : Option[RegexTree]
+    + parseOrError(pattern : String) : RegexTree
+}
+
+' ===================== TreeMutator =====================
+TreeMutator -- BuiltinMutators :> use
+TreeMutator "1" -- "*" TokenMutator :> use
+TreeMutator "1" -- "*" Mutant :> return
+TreeMutator -- RegexTree :> traverse & mutate\n extension
+
+class TreeMutator <extension (tree : RegexTree)> {
+'    == extension (tree : RegexTree) ==
+    + mutate(mutationLevel : Int) : Seq[Mutant]
+    + mutate(mutators : Seq[TokenMutator], mutationLevel : Int) : Seq[Mutant]
+    + mutate(mutators : Seq[TokenMutator]) : Seq[Mutant]
+}
+
+' ===================== TokenMutator =====================
+BuiltinMutators "1" *-- "*" TokenMutator
+class BuiltinMutators {
+    + all : Seq[TokenMutator]
+    + levels : Map[Int, Seq[TokenMutator]]
+
+    + apply(mutationLevel : Int) : Seq[TokenMutator]
+    + level(mutationLevel : Int) : Seq[TokenMutator]
+}
+
+TokenMutator --- RegexTree :> mutate
+interface TokenMutator {
+    + {abstract} name : String
+    + {abstract} levels : Seq[Int]
+    + description : String
+
+    + apply(token : RegexTree) : Seq[String]
+    + {abstract} mutate(token : RegexTree) : Seq[String]
+}
+
+ConcreteTokenMutator ..|> TokenMutator
+class ConcreteTokenMutator
+
+@enduml

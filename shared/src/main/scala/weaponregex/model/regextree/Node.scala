@@ -68,7 +68,6 @@ object QuantifierType extends Enumeration {
   val Possessive: QuantifierType = Value("+")
 }
 
-// Infinity will be represented as negatives, preferably -1
 case class Quantifier private (
     expr: RegexTree,
     min: Int,
@@ -78,19 +77,21 @@ case class Quantifier private (
     isExact: Boolean
 ) extends Node(expr)(location)(
       postfix = s"{$min"
-        + (if (isExact) "" else ",")
-        + (if (max < 0) "" else max)
+        + (if (isExact) "" else "," + (if (max < 0) "" else max))
         + s"}$quantifierType"
     )
 
 object Quantifier {
+  // Infinity will be represented as negatives, preferably -1
+  val Infinity: Int = -1
+
   // Exact quantifier {n} factory method
   def apply(
       expr: RegexTree,
       exact: Int,
       location: Location,
       quantifierType: QuantifierType.Value
-  ): Quantifier = Quantifier(expr, exact, -1, location, quantifierType, isExact = true)
+  ): Quantifier = Quantifier(expr, exact, exact, location, quantifierType, isExact = true)
 
   // Range quantifier {min,max} factory method
   def apply(

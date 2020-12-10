@@ -7,6 +7,11 @@ import weaponregex.mutator.BuiltinMutators
 object TreeMutator {
   implicit class RegexTreeMutator(tree: RegexTree) {
 
+    /** Mutate using all the built-in mutators
+      * @return A sequence of [[weaponregex.model.mutation.Mutant]]
+      */
+    def mutate: Seq[Mutant] = mutate(BuiltinMutators.all)
+
     /** Mutate using all the built-in mutators in a specific mutation level
       * @param mutationLevel Target mutation level
       * @return A sequence of [[weaponregex.model.mutation.Mutant]]

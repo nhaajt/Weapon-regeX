@@ -4,18 +4,19 @@ import fastparse._, NoWhitespace._
 import weaponregex.model._
 import weaponregex.model.regextree._
 import weaponregex.extension.StringExtension.StringIndexExtension
-
 object Parser {
   private var currentPattern: String = _
+  private val specialChars: String = """[](){}\.^$|?*+"""
 
   def Indexed[_: P, T](p: => P[T]): P[(Location, T)] = P(Index ~ p ~ Index)
     .map { case (i, t, j) => (currentPattern.locationOf(i, j), t) }
 
-  def character[_: P]: P[Character] = Indexed(AnyChar.!)
+  def number[_: P]: P[Int] = P(CharIn("0-9").rep(1).!) map (_.toInt)
+
+  def charLiteral[_: P]: P[Character] = Indexed(CharPred(!specialChars.contains(_)).!)
     .map { case (loc, c) => Character(c.head, loc) }
 
-  def any[_: P]: P[Any] = Indexed(P("."))
-    .map { case (loc, _) => Any(loc) }
+  def character[_: P]: P[RegexTree] = P(metaCharacter | charLiteral)
 
   def bol[_: P]: P[BOL] = Indexed(P("^"))
     .map { case (loc, _) => BOL(loc) }
@@ -25,7 +26,27 @@ object Parser {
 
   def boundary[_: P]: P[RegexTree] = P(bol | eol)
 
-  def range[_: P]: P[Range] = Indexed(character ~ "-" ~ character)
+  def metaCharacter[_: P]: P[RegexTree] = P(charOct | charHex | charUnicode | charHexBrace | escapeChar)
+
+  // \c is not supported yet
+  // \a an \e is JVM only
+  def escapeChar[_: P]: P[MetaChar] =
+    Indexed("""\""" ~ CharIn("\\\\tnrf").!) // fastparse needs //// for a single backslash
+      .map { case (loc, c) => MetaChar(c, loc) }
+
+  def charOct[_: P]: P[MetaChar] = Indexed("""\0""" ~ CharIn("0-7").!.rep(min = 1, max = 3))
+    .map { case (loc, octDigits) => MetaChar("0" + octDigits.mkString, loc) }
+
+  def charHex[_: P]: P[MetaChar] = Indexed("""\x""" ~ CharIn("0-9a-zA-Z").!.rep(exactly = 2))
+    .map { case (loc, hexDigits) => MetaChar("x" + hexDigits.mkString, loc) }
+
+  def charUnicode[_: P]: P[MetaChar] = Indexed("\\u" ~ CharIn("0-9a-zA-Z").!.rep(exactly = 4))
+    .map { case (loc, hexDigits) => MetaChar("u" + hexDigits.mkString, loc) }
+
+  def charHexBrace[_: P]: P[MetaChar] = Indexed("""\x{""" ~ CharIn("0-9a-zA-Z").!.rep(1) ~ "}")
+    .map { case (loc, hexDigits) => MetaChar("x{" + hexDigits.mkString + "}", loc) }
+
+  def range[_: P]: P[Range] = Indexed(charLiteral ~ "-" ~ charLiteral)
     .map { case (loc, (from, to)) => Range(from, to, loc) }
 
   // !! unsupported (yet)
@@ -34,7 +55,7 @@ object Parser {
     .map { case (loc, nodes) => ClassItemIntersection(nodes, loc) }
 
   // Nested character class is Scala/Java only
-  def classItem[_: P]: P[RegexTree] = P(range | charClass | character)
+  def classItem[_: P]: P[RegexTree] = P(range | charClass | charLiteral)
 
   def positiveCharClass[_: P]: P[CharacterClass] = Indexed("[" ~ classItem.rep(1) ~ "]")
     .map { case (loc, nodes) => CharacterClass(nodes, loc) }
@@ -44,11 +65,50 @@ object Parser {
 
   def charClass[_: P]: P[CharacterClass] = P(positiveCharClass | negativeCharClass)
 
+  def any[_: P]: P[Any] = Indexed(P("."))
+    .map { case (loc, _) => Any(loc) }
+
+  def preDefinedCharClass[_: P]: P[PredefinedCharClass] = Indexed("""\""" ~ CharIn("dDsSwW").!)
+    .map { case (loc, c) => PredefinedCharClass(c, loc) }
+
+  def quantifierType[_: P, T](p: => P[T]): P[(T, QuantifierType.Value)] = P(p ~ CharIn("?+").!.?)
+    .map { case (pp, optionQType) =>
+      (
+        pp,
+        optionQType match {
+          case Some("?") => QuantifierType.Reluctant
+          case Some("+") => QuantifierType.Possessive
+          case _         => QuantifierType.Greedy
+        }
+      )
+    }
+
+  def quantifierShort[_: P]: P[RegexTree] = Indexed(quantifierType(elementaryRE ~ CharIn("?*+").!))
+    .map { case (loc, ((expr, q), quantifierType)) =>
+      q match {
+        case "?" => ZeroOrOne(expr, loc, quantifierType)
+        case "*" => ZeroOrMore(expr, loc, quantifierType)
+        case "+" => OneOrMore(expr, loc, quantifierType)
+      }
+    }
+
+  def quantifierLong[_: P]: P[Quantifier] =
+    Indexed(quantifierType(elementaryRE ~ "{" ~ number ~ ("," ~ number.?).? ~ "}"))
+      .map { case (loc, ((expr, num, optionMax), quantifierType)) =>
+        optionMax match {
+          case None            => Quantifier(expr, num, loc, quantifierType)
+          case Some(None)      => Quantifier(expr, num, Quantifier.Infinity, loc, quantifierType)
+          case Some(Some(max)) => Quantifier(expr, num, max, loc, quantifierType)
+        }
+      }
+
+  def quantifier[_: P]: P[RegexTree] = P(quantifierShort | quantifierLong)
+
   // ! unfinished
-  def elementaryRE[_: P]: P[RegexTree] = P(boundary | charClass | character)
+  def elementaryRE[_: P]: P[RegexTree] = P(any | preDefinedCharClass | boundary | charClass | character)
 
   // ! missing quantifier
-  def basicRE[_: P]: P[RegexTree] = P(elementaryRE)
+  def basicRE[_: P]: P[RegexTree] = P(quantifier | elementaryRE)
 
   def concat[_: P]: P[Concat] = Indexed(basicRE.rep(2))
     .map { case (loc, nodes) => Concat(nodes, loc) }
