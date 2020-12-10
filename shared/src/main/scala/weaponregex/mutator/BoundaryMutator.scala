@@ -6,6 +6,7 @@ import weaponregex.model.regextree._
 object BOLRemoval extends TokenMutator {
   override val name: String = "Beginning of line character `^` removal"
   override val levels: Seq[Int] = Seq(1, 2, 3)
+  override val description: String = "Remove beginning of line character `^`"
 
   override def mutate(token: RegexTree): Seq[String] = token.children.foldLeft(Seq.empty[String])((results, child) =>
     child match {
@@ -18,6 +19,7 @@ object BOLRemoval extends TokenMutator {
 object EOLRemoval extends TokenMutator {
   override val name: String = "End of line character `$` removal"
   override val levels: Seq[Int] = Seq(1, 2, 3)
+  override val description: String = "Remove end of line character `$`"
 
   override def mutate(token: RegexTree): Seq[String] = token.children.foldLeft(Seq.empty[String])((results, child) =>
     child match {
