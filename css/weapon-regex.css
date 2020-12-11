@@ -1,0 +1,50 @@
+:root {
+    --stryker-red: #e84b39;
+    --stryker-yellow: #f1c413;
+    --mutant-text: black;
+    --mutant-removed: var(--stryker-red);
+    --mutant-added: green;
+    --bg-light: white;
+    --bg-light-1: #E9EDEE;
+}
+
+#main-content {
+    width: 50vw;
+    height: 50vh;
+    margin: 10% auto;
+}
+
+.card {
+    margin-bottom: 1rem;
+}
+
+.mutant-container {
+    /*background-color: var(--bg-light-1);*/
+    /*padding: 1em;*/
+    /*border-radius: .25rem;*/
+}
+
+.mutant-decompose {
+    font-weight: bold;
+}
+
+.mut-pre {
+    display: inline-block;
+    color: var(--mutant-text);
+}
+
+.mut-rem {
+    display: inline-block;
+    color: var(--mutant-removed);
+    text-decoration: line-through;
+}
+
+.mut-add {
+    display: inline-block;
+    color: var(--mutant-added);
+}
+
+.mut-pos {
+    display: inline-block;
+    color: var(--mutant-text);
+}
