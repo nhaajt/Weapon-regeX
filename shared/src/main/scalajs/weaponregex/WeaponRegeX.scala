@@ -1,13 +1,10 @@
 package weaponregex
 
-import weaponregex.model.regextree._
-import weaponregex.mutator.BuiltinMutators
-import weaponregex.model.mutation._
-import weaponregex.model._
 import weaponregex.run.Parser
+import weaponregex.run.TreeMutator._
+import weaponregex.model.mutation._
 
 import scala.scalajs.js.annotation._
-import weaponregex.run.TreeMutator
 
 // class WRegex(var pattern: String, var flags: String = "")
 
@@ -17,18 +14,27 @@ import weaponregex.run.TreeMutator
 @JSExportAll
 object WeaponRegeX {
 
-  def mutate(regex: String, mutationLevel: Int): Seq[Mutant] = {
-    val parsedTree = Parser.parseOrError(regex)
-    return TreeMutator.RegexTreeMutator(parsedTree).mutate(mutationLevel)
-  }
+  def mutate(pattern: String): Seq[Mutant] =
+    Parser(pattern) match {
+      case Some(tree) => tree.mutate
+      case None       => Nil
+    }
 
-  def mutate(regex: String, mutators: Seq[TokenMutator], mutationLevel: Int): Seq[Mutant] = {
-    val parsedTree = Parser.parseOrError(regex)
-    return TreeMutator.RegexTreeMutator(parsedTree).mutate(mutators, mutationLevel)
-  }
+  def mutate(pattern: String, mutationLevel: Int): Seq[Mutant] =
+    Parser(pattern) match {
+      case Some(tree) => tree.mutate(mutationLevel)
+      case None       => Nil
+    }
 
-  def mutate(regex: String, mutators: Seq[TokenMutator]): Seq[Mutant] = {
-    val parsedTree = Parser.parseOrError(regex)
-    return TreeMutator.RegexTreeMutator(parsedTree).mutate(mutators)
-  }
+  def mutate(pattern: String, mutators: Seq[TokenMutator], mutationLevel: Int): Seq[Mutant] =
+    Parser(pattern) match {
+      case Some(tree) => tree.mutate(mutators, mutationLevel)
+      case None       => Nil
+    }
+
+  def mutate(pattern: String, mutators: Seq[TokenMutator]): Seq[Mutant] =
+    Parser(pattern) match {
+      case Some(tree) => tree.mutate(mutators)
+      case None       => Nil
+    }
 }

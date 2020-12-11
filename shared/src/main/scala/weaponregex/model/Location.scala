@@ -1,7 +1,6 @@
 package weaponregex.model
 
-import scala.scalajs.js.annotation.JSExportTopLevel
-import scala.scalajs.js.annotation.JSExportAll
+import scala.scalajs.js.annotation._
 
 /** A location in the source code which can span multiple lines and/or columns.
   *

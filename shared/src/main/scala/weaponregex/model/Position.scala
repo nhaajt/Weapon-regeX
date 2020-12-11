@@ -1,7 +1,6 @@
 package weaponregex.model
 
-import scala.scalajs.js.annotation.JSExportTopLevel
-import scala.scalajs.js.annotation.JSExportAll
+import scala.scalajs.js.annotation._
 
 /** A specific spot in the source code based on line and column.
   * Stryker uses zero-based indexes. So the first character in a file is at line 0, column 0.

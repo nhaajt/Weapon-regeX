@@ -1,8 +1,8 @@
 package weaponregex.model.mutation
 
 import weaponregex.model.Location
-import scala.scalajs.js.annotation.JSExportTopLevel
-import scala.scalajs.js.annotation.JSExportAll
+
+import scala.scalajs.js.annotation._
 
 /** Data structure for metadata of a mutation made by a mutator.
   * @param name Name of the mutation
@@ -12,4 +12,4 @@ import scala.scalajs.js.annotation.JSExportAll
   */
 @JSExportTopLevel("MutationData")
 @JSExportAll
-case class MutationData(name: String, location: Location, level: Int, description: String = "") {}
+case class MutationData(name: String, location: Location, level: Int, description: String = "")
