@@ -15,6 +15,7 @@ jobs:
           java-version: 11
       - name: Compile code
         run: sbt +compile
+        # Shouldn't this be fullOptJS?
       - name: Run Scala.js
         run: sbt fastOptJS
 
@@ -49,6 +50,7 @@ jobs:
         with:
           java-version: 11
       - name: Run stryker
+        # This file can be checked in to source-control given that your config will always be the same (maybe add html reporter for local)
         run: |
           echo 'stryker4s{reporters=["console","dashboard"]}' > stryker4s.conf
           sbt 'project WeaponRegeX; stryker'
