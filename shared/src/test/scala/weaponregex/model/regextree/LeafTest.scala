@@ -5,6 +5,9 @@ import weaponregex.model._
 class LeafTest extends munit.FunSuite {
   var locStub: Location = Location(Position(0, 0), Position(0, 1))
 
+  // A lot of tests here have 2 separate asserts for different cases. Can you separate those into multiple tests so each test only tests a single thing?
+  // This applies to other test files as well
+
   test("Character build") {
     val node1 = Character('a', locStub)
     assertEquals(node1.build, "a")

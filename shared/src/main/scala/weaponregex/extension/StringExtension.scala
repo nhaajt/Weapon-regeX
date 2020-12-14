@@ -40,6 +40,7 @@ object StringExtension {
     final def locationOf(start: Int, end: Int): Location = Location(string positionOf start, string positionOf end)
   }
 
+  // Are these used anywhere?
   implicit class StringStylingExtension(string: String) {
     final def style(style: String): String = style + string + Console.RESET
 

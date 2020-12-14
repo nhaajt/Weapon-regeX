@@ -9,7 +9,13 @@ trait TokenMutator {
 
   final def apply(token: RegexTree): Seq[String] = mutate(token)
 
+  /** I'm noticing most of the implementations for this function have a pattern match on the expected tree type of the mutator.
+    * Perhaps the mutate function could be generalized so a mutator only accepts the expected Tree type?
+    * I would also expect this to return a `Seq[RegexTree]`
+    */
+
   def mutate(token: RegexTree): Seq[String]
 
+  // Why override toString?
   override def toString: String = name
 }

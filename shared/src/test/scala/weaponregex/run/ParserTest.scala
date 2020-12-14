@@ -9,6 +9,7 @@ class ParserTest extends munit.FunSuite {
     val pattern = "hello"
     val parsedTree = Parser.parseOrError(pattern)
     assert(clue(parsedTree).isInstanceOf[Concat])
+    // Small note, but for better error messages something like `parsedTree.children.foreach(assert(_.isInstanceOf[Character]))` would be more helpful
     assert(clue(parsedTree.children) forall (_.isInstanceOf[Character]))
 
     treeBuildTest(parsedTree, pattern)

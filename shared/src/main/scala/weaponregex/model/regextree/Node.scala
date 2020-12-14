@@ -2,6 +2,10 @@ package weaponregex.model.regextree
 
 import weaponregex.model.Location
 
+/* Here I would also advice against using 3 implicit parameters of the same (common) type
+ * If I were to make a single `implicit val s: String = "foo"` it would be passed everywhere
+ */
+
 abstract class Node(override val children: RegexTree*)(override val location: Location)(implicit
     override val prefix: String = "",
     override val postfix: String = "",
@@ -57,8 +61,14 @@ case class Lookaround(expr: RegexTree, isPositive: Boolean, isLookahead: Boolean
       ")"
     )
 
+// Comments like these are also nice as a ScalaDoc so I know what I'm auto-completing :)
 // Independent non-capturing group
 case class INCGroup(expr: RegexTree, override val location: Location) extends Node(expr)(location)("(?>", ")")
+
+/* Enumerations are a bit of a controversial subject in Scala, unfortunately.
+ * It's different in Scala 3, but in Scala 2 you don't get incomplete pattern-matching warnings for example
+ * The common pattern is to instead make an ADT like here: https://github.com/stryker-mutator/stryker4s/blob/master/core/src/main/scala/stryker4s/config/ReporterType.scala
+ */
 
 object QuantifierType extends Enumeration {
   type QuantifierType = Value

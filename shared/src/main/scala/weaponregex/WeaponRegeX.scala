@@ -11,6 +11,7 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("WeaponRegeX")
 object WeaponRegeX {
 
+  // Can't these also be default arguments instead of 4 separate methods?
   @JSExport
   def mutate(pattern: String): Seq[Mutant] =
     Parser(pattern) match {

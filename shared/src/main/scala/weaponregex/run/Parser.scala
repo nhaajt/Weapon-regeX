@@ -1,10 +1,17 @@
-package weaponregex.run
+package weaponregex.run // Why is this package called run?
 
 import fastparse._, NoWhitespace._
 import weaponregex.model._
 import weaponregex.model.regextree._
 import weaponregex.extension.StringExtension.StringIndexExtension
 object Parser {
+
+  /** This is a bit of a red flag. A mutable variable in a singleton goes against FP idioms of not having shared state.
+    * It is very possible that a Stryker implementation will be calling the parser in parallel with multiple regexes. What will happen to this mutable variable?
+    * It also makes it harder to test as tests now depend on each other and will have different state depending on the order they are called in, which can make them flaky
+    * Perhaps it is possible to isolate each pattern into its own when parsing?
+    */
+
   private var currentPattern: String = _
   private val specialChars: String = """[](){}\.^$|?*+"""
 

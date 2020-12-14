@@ -7,6 +7,8 @@ import weaponregex.mutator.BuiltinMutators
 object TreeMutator {
   implicit class RegexTreeMutator(tree: RegexTree) {
 
+    // Can these not also be default variables?
+
     /** Mutate using all the built-in mutators
       * @return A sequence of [[weaponregex.model.mutation.Mutant]]
       */
