@@ -20,13 +20,13 @@
 <div id="main-content">
     <h1 style="font-variant: small-caps">Weapon regeX</h1>
 
-    <form>
+    <form onsubmit="runMutator(); return false;">
         <div class="form-row align-items-end">
             <div class="form-group col-9">
                 <label for="inputPattern">Regex pattern</label>
                 <div class="input-group">
                     <input type="text" class="form-control" id="inputPattern"
-                           placeholder="e.g. ^a?(b*c[xyzA-D])+.(d|e|[^0-9])$" required>
+                           placeholder="e.g. \n\t.[0-9[a-zA-Z[^#]]abc]|d|e" required>
                 </div>
             </div>
 
