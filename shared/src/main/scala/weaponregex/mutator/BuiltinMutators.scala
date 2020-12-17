@@ -6,6 +6,8 @@ object BuiltinMutators {
   val all: Seq[TokenMutator] = Seq(
     BOLRemoval,
     EOLRemoval,
+    BOL2BOI,
+    EOL2EOI,
     CharClassNegation,
     CharClassChildRemoval,
     CharClassAnyChar,

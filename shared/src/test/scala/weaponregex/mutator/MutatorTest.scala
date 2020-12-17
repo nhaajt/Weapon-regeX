@@ -12,7 +12,11 @@ class MutatorTest extends munit.FunSuite {
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(BOLRemoval))
     assertEquals(clue(mutants).length, 3)
 
-    val expected: Seq[String] = Seq("abc^def^", "^abcdef^", "^abc^def").sorted
+    val expected: Seq[String] = Seq(
+      "abc^def^",
+      "^abcdef^",
+      "^abc^def"
+    ).sorted
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
 
@@ -23,7 +27,41 @@ class MutatorTest extends munit.FunSuite {
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(EOLRemoval))
     assertEquals(clue(mutants).length, 3)
 
-    val expected: Seq[String] = Seq("abc$def$", "$abcdef$", "$abc$def").sorted
+    val expected: Seq[String] = Seq(
+      "abc$def$",
+      "$abcdef$",
+      "$abc$def"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Change BOL to BOI") {
+    val pattern = "^abc^def^"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(BOL2BOI))
+    assertEquals(clue(mutants).length, 3)
+
+    val expected: Seq[String] = Seq(
+      """\Aabc^def^""",
+      """^abc\Adef^""",
+      """^abc^def\A"""
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Change EOL to EOI") {
+    val pattern = "$abc$def$"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(EOL2EOI))
+    assertEquals(clue(mutants).length, 3)
+
+    val expected: Seq[String] = Seq(
+      """\zabc$def$""",
+      """$abc\zdef$""",
+      """$abc$def\z"""
+    ).sorted
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
 
