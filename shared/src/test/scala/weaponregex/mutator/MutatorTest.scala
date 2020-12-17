@@ -153,7 +153,7 @@ class MutatorTest extends munit.FunSuite {
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
 
-  test("Character Class Remove Child") {
+  test("Character Class to any char") {
     val pattern = "[abc[0-9]]"
     val parsedTree = Parser.parseOrError(pattern)
 

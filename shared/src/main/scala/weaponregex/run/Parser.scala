@@ -6,7 +6,7 @@ import weaponregex.model.regextree._
 import weaponregex.extension.StringExtension.StringIndexExtension
 object Parser {
   private var currentPattern: String = _
-  private val specialChars: String = """[](){}\.^$|?*+"""
+  final private val specialChars: String = """[](){}\.^$|?*+"""
 
   def Indexed[_: P, T](p: => P[T]): P[(Location, T)] = P(Index ~ p ~ Index)
     .map { case (i, t, j) => (currentPattern.locationOf(i, j), t) }
