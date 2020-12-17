@@ -1,3 +1,7 @@
 package weaponregex.model.mutation
 
-case class Mutant(pattern: String, data: MutationData) {}
+import scala.scalajs.js.annotation._
+
+@JSExportTopLevel("Mutant")
+@JSExportAll
+case class Mutant(pattern: String, data: MutationData)
