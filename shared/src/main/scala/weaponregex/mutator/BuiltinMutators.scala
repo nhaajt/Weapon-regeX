@@ -12,7 +12,15 @@ object BuiltinMutators {
     CharClassRangeModification,
     PredefCharClassNegation,
     PredefCharClassNullification,
-    PredefCharClassAnyChar
+    PredefCharClassAnyChar,
+    QuantifierRemoval,
+    QuantifierNChange,
+    QuantifierNOrMoreModification,
+    QuantifierNOrMoreChange,
+    QuantifierNMModification,
+    QuantifierShortModification,
+    QuantifierShortChange,
+    QuantifierReluctantAddition
   )
 
   lazy val levels: Map[Int, Seq[TokenMutator]] =
