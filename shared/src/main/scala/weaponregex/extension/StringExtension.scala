@@ -41,28 +41,6 @@ object StringExtension {
   }
 
   implicit class StringStylingExtension(string: String) {
-    final def style(style: String): String = style + string + Console.RESET
-
-    final def black: String = style(Console.BLACK)
-
-    final def red: String = style(Console.RED)
-
-    final def green: String = style(Console.GREEN)
-
-    final def yellow: String = style(Console.YELLOW)
-
-    final def blue: String = style(Console.BLUE)
-
-    final def magenta: String = style(Console.MAGENTA)
-
-    final def cyan: String = style(Console.CYAN)
-
-    final def white: String = style(Console.WHITE)
-
-    final def bold: String = style(Console.BOLD)
-
-    final def underlined: String = style(Console.UNDERLINED)
-
     final def toggleCase: String = string map (char => if (char.isUpper) char.toLower else char.toUpper)
   }
 }
