@@ -10,6 +10,8 @@ abstract class Leaf[A](val value: A)(override val location: Location)(implicit
   override protected def _build: String = prefix + value + postfix
 
   override def buildWith(child: RegexTree, childString: String): String = build
+
+  override def buildWhile(pred: RegexTree => Boolean): String = build
 }
 
 case class Character(char: Char, override val location: Location) extends Leaf(char)(location)

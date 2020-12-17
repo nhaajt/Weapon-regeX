@@ -20,7 +20,7 @@ object CharClassChildRemoval extends TokenMutator {
   override val description: String = "Remove a child character class"
 
   override def mutate(token: RegexTree): Seq[String] = token match {
-    case cc: CharacterClass if cc.children.length > 1 => cc.children map (child => cc.buildWith(child, ""))
+    case cc: CharacterClass if cc.children.length > 1 => cc.children map (child => cc.buildWhile(_ ne child))
     case _                                            => Nil
   }
 }

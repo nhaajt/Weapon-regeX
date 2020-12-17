@@ -17,4 +17,10 @@ trait RegexTree {
   protected def _build: String
 
   def buildWith(child: RegexTree, childString: String): String
+
+  /** Build the tree into a String while a predicate holds for a given child.
+    * @param pred Predicate on a child
+    * @return A String representation of the tree
+    */
+  def buildWhile(pred: RegexTree => Boolean): String
 }
