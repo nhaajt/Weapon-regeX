@@ -7,7 +7,8 @@ abstract class Leaf[A](val value: A)(override val location: Location)(implicit
     override val postfix: String = ""
 ) extends RegexTree {
   override val children: Seq[RegexTree] = Nil
-  override protected def _build: String = prefix + value + postfix
+
+  override lazy val build: String = prefix + value + postfix
 
   override def buildWith(child: RegexTree, childString: String): String = build
 
