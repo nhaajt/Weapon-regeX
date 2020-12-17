@@ -6,11 +6,11 @@ import weaponregex.model.mutation._
 
 class MutatorTest extends munit.FunSuite {
   test("Mutator name exists and is non-empty") {
-    assert(BuiltinMutators.all.forall(mutator => mutator.name != null && mutator.name != ""))
+    assert(BuiltinMutators.all.forall(_.name.nonEmpty))
   }
 
   test("Mutator description exists and is non-empty") {
-    assert(BuiltinMutators.all.forall(mutator => mutator.description != null && mutator.description != ""))
+    assert(BuiltinMutators.all.forall(_.description.nonEmpty))
   }
 
   test("Remove BOL") {
