@@ -36,7 +36,7 @@ case class EOL(override val location: Location) extends Leaf('$')(location)
   * @param boundary Can be any boundary character as defined in the grammar
   * @param location Location of the token in the regex string
   */
-case class Boundary(boundary: String, override val location: Location) extends Leaf(boundary)(location)
+case class Boundary(boundary: String, override val location: Location) extends Leaf(boundary)(location)("""\""")
 
 case class NameReference(name: String, override val location: Location) extends Leaf(name)(location)("""\k<""", ">")
 

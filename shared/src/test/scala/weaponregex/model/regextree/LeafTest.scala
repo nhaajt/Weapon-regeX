@@ -45,7 +45,7 @@ class LeafTest extends munit.FunSuite {
   }
 
   test("Boundary build") {
-    val node1 = Boundary("""\G""", locStub)
+    val node1 = Boundary("G", locStub)
     assertEquals(node1.build, """\G""")
   }
 
