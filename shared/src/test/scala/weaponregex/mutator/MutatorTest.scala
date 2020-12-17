@@ -5,6 +5,14 @@ import weaponregex.run.TreeMutator._
 import weaponregex.model.mutation._
 
 class MutatorTest extends munit.FunSuite {
+  test("Mutator name exists and is non-empty") {
+    assert(BuiltinMutators.all.forall(mutator => mutator.name != null && mutator.name != ""))
+  }
+
+  test("Mutator description exists and is non-empty") {
+    assert(BuiltinMutators.all.forall(mutator => mutator.description != null && mutator.description != ""))
+  }
+
   test("Remove BOL") {
     val pattern = "^abc^def^"
     val parsedTree = Parser.parseOrError(pattern)
