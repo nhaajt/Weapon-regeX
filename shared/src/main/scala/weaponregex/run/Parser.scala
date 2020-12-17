@@ -65,8 +65,8 @@ object Parser {
 
   def charClass[_: P]: P[CharacterClass] = P(positiveCharClass | negativeCharClass)
 
-  def any[_: P]: P[Any] = Indexed(P("."))
-    .map { case (loc, _) => Any(loc) }
+  def anyDot[_: P]: P[AnyDot] = Indexed(P("."))
+    .map { case (loc, _) => AnyDot(loc) }
 
   def preDefinedCharClass[_: P]: P[PredefinedCharClass] = Indexed("""\""" ~ CharIn("dDsSwW").!)
     .map { case (loc, c) => PredefinedCharClass(c, loc) }
@@ -105,7 +105,7 @@ object Parser {
   def quantifier[_: P]: P[RegexTree] = P(quantifierShort | quantifierLong)
 
   // ! unfinished
-  def elementaryRE[_: P]: P[RegexTree] = P(any | preDefinedCharClass | boundary | charClass | character)
+  def elementaryRE[_: P]: P[RegexTree] = P(anyDot | preDefinedCharClass | boundary | charClass | character)
 
   // ! missing quantifier
   def basicRE[_: P]: P[RegexTree] = P(quantifier | elementaryRE)

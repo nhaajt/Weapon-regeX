@@ -17,7 +17,7 @@ abstract class Leaf[A](val value: A)(override val location: Location)(implicit
 case class Character(char: Char, override val location: Location) extends Leaf(char)(location)
 
 // "Any" is technically a predefined character class, but because it cannot be negated, it is handled separately
-case class Any(override val location: Location) extends Leaf('.')(location)
+case class AnyDot(override val location: Location) extends Leaf('.')(location)
 
 /** @param metaChar Can be any meta character as defined in the grammar
   * @param location [[weaponregex.model.Location]] of the token in the regex string

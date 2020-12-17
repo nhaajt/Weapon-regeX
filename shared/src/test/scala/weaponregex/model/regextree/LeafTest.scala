@@ -14,7 +14,7 @@ class LeafTest extends munit.FunSuite {
   }
 
   test("Any build") {
-    val node1 = Any(locStub)
+    val node1 = AnyDot(locStub)
     assertEquals(node1.build, ".")
   }
 
