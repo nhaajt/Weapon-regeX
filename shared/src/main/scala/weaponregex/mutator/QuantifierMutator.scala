@@ -67,7 +67,7 @@ object QuantifierNMModification extends TokenMutator {
     "Modify quantifier `{n,m}` to `{n-1,m}`, `{n+1,m}`, `{n,m-1}`, and `{n,m+1}`"
 
   override def mutate(token: RegexTree): Seq[String] = (token match {
-    case q: Quantifier if !q.isExact =>
+    case q: Quantifier if !q.isExact && q.max != Quantifier.Infinity =>
       (q.min, q.max) match {
         case (n, m) if n < 0 && m < 0 => Nil
         case (0, 0)                   => Seq(q.copy(max = 1))
