@@ -24,7 +24,10 @@ object Parser {
   def eol[_: P]: P[EOL] = Indexed(P("$"))
     .map { case (loc, _) => EOL(loc) }
 
-  def boundary[_: P]: P[RegexTree] = P(bol | eol)
+  def boundaryMetaChar[_: P]: P[Boundary] = Indexed("""\""" ~ CharIn("bBAGzZ").!)
+    .map { case (loc, b) => Boundary(b, loc) }
+
+  def boundary[_: P]: P[RegexTree] = P(bol | eol | boundaryMetaChar)
 
   def metaCharacter[_: P]: P[RegexTree] = P(charOct | charHex | charUnicode | charHexBrace | escapeChar)
 
