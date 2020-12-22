@@ -5,12 +5,12 @@ import weaponregex.run.TreeMutator._
 import weaponregex.model.mutation._
 
 class MutatorTest extends munit.FunSuite {
-  test("Mutator name exists and is non-empty") {
-    assert(BuiltinMutators.all.forall(_.name.nonEmpty))
+  test("Mutator name is non-empty") {
+    BuiltinMutators.all foreach (mutator => assert(clue(mutator).name.nonEmpty))
   }
 
-  test("Mutator description exists and is non-empty") {
-    assert(BuiltinMutators.all.forall(_.description.nonEmpty))
+  test("Mutator description is non-empty") {
+    BuiltinMutators.all foreach (mutator => assert(clue(mutator).description.nonEmpty))
   }
 
   test("Remove BOL") {

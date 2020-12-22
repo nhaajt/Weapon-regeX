@@ -40,25 +40,25 @@ class ParserTest extends munit.FunSuite {
     treeBuildTest(parsedTree, pattern)
   }
 
-//  test("Parse multiple lines with location") {
-//    val pattern =
-//      """a
-//        |a
-//        |a
-//        |a
-//        |a
-//        |a""".stripMargin
-//    val parsedTree = Parser.parseOrError(pattern)
-//    assertEquals(
-//      parsedTree.children filter {
-//        case Character('a', _) => true
-//        case _                 => false
-//      } map (_.location.start.line),
-//      0 to 5
-//    )
-//
-//    treeBuildTest(parsedTree, pattern)
-//  }
+  test("Parse multiple lines with location") {
+    val pattern =
+      """a
+        |a
+        |a
+        |a
+        |a
+        |a""".stripMargin
+    val parsedTree = Parser.parseOrError(pattern)
+    assertEquals(
+      parsedTree.children filter {
+        case c: Character => c.char == 'a'
+        case _            => false
+      } map (_.location.start.line),
+      0 to 5
+    )
+
+    treeBuildTest(parsedTree, pattern)
+  }
 
   test("Parse character class with characters") {
     val pattern = "[abc]"
