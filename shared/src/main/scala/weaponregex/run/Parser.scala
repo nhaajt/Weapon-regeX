@@ -52,11 +52,6 @@ object Parser {
   def range[_: P]: P[Range] = Indexed(charLiteral ~ "-" ~ charLiteral)
     .map { case (loc, (from, to)) => Range(from, to, loc) }
 
-  // !! unsupported (yet)
-  // Character class item intersection is Scala/Java only
-  def classItemIntersection[_: P]: P[ClassItemIntersection] = Indexed(classItem.rep(2, sep = "&&"))
-    .map { case (loc, nodes) => ClassItemIntersection(nodes, loc) }
-
   // Nested character class is Scala/Java only
   def classItem[_: P]: P[RegexTree] = P(range | charClass | charLiteral)
 

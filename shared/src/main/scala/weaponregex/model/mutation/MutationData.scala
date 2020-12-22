@@ -12,4 +12,4 @@ import scala.scalajs.js.annotation._
   */
 @JSExportTopLevel("MutationData")
 @JSExportAll
-case class MutationData(name: String, location: Location, level: Int, description: String = "")
+case class MutationData(name: String, location: Location, level: Int, description: String)
