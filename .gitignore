@@ -135,4 +135,4 @@ project/plugins/project/
 
 ### Other ###
 .bsp/
-package.json
+/package.json
