@@ -22,12 +22,12 @@ object TreeMutator {
 
       val rootMutants: Seq[Mutant] = mutatorsFiltered flatMap (mutator =>
         mutator(tree) map (mutatedPattern =>
-          Mutant(mutatedPattern, MutationData(mutator.name, tree.location, mutator.levels.min, mutator.description))
+          Mutant(mutatedPattern, mutator.name, tree.location, mutator.levels.min, mutator.description)
         )
       )
 
       val childrenMutants: Seq[Mutant] = tree.children flatMap (child =>
-        child.mutate(mutatorsFiltered) map { case mutant @ Mutant(mutatedPattern, _) =>
+        child.mutate(mutatorsFiltered) map { case mutant @ Mutant(mutatedPattern, _, _, _, _) =>
           mutant.copy(pattern = tree.buildWith(child, mutatedPattern))
         }
       )

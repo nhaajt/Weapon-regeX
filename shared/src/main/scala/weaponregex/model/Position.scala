@@ -8,6 +8,5 @@ import scala.scalajs.js.annotation._
   * @param line line number
   * @param column column number
   */
-@JSExportTopLevel("Position")
 @JSExportAll
 case class Position(line: Int, column: Int)

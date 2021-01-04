@@ -5,30 +5,34 @@ import weaponregex.run.TreeMutator._
 import weaponregex.model.mutation._
 import weaponregex.mutator.BuiltinMutators
 
+import scala.scalajs.js
+import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation._
 
 // class WRegex(var pattern: String, var flags: String = "")
 
 /** Main facade of Weapon regeX
   */
-@JSExportTopLevel("WeaponRegeX")
-@JSExportAll
 object WeaponRegeX {
 
-  /** Mutate using the given mutators in some specific mutation levels
-    *
-    * @param pattern Input regex string
-    * @param mutators Mutators to be used for mutation
-    * @param mutationLevels Target mutation levels. If this is `null`, the `mutators` will not be filtered.
-    * @return A sequence of [[weaponregex.model.mutation.Mutant]]
-    */
-  def mutate(
-      pattern: String,
-      mutators: Seq[TokenMutator] = BuiltinMutators.all,
-      mutationLevels: Seq[Int] = null
-  ): Seq[Mutant] =
+  @JSExportTopLevel("mutators")
+  val allMutators = BuiltinMutators.all.map(mut => mut.getClass().getSimpleName().dropRight(1) -> mut).toMap.toJSMap
+
+  class OptionObject extends js.Object {
+    val mutators: js.Array[TokenMutator] = BuiltinMutators.all.toJSArray
+    val mutationLevels: js.Array[Int] = js.Array(1, 2, 3)
+  }
+
+  @JSExportTopLevel("mutate")
+  def mutate(pattern: String, options: OptionObject = new OptionObject {}): js.Array[Mutant] =
     Parser(pattern) match {
-      case Some(tree) => tree.mutate(mutators, mutationLevels)
-      case None       => Nil
+      case Some(tree) =>
+        tree
+          .mutate(
+            if (options.hasOwnProperty("mutators")) options.mutators.toSeq else BuiltinMutators.all,
+            if (options.hasOwnProperty("mutationLevels")) options.mutationLevels.toSeq else null
+          )
+          .toJSArray
+      case None => js.Array()
     }
 }
