@@ -5,8 +5,8 @@ import weaponregex.model.Location
 trait RegexTree {
   val children: Seq[RegexTree]
 
-  val prefix: String = ""
-  val postfix: String = ""
+  val prefix: String
+  val postfix: String
 
   val location: Location
 

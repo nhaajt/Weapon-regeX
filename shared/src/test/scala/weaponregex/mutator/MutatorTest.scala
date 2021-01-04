@@ -5,6 +5,14 @@ import weaponregex.run.TreeMutator._
 import weaponregex.model.mutation._
 
 class MutatorTest extends munit.FunSuite {
+  test("Mutator name is non-empty") {
+    BuiltinMutators.all foreach (mutator => assert(clue(mutator).name.nonEmpty))
+  }
+
+  test("Mutator description is non-empty") {
+    BuiltinMutators.all foreach (mutator => assert(clue(mutator).description.nonEmpty))
+  }
+
   test("Remove BOL") {
     val pattern = "^abc^def^"
     val parsedTree = Parser.parseOrError(pattern)
@@ -12,7 +20,11 @@ class MutatorTest extends munit.FunSuite {
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(BOLRemoval))
     assertEquals(clue(mutants).length, 3)
 
-    val expected: Seq[String] = Seq("abc^def^", "^abcdef^", "^abc^def").sorted
+    val expected: Seq[String] = Seq(
+      "abc^def^",
+      "^abcdef^",
+      "^abc^def"
+    ).sorted
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
 
@@ -23,7 +35,41 @@ class MutatorTest extends munit.FunSuite {
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(EOLRemoval))
     assertEquals(clue(mutants).length, 3)
 
-    val expected: Seq[String] = Seq("abc$def$", "$abcdef$", "$abc$def").sorted
+    val expected: Seq[String] = Seq(
+      "abc$def$",
+      "$abcdef$",
+      "$abc$def"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Change BOL to BOI") {
+    val pattern = "^abc^def^"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(BOL2BOI))
+    assertEquals(clue(mutants).length, 3)
+
+    val expected: Seq[String] = Seq(
+      """\Aabc^def^""",
+      """^abc\Adef^""",
+      """^abc^def\A"""
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Change EOL to EOI") {
+    val pattern = "$abc$def$"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(EOL2EOI))
+    assertEquals(clue(mutants).length, 3)
+
+    val expected: Seq[String] = Seq(
+      """\zabc$def$""",
+      """$abc\zdef$""",
+      """$abc$def\z"""
+    ).sorted
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
 
@@ -115,7 +161,7 @@ class MutatorTest extends munit.FunSuite {
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
 
-  test("Character Class Remove Child") {
+  test("Character Class to any char") {
     val pattern = "[abc[0-9]]"
     val parsedTree = Parser.parseOrError(pattern)
 
@@ -230,6 +276,170 @@ class MutatorTest extends munit.FunSuite {
       "[1-8][0-8][1-9][0-9][1-1][0-1][9-9]",
       // [9-9] -> [8-9]
       "[1-8][0-8][1-9][0-9][1-1][0-0][8-9]"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Remove greedy quantifier") {
+    val pattern = "a?b*c+d{1}e{1,}f{1,2}"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierRemoval))
+    assertEquals(clue(mutants).length, 6)
+
+    val expected: Seq[String] = Seq(
+      "ab*c+d{1}e{1,}f{1,2}",
+      "a?bc+d{1}e{1,}f{1,2}",
+      "a?b*cd{1}e{1,}f{1,2}",
+      "a?b*c+de{1,}f{1,2}",
+      "a?b*c+d{1}ef{1,2}",
+      "a?b*c+d{1}e{1,}f"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Remove reluctant quantifier") {
+    val pattern = "a??b*?c+?d{1}?e{1,}?f{1,2}?"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierRemoval))
+    assertEquals(clue(mutants).length, 6)
+
+    val expected: Seq[String] = Seq(
+      "ab*?c+?d{1}?e{1,}?f{1,2}?",
+      "a??bc+?d{1}?e{1,}?f{1,2}?",
+      "a??b*?cd{1}?e{1,}?f{1,2}?",
+      "a??b*?c+?de{1,}?f{1,2}?",
+      "a??b*?c+?d{1}?ef{1,2}?",
+      "a??b*?c+?d{1}?e{1,}?f"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Remove possessive quantifier") {
+    val pattern = "a?+b*+c++d{1}+e{1,}+f{1,2}+"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierRemoval))
+    assertEquals(clue(mutants).length, 6)
+
+    val expected: Seq[String] = Seq(
+      "ab*+c++d{1}+e{1,}+f{1,2}+",
+      "a?+bc++d{1}+e{1,}+f{1,2}+",
+      "a?+b*+cd{1}+e{1,}+f{1,2}+",
+      "a?+b*+c++de{1,}+f{1,2}+",
+      "a?+b*+c++d{1}+ef{1,2}+",
+      "a?+b*+c++d{1}+e{1,}+f"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Change quantifier {n}") {
+    val pattern = "a{1}"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierNChange))
+    assertEquals(clue(mutants).length, 2)
+
+    val expected: Seq[String] = Seq(
+      "a{0,1}",
+      "a{1,}"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Modify quantifier {n,}") {
+    val pattern = "a{0,}b{1,}"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierNOrMoreModification))
+    assertEquals(clue(mutants).length, 3)
+
+    val expected: Seq[String] = Seq(
+      "a{1,}b{1,}",
+      "a{0,}b{0,}",
+      "a{0,}b{2,}"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Change quantifier {n,}") {
+    val pattern = "a{1,}"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierNOrMoreChange))
+    assertEquals(clue(mutants).length, 1)
+
+    val expected: Seq[String] = Seq("a{1}").sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Modify quantifier {n,m}") {
+    val pattern = "a{0,0}b{0,1}c{1,2}"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierNMModification))
+    assertEquals(clue(mutants).length, 8)
+
+    val expected: Seq[String] = Seq(
+      "a{0,1}b{0,1}c{1,2}",
+      "a{0,0}b{1,1}c{1,2}",
+      "a{0,0}b{0,0}c{1,2}",
+      "a{0,0}b{0,2}c{1,2}",
+      "a{0,0}b{0,1}c{0,2}",
+      "a{0,0}b{0,1}c{2,2}",
+      "a{0,0}b{0,1}c{1,1}",
+      "a{0,0}b{0,1}c{1,3}"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Modify short quantifier") {
+    val pattern = "a?b*c+"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierShortModification))
+    assertEquals(clue(mutants).length, 6)
+
+    val expected: Seq[String] = Seq(
+      "a{1,1}b*c+",
+      "a{0,0}b*c+",
+      "a{0,2}b*c+",
+      "a?b{1,}c+",
+      "a?b*c{0,}",
+      "a?b*c{2,}"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Change short quantifier") {
+    val pattern = "a*b+"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierShortChange))
+    assertEquals(clue(mutants).length, 2)
+
+    val expected: Seq[String] = Seq(
+      "a{0}b+",
+      "a*b{1}"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Add reluctant to greedy quantifier") {
+    val pattern = "a?b*c+d{1}e{1,}f{1,2}"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierReluctantAddition))
+    assertEquals(clue(mutants).length, 6)
+
+    val expected: Seq[String] = Seq(
+      "a??b*c+d{1}e{1,}f{1,2}",
+      "a?b*?c+d{1}e{1,}f{1,2}",
+      "a?b*c+?d{1}e{1,}f{1,2}",
+      "a?b*c+d{1}?e{1,}f{1,2}",
+      "a?b*c+d{1}e{1,}?f{1,2}",
+      "a?b*c+d{1}e{1,}f{1,2}?"
     ).sorted
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }

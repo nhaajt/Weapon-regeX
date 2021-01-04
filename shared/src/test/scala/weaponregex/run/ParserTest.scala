@@ -32,6 +32,14 @@ class ParserTest extends munit.FunSuite {
     treeBuildTest(parsedTree, pattern)
   }
 
+  test("Parse boundary metacharacters") {
+    val pattern = """\b\B\A\G\z\Z"""
+    val parsedTree = Parser.parseOrError(pattern)
+    assert(clue(parsedTree.children) forall (_.isInstanceOf[Boundary]))
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
   test("Parse multiple lines with location") {
     val pattern =
       """a
@@ -43,8 +51,8 @@ class ParserTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
     assertEquals(
       parsedTree.children filter {
-        case Character('a', _) => true
-        case _                 => false
+        case c: Character => c.char == 'a'
+        case _            => false
       } map (_.location.start.line),
       0 to 5
     )

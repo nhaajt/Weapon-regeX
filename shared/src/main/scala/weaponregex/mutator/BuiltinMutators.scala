@@ -6,13 +6,23 @@ object BuiltinMutators {
   val all: Seq[TokenMutator] = Seq(
     BOLRemoval,
     EOLRemoval,
+    BOL2BOI,
+    EOL2EOI,
     CharClassNegation,
     CharClassChildRemoval,
     CharClassAnyChar,
     CharClassRangeModification,
     PredefCharClassNegation,
     PredefCharClassNullification,
-    PredefCharClassAnyChar
+    PredefCharClassAnyChar,
+    QuantifierRemoval,
+    QuantifierNChange,
+    QuantifierNOrMoreModification,
+    QuantifierNOrMoreChange,
+    QuantifierNMModification,
+    QuantifierShortModification,
+    QuantifierShortChange,
+    QuantifierReluctantAddition
   )
 
   lazy val levels: Map[Int, Seq[TokenMutator]] =

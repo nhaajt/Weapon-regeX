@@ -22,7 +22,7 @@ object TreeMutator {
 
       val rootMutants: Seq[Mutant] = mutatorsFiltered flatMap (mutator =>
         mutator(tree) map (mutatedPattern =>
-          Mutant(mutatedPattern, MutationData(mutator.name, tree.location, mutator.levels.min))
+          Mutant(mutatedPattern, MutationData(mutator.name, tree.location, mutator.levels.min, mutator.description))
         )
       )
 

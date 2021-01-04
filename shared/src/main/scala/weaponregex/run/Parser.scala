@@ -6,7 +6,7 @@ import weaponregex.model.regextree._
 import weaponregex.extension.StringExtension.StringIndexExtension
 object Parser {
   private var currentPattern: String = _
-  private val specialChars: String = """[](){}\.^$|?*+"""
+  final private val specialChars: String = """[](){}\.^$|?*+"""
 
   def Indexed[_: P, T](p: => P[T]): P[(Location, T)] = P(Index ~ p ~ Index)
     .map { case (i, t, j) => (currentPattern.locationOf(i, j), t) }
@@ -24,7 +24,10 @@ object Parser {
   def eol[_: P]: P[EOL] = Indexed(P("$"))
     .map { case (loc, _) => EOL(loc) }
 
-  def boundary[_: P]: P[RegexTree] = P(bol | eol)
+  def boundaryMetaChar[_: P]: P[Boundary] = Indexed("""\""" ~ CharIn("bBAGzZ").!)
+    .map { case (loc, b) => Boundary(b, loc) }
+
+  def boundary[_: P]: P[RegexTree] = P(bol | eol | boundaryMetaChar)
 
   def metaCharacter[_: P]: P[RegexTree] = P(charOct | charHex | charUnicode | charHexBrace | escapeChar)
 
@@ -48,11 +51,6 @@ object Parser {
 
   def range[_: P]: P[Range] = Indexed(charLiteral ~ "-" ~ charLiteral)
     .map { case (loc, (from, to)) => Range(from, to, loc) }
-
-  // !! unsupported (yet)
-  // Character class item intersection is Scala/Java only
-  def classItemIntersection[_: P]: P[ClassItemIntersection] = Indexed(classItem.rep(2, sep = "&&"))
-    .map { case (loc, nodes) => ClassItemIntersection(nodes, loc) }
 
   // Nested character class is Scala/Java only
   def classItem[_: P]: P[RegexTree] = P(range | charClass | charLiteral)
