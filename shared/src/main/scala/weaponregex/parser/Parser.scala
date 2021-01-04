@@ -76,14 +76,14 @@ class Parser private (val pattern: String) {
   def preDefinedCharClass[_: P]: P[PredefinedCharClass] = Indexed("""\""" ~ CharIn("dDsSwW").!)
     .map { case (loc, c) => PredefinedCharClass(c, loc) }
 
-  def quantifierType[_: P, T](p: => P[T]): P[(T, QuantifierType.Value)] = P(p ~ CharIn("?+").!.?)
+  def quantifierType[_: P, T](p: => P[T]): P[(T, QuantifierType)] = P(p ~ CharIn("?+").!.?)
     .map { case (pp, optionQType) =>
       (
         pp,
         optionQType match {
-          case Some("?") => QuantifierType.Reluctant
-          case Some("+") => QuantifierType.Possessive
-          case _         => QuantifierType.Greedy
+          case Some("?") => ReluctantQuantifier
+          case Some("+") => PossessiveQuantifier
+          case _         => GreedyQuantifier
         }
       )
     }

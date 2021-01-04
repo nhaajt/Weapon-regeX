@@ -139,7 +139,7 @@ class ParserTest extends munit.FunSuite {
           case q: ZeroOrMore => q.quantifierType
           case q: OneOrMore  => q.quantifierType
           case q: ZeroOrOne  => q.quantifierType
-        }) == QuantifierType.Greedy
+        }) == GreedyQuantifier
       )
     )
 
@@ -158,7 +158,7 @@ class ParserTest extends munit.FunSuite {
           case q: ZeroOrMore => q.quantifierType
           case q: OneOrMore  => q.quantifierType
           case q: ZeroOrOne  => q.quantifierType
-        }) == QuantifierType.Reluctant
+        }) == ReluctantQuantifier
       )
     )
 
@@ -177,7 +177,7 @@ class ParserTest extends munit.FunSuite {
           case q: ZeroOrMore => q.quantifierType
           case q: OneOrMore  => q.quantifierType
           case q: ZeroOrOne  => q.quantifierType
-        }) == QuantifierType.Possessive
+        }) == PossessiveQuantifier
       )
     )
 
@@ -188,7 +188,7 @@ class ParserTest extends munit.FunSuite {
     val pattern = "a{1}a{1,}a{1,2}"
     val parsedTree = Parser.parseOrError(pattern)
     assert(clue(parsedTree.children) forall {
-      case q: Quantifier => q.quantifierType == QuantifierType.Greedy
+      case q: Quantifier => q.quantifierType == GreedyQuantifier
       case _             => false
     })
 
@@ -199,7 +199,7 @@ class ParserTest extends munit.FunSuite {
     val pattern = "a{1}?a{1,}?a{1,2}?"
     val parsedTree = Parser.parseOrError(pattern)
     assert(clue(parsedTree.children) forall {
-      case q: Quantifier => q.quantifierType == QuantifierType.Reluctant
+      case q: Quantifier => q.quantifierType == ReluctantQuantifier
       case _             => false
     })
 
@@ -210,7 +210,7 @@ class ParserTest extends munit.FunSuite {
     val pattern = "a{1}+a{1,}+a{1,2}+"
     val parsedTree = Parser.parseOrError(pattern)
     assert(clue(parsedTree.children) forall {
-      case q: Quantifier => q.quantifierType == QuantifierType.Possessive
+      case q: Quantifier => q.quantifierType == PossessiveQuantifier
       case _             => false
     })
 

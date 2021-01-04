@@ -86,7 +86,7 @@ class LeafTest extends munit.FunSuite {
         OneOrMore(
           PredefinedCharClass("w", loc),
           loc,
-          QuantifierType.Greedy
+          GreedyQuantifier
         ),
         Character('@', loc),
         OneOrMore(
@@ -99,7 +99,7 @@ class LeafTest extends munit.FunSuite {
             loc
           ),
           loc,
-          QuantifierType.Reluctant
+          ReluctantQuantifier
         ),
         QuoteChar('.', loc),
         Quantifier(
@@ -113,7 +113,7 @@ class LeafTest extends munit.FunSuite {
           min = 2,
           max = 3,
           loc,
-          QuantifierType.Greedy
+          GreedyQuantifier
         ),
         EOL(loc)
       ),
