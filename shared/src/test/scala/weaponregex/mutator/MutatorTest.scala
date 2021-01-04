@@ -175,107 +175,155 @@ class MutatorTest extends munit.FunSuite {
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
 
-  test("Character Class Modify Range with lower case letters") {
-    val pattern = "[b-y][a-y][b-z][a-z][b-b][a-a][z-z]"
+  test("Character Class Modify Range [b-y][B-Y][1-8]") {
+    val pattern = "[b-y][B-Y][1-8]"
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
-    assertEquals(clue(mutants).length, 16)
+    assertEquals(clue(mutants).length, 12)
 
     val expected: Seq[String] = Seq(
       // [b-y] -> [a-y] or [c-y] or [b-z] or [b-x]
-      "[a-y][a-y][b-z][a-z][b-b][a-a][z-z]",
-      "[c-y][a-y][b-z][a-z][b-b][a-a][z-z]",
-      "[b-z][a-y][b-z][a-z][b-b][a-a][z-z]",
-      "[b-x][a-y][b-z][a-z][b-b][a-a][z-z]",
-      // [a-y] -> [b-y] or [a-z] or [a-x]
-      "[b-y][b-y][b-z][a-z][b-b][a-a][z-z]",
-      "[b-y][a-z][b-z][a-z][b-b][a-a][z-z]",
-      "[b-y][a-x][b-z][a-z][b-b][a-a][z-z]",
-      // [b-z] -> [a-z] or [c-z] or [b-y]
-      "[b-y][a-y][a-z][a-z][b-b][a-a][z-z]",
-      "[b-y][a-y][c-z][a-z][b-b][a-a][z-z]",
-      "[b-y][a-y][b-y][a-z][b-b][a-a][z-z]",
-      // [a-z] -> [b-z] or [a-y]
-      "[b-y][a-y][b-z][b-z][b-b][a-a][z-z]",
-      "[b-y][a-y][b-z][a-y][b-b][a-a][z-z]",
-      // [b-b] -> [a-b] or [b-c]
-      "[b-y][a-y][b-z][a-z][a-b][a-a][z-z]",
-      "[b-y][a-y][b-z][a-z][b-c][a-a][z-z]",
-      // [a-a] -> [a-b]
-      "[b-y][a-y][b-z][a-z][b-b][a-b][z-z]",
-      // [z-z] -> [y-z]
-      "[b-y][a-y][b-z][a-z][b-b][a-a][y-z]"
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
-  }
-
-  test("Character Class Modify Range with upper case letters") {
-    val pattern = "[B-Y][A-Y][B-Z][A-Z][B-B][A-A][Z-Z]"
-    val parsedTree = Parser.parseOrError(pattern)
-
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
-    assertEquals(clue(mutants).length, 16)
-
-    val expected: Seq[String] = Seq(
+      "[a-y][B-Y][1-8]",
+      "[c-y][B-Y][1-8]",
+      "[b-z][B-Y][1-8]",
+      "[b-x][B-Y][1-8]",
       // [B-Y] -> [A-Y] OR [C-Y] OR [B-Z] OR [B-X]
-      "[A-Y][A-Y][B-Z][A-Z][B-B][A-A][Z-Z]",
-      "[C-Y][A-Y][B-Z][A-Z][B-B][A-A][Z-Z]",
-      "[B-Z][A-Y][B-Z][A-Z][B-B][A-A][Z-Z]",
-      "[B-X][A-Y][B-Z][A-Z][B-B][A-A][Z-Z]",
-      // [A-Y] -> [B-Y] OR [A-Z] OR [A-X]
-      "[B-Y][B-Y][B-Z][A-Z][B-B][A-A][Z-Z]",
-      "[B-Y][A-Z][B-Z][A-Z][B-B][A-A][Z-Z]",
-      "[B-Y][A-X][B-Z][A-Z][B-B][A-A][Z-Z]",
-      // [B-Z] -> [A-Z] OR [C-Z] OR [B-Y]
-      "[B-Y][A-Y][A-Z][A-Z][B-B][A-A][Z-Z]",
-      "[B-Y][A-Y][C-Z][A-Z][B-B][A-A][Z-Z]",
-      "[B-Y][A-Y][B-Y][A-Z][B-B][A-A][Z-Z]",
-      // [A-Z] -> [B-Z] OR [A-Y]
-      "[B-Y][A-Y][B-Z][B-Z][B-B][A-A][Z-Z]",
-      "[B-Y][A-Y][B-Z][A-Y][B-B][A-A][Z-Z]",
-      // [B-B] -> [A-B] OR [B-C]
-      "[B-Y][A-Y][B-Z][A-Z][A-B][A-A][Z-Z]",
-      "[B-Y][A-Y][B-Z][A-Z][B-C][A-A][Z-Z]",
-      // [A-A] -> [A-B]
-      "[B-Y][A-Y][B-Z][A-Z][B-B][A-B][Z-Z]",
-      // [Z-Z] -> [Y-Z]
-      "[B-Y][A-Y][B-Z][A-Z][B-B][A-A][Y-Z]"
+      "[b-y][A-Y][1-8]",
+      "[b-y][C-Y][1-8]",
+      "[b-y][B-Z][1-8]",
+      "[b-y][B-X][1-8]",
+      // [1-8] -> [0-8] OR [2-8] OR [1-9] OR [1-7]
+      "[b-y][B-Y][0-8]",
+      "[b-y][B-Y][2-8]",
+      "[b-y][B-Y][1-9]",
+      "[b-y][B-Y][1-7]"
     ).sorted
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
 
-  test("Character Class Modify Range with numbers") {
-    val pattern = "[1-8][0-8][1-9][0-9][1-1][0-0][9-9]"
+  test("Character Class Modify Range [a-y][A-Y][0-8]") {
+    val pattern = "[a-y][A-Y][0-8]"
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
-    assertEquals(clue(mutants).length, 16)
+    assertEquals(clue(mutants).length, 9)
 
     val expected: Seq[String] = Seq(
-      // [1-8] -> [0-8] OR [2-8] OR [1-9] OR [1-7]
-      "[0-8][0-8][1-9][0-9][1-1][0-0][9-9]",
-      "[2-8][0-8][1-9][0-9][1-1][0-0][9-9]",
-      "[1-9][0-8][1-9][0-9][1-1][0-0][9-9]",
-      "[1-7][0-8][1-9][0-9][1-1][0-0][9-9]",
+      // [a-y] -> [b-y] or [a-z] or [a-x]
+      "[b-y][A-Y][0-8]",
+      "[a-z][A-Y][0-8]",
+      "[a-x][A-Y][0-8]",
+      // [A-Y] -> [B-Y] OR [A-Z] OR [A-X]
+      "[a-y][B-Y][0-8]",
+      "[a-y][A-Z][0-8]",
+      "[a-y][A-X][0-8]",
       // [0-8] -> [1-8] OR [0-9] OR [0-7]
-      "[1-8][1-8][1-9][0-9][1-1][0-0][9-9]",
-      "[1-8][0-9][1-9][0-9][1-1][0-0][9-9]",
-      "[1-8][0-7][1-9][0-9][1-1][0-0][9-9]",
+      "[a-y][A-Y][1-8]",
+      "[a-y][A-Y][0-9]",
+      "[a-y][A-Y][0-7]"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Character Class Modify Range [b-z][B-Z][1-9]") {
+    val pattern = "[b-z][B-Z][1-9]"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    assertEquals(clue(mutants).length, 9)
+
+    val expected: Seq[String] = Seq(
+      // [b-z] -> [a-z] or [c-z] or [b-y]
+      "[a-z][B-Z][1-9]",
+      "[c-z][B-Z][1-9]",
+      "[b-y][B-Z][1-9]",
+      // [B-Z] -> [A-Z] OR [C-Z] OR [B-Y]
+      "[b-z][A-Z][1-9]",
+      "[b-z][C-Z][1-9]",
+      "[b-z][B-Y][1-9]",
       // [1-9] -> [0-9] OR [2-9] OR [1-8]
-      "[1-8][0-8][0-9][0-9][1-1][0-0][9-9]",
-      "[1-8][0-8][2-9][0-9][1-1][0-0][9-9]",
-      "[1-8][0-8][1-8][0-9][1-1][0-0][9-9]",
+      "[b-z][B-Z][0-9]",
+      "[b-z][B-Z][2-9]",
+      "[b-z][B-Z][1-8]"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Character Class Modify Range [a-z][A-Z][0-9]") {
+    val pattern = "[a-z][A-Z][0-9]"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    assertEquals(clue(mutants).length, 6)
+
+    val expected: Seq[String] = Seq(
+      // [a-z] -> [b-z] or [a-y]
+      "[b-z][A-Z][0-9]",
+      "[a-y][A-Z][0-9]",
+      // [A-Z] -> [B-Z] OR [A-Y]
+      "[a-z][B-Z][0-9]",
+      "[a-z][A-Y][0-9]",
       // [0-9] -> [1-9] OR [0-8]
-      "[1-8][0-8][1-9][1-9][1-1][0-0][9-9]",
-      "[1-8][0-8][1-9][0-8][1-1][0-0][9-9]",
+      "[a-z][A-Z][1-9]",
+      "[a-z][A-Z][0-8]"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Character Class Modify Range [b-b][B-B][1-1]") {
+    val pattern = "[b-b][B-B][1-1]"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    assertEquals(clue(mutants).length, 6)
+
+    val expected: Seq[String] = Seq(
+      // [b-b] -> [a-b] or [b-c]
+      "[a-b][B-B][1-1]",
+      "[b-c][B-B][1-1]",
+      // [B-B] -> [A-B] OR [B-C]
+      "[b-b][A-B][1-1]",
+      "[b-b][B-C][1-1]",
       // [1-1] -> [0-1] OR [1-2]
-      "[1-8][0-8][1-9][0-9][0-1][0-0][9-9]",
-      "[1-8][0-8][1-9][0-9][1-2][0-0][9-9]",
+      "[b-b][B-B][0-1]",
+      "[b-b][B-B][1-2]"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Character Class Modify Range [a-a][A-A][0-0]") {
+    val pattern = "[a-a][A-A][0-0]"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    assertEquals(clue(mutants).length, 3)
+
+    val expected: Seq[String] = Seq(
+      // [a-a] -> [a-b]
+      "[a-b][A-A][0-0]",
+      // [A-A] -> [A-B]
+      "[a-a][A-B][0-0]",
       // [0-0] -> [0-1]
-      "[1-8][0-8][1-9][0-9][1-1][0-1][9-9]",
+      "[a-a][A-A][0-1]"
+    ).sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
+
+  test("Character Class Modify Range [z-z][Z-Z][9-9]") {
+    val pattern = "[z-z][Z-Z][9-9]"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    assertEquals(clue(mutants).length, 3)
+
+    val expected: Seq[String] = Seq(
+      // [z-z] -> [y-z]
+      "[y-z][Z-Z][9-9]",
+      // [Z-Z] -> [Y-Z]
+      "[z-z][Y-Z][9-9]",
       // [9-9] -> [8-9]
-      "[1-8][0-8][1-9][0-9][1-1][0-0][8-9]"
+      "[z-z][Z-Z][8-9]"
     ).sorted
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
