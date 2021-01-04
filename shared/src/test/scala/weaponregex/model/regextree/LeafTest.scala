@@ -5,23 +5,27 @@ import weaponregex.model._
 class LeafTest extends munit.FunSuite {
   var locStub: Location = Location(Position(0, 0), Position(0, 1))
 
-  test("Character build") {
+  test("Character build a") {
     val node1 = Character('a', locStub)
     assertEquals(node1.build, "a")
+  }
 
+  test("Character build b") {
     val node2 = Character('b', locStub)
     assertEquals(node2.build, "b")
   }
 
-  test("Any build") {
+  test("Any dot build") {
     val node1 = AnyDot(locStub)
     assertEquals(node1.build, ".")
   }
 
-  test("MetaChar build") {
+  test("MetaChar build a") {
     val node1 = MetaChar("a", locStub)
     assertEquals(node1.build, """\a""")
+  }
 
+  test("MetaChar build 0123") {
     val node2 = MetaChar("0123", locStub)
     assertEquals(node2.build, """\0123""")
   }
@@ -29,7 +33,9 @@ class LeafTest extends munit.FunSuite {
   test("PredefinedCharClass build") {
     val node1 = PredefinedCharClass("w", locStub)
     assertEquals(node1.build, """\w""")
+  }
 
+  test("PredefinedCharClass build negated") {
     val node2 = PredefinedCharClass("W", locStub)
     assertEquals(node2.build, """\W""")
   }
@@ -69,10 +75,12 @@ class LeafTest extends munit.FunSuite {
     assertEquals(node1.build, """\y""")
   }
 
-  test("Quote build") {
+  test("Quote build with end") {
     val node1 = Quote("some quote", hasEnd = false, locStub)
     assertEquals(node1.build, """\Qsome quote""")
+  }
 
+  test("Quote build without end") {
     val node2 = Quote("some quote", hasEnd = true, locStub)
     assertEquals(node2.build, """\Qsome quote\E""")
   }
@@ -86,7 +94,7 @@ class LeafTest extends munit.FunSuite {
         OneOrMore(
           PredefinedCharClass("w", loc),
           loc,
-          QuantifierType.Greedy
+          GreedyQuantifier
         ),
         Character('@', loc),
         OneOrMore(
@@ -99,7 +107,7 @@ class LeafTest extends munit.FunSuite {
             loc
           ),
           loc,
-          QuantifierType.Reluctant
+          ReluctantQuantifier
         ),
         QuoteChar('.', loc),
         Quantifier(
@@ -113,7 +121,7 @@ class LeafTest extends munit.FunSuite {
           min = 2,
           max = 3,
           loc,
-          QuantifierType.Greedy
+          GreedyQuantifier
         ),
         EOL(loc)
       ),

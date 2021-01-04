@@ -96,64 +96,64 @@ class NodeTest extends munit.FunSuite {
   }
 
   test("Quantifier build") {
-    val node1 = Quantifier(leafStubA, 1, locStub, QuantifierType.Greedy)
+    val node1 = Quantifier(leafStubA, 1, locStub, GreedyQuantifier)
     assertEquals(node1.build, "A{1}")
 
-    val node2 = Quantifier(leafStubA, 1, locStub, QuantifierType.Reluctant)
+    val node2 = Quantifier(leafStubA, 1, locStub, ReluctantQuantifier)
     assertEquals(node2.build, "A{1}?")
 
-    val node3 = Quantifier(leafStubA, 1, locStub, QuantifierType.Possessive)
+    val node3 = Quantifier(leafStubA, 1, locStub, PossessiveQuantifier)
     assertEquals(node3.build, "A{1}+")
 
-    val node4 = Quantifier(leafStubA, 1, 3, locStub, QuantifierType.Greedy)
+    val node4 = Quantifier(leafStubA, 1, 3, locStub, GreedyQuantifier)
     assertEquals(node4.build, "A{1,3}")
 
-    val node5 = Quantifier(leafStubA, 1, 3, locStub, QuantifierType.Reluctant)
+    val node5 = Quantifier(leafStubA, 1, 3, locStub, ReluctantQuantifier)
     assertEquals(node5.build, "A{1,3}?")
 
-    val node6 = Quantifier(leafStubA, 1, 3, locStub, QuantifierType.Possessive)
+    val node6 = Quantifier(leafStubA, 1, 3, locStub, PossessiveQuantifier)
     assertEquals(node6.build, "A{1,3}+")
 
-    val node7 = Quantifier(leafStubA, 1, -1, locStub, QuantifierType.Greedy)
+    val node7 = Quantifier(leafStubA, 1, -1, locStub, GreedyQuantifier)
     assertEquals(node7.build, "A{1,}")
 
-    val node8 = Quantifier(leafStubA, 1, -1, locStub, QuantifierType.Reluctant)
+    val node8 = Quantifier(leafStubA, 1, -1, locStub, ReluctantQuantifier)
     assertEquals(node8.build, "A{1,}?")
 
-    val node9 = Quantifier(leafStubA, 1, -1, locStub, QuantifierType.Possessive)
+    val node9 = Quantifier(leafStubA, 1, -1, locStub, PossessiveQuantifier)
     assertEquals(node9.build, "A{1,}+")
   }
 
   test("ZeroOrOne build") {
-    val node1 = ZeroOrOne(leafStubA, locStub, QuantifierType.Greedy)
+    val node1 = ZeroOrOne(leafStubA, locStub, GreedyQuantifier)
     assertEquals(node1.build, "A?")
 
-    val node2 = ZeroOrOne(leafStubA, locStub, QuantifierType.Reluctant)
+    val node2 = ZeroOrOne(leafStubA, locStub, ReluctantQuantifier)
     assertEquals(node2.build, "A??")
 
-    val node3 = ZeroOrOne(leafStubA, locStub, QuantifierType.Possessive)
+    val node3 = ZeroOrOne(leafStubA, locStub, PossessiveQuantifier)
     assertEquals(node3.build, "A?+")
   }
 
   test("ZeroOrMore build") {
-    val node1 = ZeroOrMore(leafStubA, locStub, QuantifierType.Greedy)
+    val node1 = ZeroOrMore(leafStubA, locStub, GreedyQuantifier)
     assertEquals(node1.build, "A*")
 
-    val node2 = ZeroOrMore(leafStubA, locStub, QuantifierType.Reluctant)
+    val node2 = ZeroOrMore(leafStubA, locStub, ReluctantQuantifier)
     assertEquals(node2.build, "A*?")
 
-    val node3 = ZeroOrMore(leafStubA, locStub, QuantifierType.Possessive)
+    val node3 = ZeroOrMore(leafStubA, locStub, PossessiveQuantifier)
     assertEquals(node3.build, "A*+")
   }
 
   test("OneOrMore build") {
-    val node1 = OneOrMore(leafStubA, locStub, QuantifierType.Greedy)
+    val node1 = OneOrMore(leafStubA, locStub, GreedyQuantifier)
     assertEquals(node1.build, "A+")
 
-    val node2 = OneOrMore(leafStubA, locStub, QuantifierType.Reluctant)
+    val node2 = OneOrMore(leafStubA, locStub, ReluctantQuantifier)
     assertEquals(node2.build, "A+?")
 
-    val node3 = OneOrMore(leafStubA, locStub, QuantifierType.Possessive)
+    val node3 = OneOrMore(leafStubA, locStub, PossessiveQuantifier)
     assertEquals(node3.build, "A++")
   }
 

@@ -1,15 +1,22 @@
-package weaponregex.run
+package weaponregex.parser
 
 import fastparse._, NoWhitespace._
 import weaponregex.model._
 import weaponregex.model.regextree._
 import weaponregex.extension.StringExtension.StringIndexExtension
+
 object Parser {
-  private var currentPattern: String = _
+  def apply(pattern: String): Option[RegexTree] = new Parser(pattern).parse
+
+  def parseOrError(pattern: String): RegexTree =
+    new Parser(pattern).parse.getOrElse(throw new RuntimeException("Failed to parse regex"))
+}
+
+class Parser private (val pattern: String) {
   final private val specialChars: String = """[](){}\.^$|?*+"""
 
   def Indexed[_: P, T](p: => P[T]): P[(Location, T)] = P(Index ~ p ~ Index)
-    .map { case (i, t, j) => (currentPattern.locationOf(i, j), t) }
+    .map { case (i, t, j) => (pattern.locationOf(i, j), t) }
 
   def number[_: P]: P[Int] = P(CharIn("0-9").rep(1).!) map (_.toInt)
 
@@ -69,14 +76,14 @@ object Parser {
   def preDefinedCharClass[_: P]: P[PredefinedCharClass] = Indexed("""\""" ~ CharIn("dDsSwW").!)
     .map { case (loc, c) => PredefinedCharClass(c, loc) }
 
-  def quantifierType[_: P, T](p: => P[T]): P[(T, QuantifierType.Value)] = P(p ~ CharIn("?+").!.?)
+  def quantifierType[_: P, T](p: => P[T]): P[(T, QuantifierType)] = P(p ~ CharIn("?+").!.?)
     .map { case (pp, optionQType) =>
       (
         pp,
         optionQType match {
-          case Some("?") => QuantifierType.Reluctant
-          case Some("+") => QuantifierType.Possessive
-          case _         => QuantifierType.Greedy
+          case Some("?") => ReluctantQuantifier
+          case Some("+") => PossessiveQuantifier
+          case _         => GreedyQuantifier
         }
       )
     }
@@ -118,17 +125,8 @@ object Parser {
 
   def RE[_: P]: P[RegexTree] = P(or | simpleRE)
 
-  final def apply(pattern: String): Option[RegexTree] = parse(pattern)
-
-  def parse(pattern: String): Option[RegexTree] = {
-    currentPattern = pattern
-
-    fastparse.parse(pattern, RE(_)) match {
-      case Parsed.Success(regexTree: RegexTree, index) => Some(regexTree)
-      case Parsed.Failure(str, index, extra)           => None
-    }
+  def parse: Option[RegexTree] = fastparse.parse(pattern, RE(_)) match {
+    case Parsed.Success(regexTree: RegexTree, index) => Some(regexTree)
+    case Parsed.Failure(str, index, extra)           => None
   }
-
-  def parseOrError(pattern: String): RegexTree =
-    parse(pattern).getOrElse(throw new RuntimeException("Failed to parse regex"))
 }

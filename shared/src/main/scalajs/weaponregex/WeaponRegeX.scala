@@ -1,7 +1,7 @@
 package weaponregex
 
-import weaponregex.run.Parser
-import weaponregex.run.TreeMutator._
+import weaponregex.parser.Parser
+import weaponregex.mutator.TreeMutator._
 import weaponregex.model.mutation._
 import weaponregex.mutator.BuiltinMutators
 
