@@ -1,6 +1,6 @@
 package weaponregex.mutator
 
-import weaponregex.model.mutation.{Mutant, MutationData, TokenMutator}
+import weaponregex.model.mutation.{Mutant, TokenMutator}
 import weaponregex.model.regextree.RegexTree
 
 object TreeMutator {
@@ -21,12 +21,12 @@ object TreeMutator {
 
       val rootMutants: Seq[Mutant] = mutatorsFiltered flatMap (mutator =>
         mutator(tree) map (mutatedPattern =>
-          Mutant(mutatedPattern, MutationData(mutator.name, tree.location, mutator.levels, mutator.description))
+          Mutant(mutatedPattern, mutator.name, tree.location, mutator.levels, mutator.description)
         )
       )
 
       val childrenMutants: Seq[Mutant] = tree.children flatMap (child =>
-        child.mutate(mutatorsFiltered) map { case mutant @ Mutant(mutatedPattern, _) =>
+        child.mutate(mutatorsFiltered) map { case mutant @ Mutant(mutatedPattern, _, _, _, _) =>
           mutant.copy(pattern = tree.buildWith(child, mutatedPattern))
         }
       )

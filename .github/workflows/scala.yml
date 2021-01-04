@@ -39,6 +39,28 @@ jobs:
           java-version: 11
       - name: Test
         run: sbt test
+
+  test-js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - name: Generate JS
+        run: sbt fastOptJS
+      - name: Npm setup
+        run: npm install
+        working-directory: node
+      - name: Test
+        run: npm test
+        working-directory: node
+
+
   mutation-testing:
     runs-on: ubuntu-latest
 

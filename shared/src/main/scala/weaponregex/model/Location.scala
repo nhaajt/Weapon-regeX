@@ -7,6 +7,5 @@ import scala.scalajs.js.annotation._
   * @param start start position
   * @param end end position
   */
-@JSExportTopLevel("Location")
 @JSExportAll
 case class Location(start: Position, end: Position)
