@@ -7,8 +7,8 @@ import weaponregex.model.Location
   * @param pattern The replacement pattern
   * @param name Name of the mutation
   * @param location [[weaponregex.model.Location]] in the original string where the mutation occurred
-  * @param level The highest mutation level of the mutator
+  * @param levels The mutation levels of the mutator
   * @param description Description on the mutation
   */
 @JSExportAll
-case class Mutant(pattern: String, name: String, location: Location, level: Int, description: String)
+case class Mutant(pattern: String, name: String, location: Location, levels: Seq[Int], description: String)

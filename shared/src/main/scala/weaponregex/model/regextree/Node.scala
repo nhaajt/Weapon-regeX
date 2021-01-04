@@ -2,7 +2,9 @@ package weaponregex.model.regextree
 
 import weaponregex.model.Location
 
-abstract class Node(override val children: RegexTree*)(override val location: Location)(implicit
+abstract class Node(
+    override val children: Seq[RegexTree],
+    override val location: Location,
     override val prefix: String = "",
     override val postfix: String = "",
     val sep: String = ""
@@ -15,39 +17,41 @@ abstract class Node(override val children: RegexTree*)(override val location: Lo
 }
 
 case class CharacterClass(nodes: Seq[RegexTree], override val location: Location, isPositive: Boolean = true)
-    extends Node(nodes: _*)(location)(if (isPositive) "[" else "[^", "]") {}
+    extends Node(nodes, location, if (isPositive) "[" else "[^", "]") {}
 
 case class Range(from: Character, to: Character, override val location: Location)
-    extends Node(from, to)(location)(sep = "-")
+    extends Node(Seq(from, to), location, sep = "-")
 
 case class Group(
     expr: RegexTree,
     isCapturing: Boolean,
     override val location: Location
-) extends Node(expr)(location)(if (isCapturing) "(" else "(?:", ")")
+) extends Node(Seq(expr), location, if (isCapturing) "(" else "(?:", ")")
 
 case class NamedGroup(expr: RegexTree, name: String, override val location: Location)
-    extends Node(expr)(location)(s"(?<$name>", ")")
+    extends Node(Seq(expr), location, s"(?<$name>", ")")
 
 case class FlagNCGroup(
     flagToggle: FlagToggle,
     expr: RegexTree,
     override val location: Location
-) extends Node(flagToggle, expr)(location)("(?", ")", ":")
+) extends Node(Seq(flagToggle, expr), location, "(?", ")", ":")
 
 case class FlagGroup(flagToggle: FlagToggle, override val location: Location)
-    extends Node(flagToggle)(location)("(?", ")")
+    extends Node(Seq(flagToggle), location, "(?", ")")
 
 // Non-capturing group with flags
 case class FlagToggle(onFlags: Flags, hasDash: Boolean, offFlags: Flags, override val location: Location)
-    extends Node(onFlags, offFlags)(location) {
+    extends Node(Seq(onFlags, offFlags), location) {
   override lazy val build: String = onFlags.build + (if (hasDash) "-" else "") + offFlags.build
 }
 
-case class Flags(flags: Seq[Character], override val location: Location) extends Node(flags: _*)(location)
+case class Flags(flags: Seq[Character], override val location: Location) extends Node(flags, location)
 
 case class Lookaround(expr: RegexTree, isPositive: Boolean, isLookahead: Boolean, override val location: Location)
-    extends Node(expr)(location)(
+    extends Node(
+      Seq(expr),
+      location,
       "(?"
         + (if (isLookahead) "" else "<")
         + (if (isPositive) "=" else "!"),
@@ -55,24 +59,25 @@ case class Lookaround(expr: RegexTree, isPositive: Boolean, isLookahead: Boolean
     )
 
 // Independent non-capturing group
-case class INCGroup(expr: RegexTree, override val location: Location) extends Node(expr)(location)("(?>", ")")
+case class INCGroup(expr: RegexTree, override val location: Location) extends Node(Seq(expr), location, "(?>", ")")
 
-object QuantifierType extends Enumeration {
-  type QuantifierType = Value
-
-  val Greedy: QuantifierType = Value("")
-  val Reluctant: QuantifierType = Value("?")
-  val Possessive: QuantifierType = Value("+")
+sealed abstract class QuantifierType(syntax: String) {
+  override def toString: String = syntax
 }
+case object GreedyQuantifier extends QuantifierType("")
+case object ReluctantQuantifier extends QuantifierType("?")
+case object PossessiveQuantifier extends QuantifierType("+")
 
 case class Quantifier private (
     expr: RegexTree,
     min: Int,
     max: Int,
     override val location: Location,
-    quantifierType: QuantifierType.Value,
+    quantifierType: QuantifierType,
     isExact: Boolean
-) extends Node(expr)(location)(
+) extends Node(
+      Seq(expr),
+      location,
       postfix = s"{$min"
         + (if (isExact) "" else "," + (if (max < 0) "" else max))
         + s"}$quantifierType"
@@ -87,7 +92,7 @@ object Quantifier {
       expr: RegexTree,
       exact: Int,
       location: Location,
-      quantifierType: QuantifierType.Value
+      quantifierType: QuantifierType
   ): Quantifier = Quantifier(expr, exact, exact, location, quantifierType, isExact = true)
 
   // Range quantifier {min,max} factory method
@@ -96,28 +101,28 @@ object Quantifier {
       min: Int,
       max: Int,
       location: Location,
-      quantifierType: QuantifierType.Value
+      quantifierType: QuantifierType
   ): Quantifier = Quantifier(expr, min, max, location, quantifierType, isExact = false)
 }
 
 case class ZeroOrOne(
     expr: RegexTree,
     override val location: Location,
-    quantifierType: QuantifierType.Value
-) extends Node(expr)(location)(postfix = s"?$quantifierType")
+    quantifierType: QuantifierType
+) extends Node(Seq(expr), location, postfix = s"?$quantifierType")
 
 case class ZeroOrMore(
     expr: RegexTree,
     override val location: Location,
-    quantifierType: QuantifierType.Value
-) extends Node(expr)(location)(postfix = s"*$quantifierType")
+    quantifierType: QuantifierType
+) extends Node(Seq(expr), location, postfix = s"*$quantifierType")
 
 case class OneOrMore(
     expr: RegexTree,
     override val location: Location,
-    quantifierType: QuantifierType.Value
-) extends Node(expr)(location)(postfix = s"+$quantifierType")
+    quantifierType: QuantifierType
+) extends Node(Seq(expr), location, postfix = s"+$quantifierType")
 
-case class Concat(nodes: Seq[RegexTree], override val location: Location) extends Node(nodes: _*)(location)
+case class Concat(nodes: Seq[RegexTree], override val location: Location) extends Node(nodes, location)
 
-case class Or(nodes: Seq[RegexTree], override val location: Location) extends Node(nodes: _*)(location)(sep = "|")
+case class Or(nodes: Seq[RegexTree], override val location: Location) extends Node(nodes, location, sep = "|")

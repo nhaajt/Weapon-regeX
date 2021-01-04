@@ -56,7 +56,7 @@ describe('Weapon regeX', function() {
         mutants = wr.mutate('^a', {mutationLevels: [1]});
 
         mocha.strictEqual(mutants.length, 1);
-        mocha.strictEqual(mutants[0].level, 1);
+        // mocha.strictEqual(mutants[0].levels, [1, 2, 3]);
     });
     
     it('Contains the mutator description', function() {

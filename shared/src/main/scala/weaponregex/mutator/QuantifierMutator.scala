@@ -130,14 +130,14 @@ object QuantifierReluctantAddition extends TokenMutator {
     "Add reluctant quantifier type to greedy quantifier"
 
   override def mutate(token: RegexTree): Seq[String] = (token match {
-    case q: ZeroOrOne if q.quantifierType == QuantifierType.Greedy =>
-      Seq(q.copy(quantifierType = QuantifierType.Reluctant))
-    case q: ZeroOrMore if q.quantifierType == QuantifierType.Greedy =>
-      Seq(q.copy(quantifierType = QuantifierType.Reluctant))
-    case q: OneOrMore if q.quantifierType == QuantifierType.Greedy =>
-      Seq(q.copy(quantifierType = QuantifierType.Reluctant))
-    case q: Quantifier if q.quantifierType == QuantifierType.Greedy =>
-      Seq(q.copy(quantifierType = QuantifierType.Reluctant))
+    case q: ZeroOrOne if q.quantifierType == GreedyQuantifier =>
+      Seq(q.copy(quantifierType = ReluctantQuantifier))
+    case q: ZeroOrMore if q.quantifierType == GreedyQuantifier =>
+      Seq(q.copy(quantifierType = ReluctantQuantifier))
+    case q: OneOrMore if q.quantifierType == GreedyQuantifier =>
+      Seq(q.copy(quantifierType = ReluctantQuantifier))
+    case q: Quantifier if q.quantifierType == GreedyQuantifier =>
+      Seq(q.copy(quantifierType = ReluctantQuantifier))
     case _ => Nil
   }) map (_.build)
 }
