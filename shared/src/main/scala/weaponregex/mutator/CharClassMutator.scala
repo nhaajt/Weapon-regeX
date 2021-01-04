@@ -15,7 +15,7 @@ object CharClassNegation extends TokenMutator {
 }
 
 object CharClassChildRemoval extends TokenMutator {
-  override val name = "Remove a child from the character class"
+  override val name: String = "Remove a child from the character class"
   override val levels: Seq[Int] = Seq(2, 3)
   override val description: String = "Remove a child character class"
 

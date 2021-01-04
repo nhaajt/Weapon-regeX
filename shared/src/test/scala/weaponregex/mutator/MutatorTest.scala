@@ -5,6 +5,14 @@ import weaponregex.run.TreeMutator._
 import weaponregex.model.mutation._
 
 class MutatorTest extends munit.FunSuite {
+  test("Mutator name is non-empty") {
+    BuiltinMutators.all foreach (mutator => assert(clue(mutator).name.nonEmpty))
+  }
+
+  test("Mutator description is non-empty") {
+    BuiltinMutators.all foreach (mutator => assert(clue(mutator).description.nonEmpty))
+  }
+
   test("Remove BOL") {
     val pattern = "^abc^def^"
     val parsedTree = Parser.parseOrError(pattern)
@@ -153,7 +161,7 @@ class MutatorTest extends munit.FunSuite {
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
 
-  test("Character Class Remove Child") {
+  test("Character Class to any char") {
     val pattern = "[abc[0-9]]"
     val parsedTree = Parser.parseOrError(pattern)
 

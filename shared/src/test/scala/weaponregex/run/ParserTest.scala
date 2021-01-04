@@ -51,8 +51,8 @@ class ParserTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
     assertEquals(
       parsedTree.children filter {
-        case Character('a', _) => true
-        case _                 => false
+        case c: Character => c.char == 'a'
+        case _            => false
       } map (_.location.start.line),
       0 to 5
     )
@@ -121,7 +121,7 @@ class ParserTest extends munit.FunSuite {
   test("Parse predefined character class") {
     val pattern = """.\w\W\s\S\d\D"""
     val parsedTree = Parser.parseOrError(pattern)
-    assert(clue(parsedTree.children.head).isInstanceOf[Any])
+    assert(clue(parsedTree.children.head).isInstanceOf[AnyDot])
     assert(clue(parsedTree.children.tail) forall (_.isInstanceOf[PredefinedCharClass]))
 
     treeBuildTest(parsedTree, pattern)

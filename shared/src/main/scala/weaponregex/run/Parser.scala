@@ -6,7 +6,7 @@ import weaponregex.model.regextree._
 import weaponregex.extension.StringExtension.StringIndexExtension
 object Parser {
   private var currentPattern: String = _
-  private val specialChars: String = """[](){}\.^$|?*+"""
+  final private val specialChars: String = """[](){}\.^$|?*+"""
 
   def Indexed[_: P, T](p: => P[T]): P[(Location, T)] = P(Index ~ p ~ Index)
     .map { case (i, t, j) => (currentPattern.locationOf(i, j), t) }
@@ -52,11 +52,6 @@ object Parser {
   def range[_: P]: P[Range] = Indexed(charLiteral ~ "-" ~ charLiteral)
     .map { case (loc, (from, to)) => Range(from, to, loc) }
 
-  // !! unsupported (yet)
-  // Character class item intersection is Scala/Java only
-  def classItemIntersection[_: P]: P[ClassItemIntersection] = Indexed(classItem.rep(2, sep = "&&"))
-    .map { case (loc, nodes) => ClassItemIntersection(nodes, loc) }
-
   // Nested character class is Scala/Java only
   def classItem[_: P]: P[RegexTree] = P(range | charClass | charLiteral)
 
@@ -68,8 +63,8 @@ object Parser {
 
   def charClass[_: P]: P[CharacterClass] = P(positiveCharClass | negativeCharClass)
 
-  def any[_: P]: P[Any] = Indexed(P("."))
-    .map { case (loc, _) => Any(loc) }
+  def anyDot[_: P]: P[AnyDot] = Indexed(P("."))
+    .map { case (loc, _) => AnyDot(loc) }
 
   def preDefinedCharClass[_: P]: P[PredefinedCharClass] = Indexed("""\""" ~ CharIn("dDsSwW").!)
     .map { case (loc, c) => PredefinedCharClass(c, loc) }
@@ -108,7 +103,7 @@ object Parser {
   def quantifier[_: P]: P[RegexTree] = P(quantifierShort | quantifierLong)
 
   // ! unfinished
-  def elementaryRE[_: P]: P[RegexTree] = P(any | preDefinedCharClass | boundary | charClass | character)
+  def elementaryRE[_: P]: P[RegexTree] = P(anyDot | preDefinedCharClass | boundary | charClass | character)
 
   // ! missing quantifier
   def basicRE[_: P]: P[RegexTree] = P(quantifier | elementaryRE)

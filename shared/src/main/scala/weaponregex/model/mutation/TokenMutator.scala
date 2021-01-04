@@ -10,6 +10,4 @@ trait TokenMutator {
   final def apply(token: RegexTree): Seq[String] = mutate(token)
 
   def mutate(token: RegexTree): Seq[String]
-
-  override def toString: String = name
 }

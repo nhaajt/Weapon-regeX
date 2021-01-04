@@ -3,6 +3,7 @@ package weaponregex
 import weaponregex.run.Parser
 import weaponregex.run.TreeMutator._
 import weaponregex.model.mutation._
+import weaponregex.mutator.BuiltinMutators
 
 import scala.scalajs.js.annotation._
 
@@ -14,27 +15,20 @@ import scala.scalajs.js.annotation._
 @JSExportAll
 object WeaponRegeX {
 
-  def mutate(pattern: String): Seq[Mutant] =
+  /** Mutate using the given mutators in some specific mutation levels
+    *
+    * @param pattern Input regex string
+    * @param mutators Mutators to be used for mutation
+    * @param mutationLevels Target mutation levels. If this is `null`, the `mutators` will not be filtered.
+    * @return A sequence of [[weaponregex.model.mutation.Mutant]]
+    */
+  def mutate(
+      pattern: String,
+      mutators: Seq[TokenMutator] = BuiltinMutators.all,
+      mutationLevels: Seq[Int] = null
+  ): Seq[Mutant] =
     Parser(pattern) match {
-      case Some(tree) => tree.mutate
-      case None       => Nil
-    }
-
-  def mutate(pattern: String, mutationLevel: Int): Seq[Mutant] =
-    Parser(pattern) match {
-      case Some(tree) => tree.mutate(mutationLevel)
-      case None       => Nil
-    }
-
-  def mutate(pattern: String, mutators: Seq[TokenMutator], mutationLevel: Int): Seq[Mutant] =
-    Parser(pattern) match {
-      case Some(tree) => tree.mutate(mutators, mutationLevel)
-      case None       => Nil
-    }
-
-  def mutate(pattern: String, mutators: Seq[TokenMutator]): Seq[Mutant] =
-    Parser(pattern) match {
-      case Some(tree) => tree.mutate(mutators)
+      case Some(tree) => tree.mutate(mutators, mutationLevels)
       case None       => Nil
     }
 }
