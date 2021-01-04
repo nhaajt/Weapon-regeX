@@ -4,12 +4,19 @@ import fastparse._, NoWhitespace._
 import weaponregex.model._
 import weaponregex.model.regextree._
 import weaponregex.extension.StringExtension.StringIndexExtension
+
 object Parser {
-  private var currentPattern: String = _
+  def apply(pattern: String): Option[RegexTree] = new Parser(pattern).parse
+
+  def parseOrError(pattern: String): RegexTree =
+    new Parser(pattern).parse.getOrElse(throw new RuntimeException("Failed to parse regex"))
+}
+
+class Parser private (val pattern: String) {
   final private val specialChars: String = """[](){}\.^$|?*+"""
 
   def Indexed[_: P, T](p: => P[T]): P[(Location, T)] = P(Index ~ p ~ Index)
-    .map { case (i, t, j) => (currentPattern.locationOf(i, j), t) }
+    .map { case (i, t, j) => (pattern.locationOf(i, j), t) }
 
   def number[_: P]: P[Int] = P(CharIn("0-9").rep(1).!) map (_.toInt)
 
@@ -118,17 +125,8 @@ object Parser {
 
   def RE[_: P]: P[RegexTree] = P(or | simpleRE)
 
-  final def apply(pattern: String): Option[RegexTree] = parse(pattern)
-
-  def parse(pattern: String): Option[RegexTree] = {
-    currentPattern = pattern
-
-    fastparse.parse(pattern, RE(_)) match {
-      case Parsed.Success(regexTree: RegexTree, index) => Some(regexTree)
-      case Parsed.Failure(str, index, extra)           => None
-    }
+  def parse: Option[RegexTree] = fastparse.parse(pattern, RE(_)) match {
+    case Parsed.Success(regexTree: RegexTree, index) => Some(regexTree)
+    case Parsed.Failure(str, index, extra)           => None
   }
-
-  def parseOrError(pattern: String): RegexTree =
-    parse(pattern).getOrElse(throw new RuntimeException("Failed to parse regex"))
 }
