@@ -1,8 +1,7 @@
-package weaponregex.run
+package weaponregex.mutator
 
-import weaponregex.model.mutation._
+import weaponregex.model.mutation.{Mutant, MutationData, TokenMutator}
 import weaponregex.model.regextree.RegexTree
-import weaponregex.mutator.BuiltinMutators
 
 object TreeMutator {
   implicit class RegexTreeMutator(tree: RegexTree) {

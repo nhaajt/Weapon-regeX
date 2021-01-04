@@ -1,4 +1,4 @@
-package weaponregex.run
+package weaponregex.parser
 
 import weaponregex.model.regextree._
 
