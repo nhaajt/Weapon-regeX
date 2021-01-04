@@ -17,7 +17,7 @@ abstract class Leaf[A](
   override def buildWhile(pred: RegexTree => Boolean): String = build
 }
 
-case class Character(char: Char, override val location: Location) extends Leaf(char)(location)
+case class Character(char: Char, override val location: Location) extends Leaf(char, location)
 
 // "Any" is technically a predefined character class, but because it cannot be negated, it is handled separately
 case class AnyDot(override val location: Location) extends Leaf('.', location)
