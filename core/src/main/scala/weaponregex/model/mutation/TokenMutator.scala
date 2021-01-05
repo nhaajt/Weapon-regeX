@@ -1,7 +1,7 @@
 package weaponregex.model.mutation
 
 import weaponregex.model.regextree.RegexTree
-import scala.scalajs.js.annotation.JSExport
+import scala.scalajs.js.annotation._
 
 trait TokenMutator {
   @JSExport
