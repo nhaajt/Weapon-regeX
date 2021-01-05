@@ -1,6 +1,6 @@
 const { assert } = require('console');
 
-var wr = require('../../shared/target/js-2.13/weapon-regex-fastopt')
+var wr = require('../../core/target/js-2.13/weapon-regex-fastopt')
 var mocha = require('assert');
 describe('Weapon regeX', function() {
   describe('#mutate()', function() {
@@ -56,7 +56,7 @@ describe('Weapon regeX', function() {
         mutants = wr.mutate('^a', {mutationLevels: [1]});
 
         mocha.strictEqual(mutants.length, 1);
-        // mocha.strictEqual(mutants[0].levels, [1, 2, 3]);
+        mocha.deepStrictEqual(mutants[0].mutationLevels, [1, 2, 3]);
     });
     
     it('Contains the mutator description', function() {

@@ -1,7 +1,9 @@
 package weaponregex.model.mutation
 
-import scala.scalajs.js.annotation._
 import weaponregex.model.Location
+import scala.scalajs.js
+import scala.scalajs.js.JSConverters._
+import scala.scalajs.js.annotation.JSExport
 
 /** A mutation made by the mutator.
   * @param pattern The replacement pattern
@@ -10,5 +12,12 @@ import weaponregex.model.Location
   * @param levels The mutation levels of the mutator
   * @param description Description on the mutation
   */
-@JSExportAll
-case class Mutant(pattern: String, name: String, location: Location, levels: Seq[Int], description: String)
+case class Mutant(
+    @JSExport pattern: String,
+    @JSExport name: String,
+    @JSExport location: Location,
+    levels: Seq[Int],
+    @JSExport description: String
+) {
+  @JSExport val mutationLevels: js.Array[Int] = levels.toJSArray
+}
