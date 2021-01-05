@@ -30,7 +30,7 @@ inThisBuild(
 )
 
 lazy val WeaponRegeX = projectMatrix
-  .in(file("shared"))
+  .in(file("core"))
   .settings(
     name := "weapon-regex",
     // libraryDependencies += "com.lihaoyi" %%% "pprint" % "0.6.0",

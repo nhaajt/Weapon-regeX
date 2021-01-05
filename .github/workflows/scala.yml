@@ -16,7 +16,8 @@ jobs:
       - name: Compile code
         run: sbt +compile
       - name: Run Scala.js
-        run: sbt fastOptJS
+        run: sbt fastLinkJS
+#        run: sbt fullLinkJS
 
   formatting:
     runs-on: ubuntu-latest
@@ -52,7 +53,8 @@ jobs:
         with:
           node-version: 14
       - name: Generate JS
-        run: sbt fastOptJS
+        run: sbt fastLinkJS
+#        run: sbt fullLinkJS
       - name: Npm setup
         run: npm install
         working-directory: node

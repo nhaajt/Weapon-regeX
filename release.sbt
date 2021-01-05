@@ -33,7 +33,7 @@ generatePackageJson := s"""{
                           |  "name": "${name.value}",
                           |  "version": "${version.value}",
                           |  "description": "${description.value}",
-                          |  "main": "shared/target/js-2.13/weapon-regex-opt.js",
+                          |  "main": "core/target/js-2.13/weapon-regex-opt.js",
                           |  "repository": {
                           |    "type": "git",
                           |    "url": "${homepage.value.get}"
