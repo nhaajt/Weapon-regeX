@@ -6,11 +6,11 @@ import scala.scalajs.js.annotation._
 /** Built-in token mutators
   */
 @JSExportTopLevel("BuiltinMutators")
-@JSExportAll
 object BuiltinMutators {
 
   /** Sequence of all built-in token mutators
     */
+  @JSExport
   val all: Seq[TokenMutator] = Seq(
     BOLRemoval,
     EOLRemoval,
@@ -36,6 +36,7 @@ object BuiltinMutators {
 
   /** Map from mutation level number to token mutators in that level
     */
+  @JSExport
   lazy val levels: Map[Int, Seq[TokenMutator]] =
     all.foldLeft(Map.empty[Int, Seq[TokenMutator]])((levels, mutator) =>
       mutator.levels.foldLeft(levels)((ls, level) => ls + (level -> (ls.getOrElse(level, Nil) :+ mutator)))
@@ -47,5 +48,6 @@ object BuiltinMutators {
     * @param mutationLevel Mutation level number
     * @return Sequence of all the tokens mutators in that level, if any
     */
+  @JSExport
   def level(mutationLevel: Int): Seq[TokenMutator] = levels.getOrElse(mutationLevel, Nil)
 }
