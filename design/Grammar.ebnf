@@ -15,15 +15,17 @@ elementaryRE = capturing
              | boundary
              | charClass
              | reference
-             | quote
              | character
+             | quote
              ;
 
 character = metaChar
           | charLiteral
           ;
 
-charLiteral = ? anyNonMetaChar ? ;                            (* any non-metacharacters *)
+specialChar = ? [](){}\.^$|?*+ ?                              (* special characters *)
+
+charLiteral = - specialChar ;                                 (* any non-metacharacters *)
 
 metaChar = '\\\\'
          | charOct
@@ -97,8 +99,8 @@ concat = simpleRE basicRE ;
 
 or = RE '|' simpleRE ;
 
-quote = '\\' charLiteral                                      (* quote next char *)
-      | '\\Q' { charLiteral } [ '\\E' ]                       (* quote from \Q to optional \E *)
+quote = '\\Q' { ? any character ? } [ '\\E' ]                 (* quote from \Q to optional \E *)
+      | '\\' ? any character ?                                (* quote next char *)
       ;
 
 capturing = group | specialConstruct ;

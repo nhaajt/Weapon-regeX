@@ -462,4 +462,64 @@ class ParserTest extends munit.FunSuite {
 
     treeBuildTest(parsedTree, pattern)
   }
+
+  test("Parse named reference") {
+    val pattern = """\k<name1>"""
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case NameReference("name1", _) => true
+      case _                         => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse numbered reference") {
+    val pattern = """\123"""
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case NumberReference(123, _) => true
+      case _                       => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse character quote") {
+    val pattern = """\$"""
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case QuoteChar('$', _) => true
+      case _                 => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse long quote with end") {
+    val pattern = """stuff\Q$hit\Emorestuff"""
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree.children(5)) match {
+      case Quote("$hit", true, _) => true
+      case _                      => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse long quote without end") {
+    val pattern = """stuff\Q$hit"""
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree.children(5)) match {
+      case Quote("$hit", false, _) => true
+      case _                       => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
 }

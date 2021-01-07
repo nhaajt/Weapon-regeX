@@ -145,10 +145,29 @@ class Parser private (val pattern: String) {
 
   def capturing[_: P]: P[RegexTree] = P(group | specialConstruct)
 
-  // ! unfinished
-  def elementaryRE[_: P]: P[RegexTree] = P(capturing | anyDot | preDefinedCharClass | boundary | charClass | character)
+  def nameReference[_: P]: P[NameReference] = Indexed("""\k<""" ~ groupName ~ ">")
+    .map { case (loc, name) => NameReference(name, loc) }
 
-  // ! missing quantifier
+  def numReference[_: P]: P[NumberReference] = Indexed("""\""" ~ (CharIn("1-9") ~ CharIn("0-9").rep).!)
+    .map { case (loc, num) => NumberReference(num.toInt, loc) }
+
+  def reference[_: P]: P[RegexTree] = P(nameReference | numReference)
+
+  def quoteChar[_: P]: P[RegexTree] = Indexed("""\""" ~ AnyChar.!)
+    .map { case (loc, char) => QuoteChar(char.head, loc) }
+
+  def quoteWithEnd[_: P]: P[RegexTree] = Indexed("""\Q""" ~ (!"""\E""" ~ AnyChar).rep.! ~ """\E""")
+    .map { case (loc, str) => Quote(str, hasEnd = true, loc) }
+
+  def quoteWithoutEnd[_: P]: P[RegexTree] = Indexed("""\Q""" ~ AnyChar.rep.!)
+    .map { case (loc, str) => Quote(str, hasEnd = false, loc) }
+
+  def quote[_: P]: P[RegexTree] = P(quoteWithEnd | quoteWithoutEnd | quoteChar)
+
+  def elementaryRE[_: P]: P[RegexTree] = P(
+    capturing | anyDot | preDefinedCharClass | boundary | charClass | reference | character | quote
+  )
+
   def basicRE[_: P]: P[RegexTree] = P(quantifier | elementaryRE)
 
   def concat[_: P]: P[Concat] = Indexed(basicRE.rep(2))
