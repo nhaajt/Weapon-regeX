@@ -41,6 +41,10 @@ object StringExtension {
   }
 
   implicit class StringStylingExtension(string: String) {
+
+    /** Character-wise toggling the case of a String
+      * @return Case-toggled String
+      */
     final def toggleCase: String = string map (char => if (char.isUpper) char.toLower else char.toUpper)
   }
 }

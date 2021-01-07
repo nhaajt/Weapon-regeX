@@ -94,6 +94,15 @@ class ParserTest extends munit.FunSuite {
     treeBuildTest(parsedTree, pattern)
   }
 
+  test("Parse character class with predefined character classes") {
+    val pattern = """[\w\W\s\S\d\D]"""
+    val parsedTree = Parser.parseOrError(pattern)
+    assert(clue(parsedTree).isInstanceOf[CharacterClass])
+    parsedTree.children foreach (child => assert(child.isInstanceOf[PredefinedCharClass], clue = parsedTree.children))
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
   test("Parse escape characters") {
     val pattern = """\\\t\n\r\f"""
     val parsedTree = Parser.parseOrError(pattern)
@@ -233,6 +242,292 @@ class ParserTest extends munit.FunSuite {
         clue = parsedTree.children
       )
     )
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse capturing group") {
+    val pattern = "(hello)(world)"
+    val parsedTree = Parser.parseOrError(pattern)
+    parsedTree.children foreach (child => assert(child.isInstanceOf[Group], clue = parsedTree.children))
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse named capturing group") {
+    val pattern = "(?<name1>hello)(?<name2>world)"
+    val parsedTree = Parser.parseOrError(pattern)
+    assert(clue(parsedTree.children(0)) match {
+      case NamedGroup(_, name, _) => name == "name1"
+      case _                      => false
+    })
+    assert(clue(parsedTree.children(1)) match {
+      case NamedGroup(_, name, _) => name == "name2"
+      case _                      => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse non-capturing group") {
+    val pattern = "(?:hello)(?:world)"
+    val parsedTree = Parser.parseOrError(pattern)
+    parsedTree.children foreach (child =>
+      assert(
+        child match {
+          case Group(_, false, _) => true
+          case _                  => false
+        },
+        clue = parsedTree.children
+      )
+    )
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse flag toggle group i-i") {
+    val pattern = "(?idmsuxU-idmsuxU)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case FlagToggleGroup(FlagToggle(onFlags, hasDash, offFlags, _), _) =>
+        onFlags.flags.nonEmpty && offFlags.flags.nonEmpty && hasDash
+      case _ => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse flag toggle group i-") {
+    val pattern = "(?idmsuxU-)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case FlagToggleGroup(FlagToggle(onFlags, hasDash, offFlags, _), _) =>
+        onFlags.flags.nonEmpty && offFlags.flags.isEmpty && hasDash
+      case _ => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse flag toggle group -i") {
+    val pattern = "(?-idmsuxU)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case FlagToggleGroup(FlagToggle(onFlags, hasDash, offFlags, _), _) =>
+        onFlags.flags.isEmpty && offFlags.flags.nonEmpty && hasDash
+      case _ => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse flag toggle group -") {
+    val pattern = "(?-)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case FlagToggleGroup(FlagToggle(onFlags, hasDash, offFlags, _), _) =>
+        onFlags.flags.isEmpty && offFlags.flags.isEmpty && hasDash
+      case _ => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse flag toggle group i") {
+    val pattern = "(?idmsuxU)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case FlagToggleGroup(FlagToggle(onFlags, hasDash, offFlags, _), _) =>
+        onFlags.flags.nonEmpty && offFlags.flags.isEmpty && !hasDash
+      case _ => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse non-capturing group with flags i-i") {
+    val pattern = "(?idmsux-idmsux:hello)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case FlagNCGroup(FlagToggle(onFlags, hasDash, offFlags, _), _, _) =>
+        onFlags.flags.nonEmpty && offFlags.flags.nonEmpty && hasDash
+      case _ => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse non-capturing group with flags i-") {
+    val pattern = "(?idmsux-:hello)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case FlagNCGroup(FlagToggle(onFlags, hasDash, offFlags, _), _, _) =>
+        onFlags.flags.nonEmpty && offFlags.flags.isEmpty && hasDash
+      case _ => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse non-capturing group with flags -i") {
+    val pattern = "(?-idmsux:hello)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case FlagNCGroup(FlagToggle(onFlags, hasDash, offFlags, _), _, _) =>
+        onFlags.flags.isEmpty && offFlags.flags.nonEmpty && hasDash
+      case _ => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse non-capturing group with flags -") {
+    val pattern = "(?-:hello)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case FlagNCGroup(FlagToggle(onFlags, hasDash, offFlags, _), _, _) =>
+        onFlags.flags.isEmpty && offFlags.flags.isEmpty && hasDash
+      case _ => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse non-capturing group with flags i") {
+    val pattern = "(?idmsux:hello)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case FlagNCGroup(FlagToggle(onFlags, hasDash, offFlags, _), _, _) =>
+        onFlags.flags.nonEmpty && offFlags.flags.isEmpty && !hasDash
+      case _ => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse positive lookahead") {
+    val pattern = "(?=hello)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case Lookaround(_, true, true, _) => true
+      case _                            => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse negative lookahead") {
+    val pattern = "(?!hello)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case Lookaround(_, false, true, _) => true
+      case _                             => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse positive lookbehind") {
+    val pattern = "(?<=hello)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case Lookaround(_, true, false, _) => true
+      case _                             => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse negative lookbehind") {
+    val pattern = "(?<!hello)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case Lookaround(_, false, false, _) => true
+      case _                              => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse independent non-capturing group") {
+    val pattern = "(?>hello)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree).isInstanceOf[INCGroup])
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse named reference") {
+    val pattern = """\k<name1>"""
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case NameReference("name1", _) => true
+      case _                         => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse numbered reference") {
+    val pattern = """\123"""
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case NumberReference(123, _) => true
+      case _                       => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse character quote") {
+    val pattern = """\$"""
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree) match {
+      case QuoteChar('$', _) => true
+      case _                 => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse long quote with end") {
+    val pattern = """stuff\Q$hit\Emorestuff"""
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree.children(5)) match {
+      case Quote("$hit", true, _) => true
+      case _                      => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse long quote without end") {
+    val pattern = """stuff\Q$hit"""
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree.children(5)) match {
+      case Quote("$hit", false, _) => true
+      case _                       => false
+    })
 
     treeBuildTest(parsedTree, pattern)
   }

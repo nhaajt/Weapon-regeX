@@ -15,15 +15,17 @@ elementaryRE = capturing
              | boundary
              | charClass
              | reference
-             | quote
              | character
+             | quote
              ;
 
 character = metaChar
           | charLiteral
           ;
 
-charLiteral = ? anyNonMetaChar ? ;                            (* any non-metacharacters *)
+specialChar = ? [](){}\.^$|?*+ ?                              (* special characters *)
+
+charLiteral = - specialChar ;                                 (* any non-metacharacters *)
 
 metaChar = '\\\\'
          | charOct
@@ -97,8 +99,8 @@ concat = simpleRE basicRE ;
 
 or = RE '|' simpleRE ;
 
-quote = '\\' charLiteral                                      (* quote next char *)
-      | '\\Q' { charLiteral } [ '\\E' ]                       (* quote from \Q to optional \E *)
+quote = '\\Q' { ? any character ? } [ '\\E' ]                 (* quote from \Q to optional \E *)
+      | '\\' ? any character ?                                (* quote next char *)
       ;
 
 capturing = group | specialConstruct ;
@@ -107,10 +109,10 @@ group = '(' RE ')' ;
 
 specialConstruct = '(?<' name '>' RE ')'                      (* named-capturing group *)
                  | '(?:' RE ')'                               (* non-capturing group *)
-                 | '(?' idmsuxU ')'                           (* flag toggle *)
-                 | '(?' [ idmsuxU ] '-' [ idmsuxU ] ')'       (* flag toggle *)
+                 | '(?' idmsuxU ')'                           (* flag toggle group *)
+                 | '(?' { idmsuxU } '-' { idmsuxU } ')'       (* flag toggle group *)
                  | '(?' idmsux ':' RE ')'                     (* non-capturing group with flags *)
-                 | '(?' [ idmsux ] '-' [ idmsux ] ':' RE ')'  (* non-capturing group with flags *)
+                 | '(?' { idmsux } '-' { idmsux } ':' RE ')'  (* non-capturing group with flags *)
                  | '(?=' RE ')'                               (* positive lookahead *)
                  | '(?!' RE ')'                               (* negative lookahead *)
                  | '(?<=' RE ')'                              (* positive lookbehind *)

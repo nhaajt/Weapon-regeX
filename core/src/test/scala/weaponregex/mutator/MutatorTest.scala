@@ -491,4 +491,15 @@ class MutatorTest extends munit.FunSuite {
     ).sorted
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
+
+  test("Change capturing group to non-capturing group") {
+    val pattern = "(hello)"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(GroupToNCGroup))
+    assertEquals(clue(mutants).length, 1)
+
+    val expected: Seq[String] = Seq("(?:hello)").sorted
+    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+  }
 }

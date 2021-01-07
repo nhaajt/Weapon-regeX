@@ -64,15 +64,15 @@ class NodeTest extends munit.FunSuite {
   test("FlagGroup build") {
     val charSeq = Seq(leafStubA, leafStubB, leafStubC)
     val node1 =
-      FlagGroup(FlagToggle(Flags(charSeq, locStub), hasDash = true, Flags(charSeq, locStub), locStub), locStub)
+      FlagToggleGroup(FlagToggle(Flags(charSeq, locStub), hasDash = true, Flags(charSeq, locStub), locStub), locStub)
     assertEquals(node1.build, "(?ABC-ABC)")
 
     val node2 =
-      FlagGroup(FlagToggle(Flags(Seq(), locStub), hasDash = true, Flags(charSeq, locStub), locStub), locStub)
+      FlagToggleGroup(FlagToggle(Flags(Seq(), locStub), hasDash = true, Flags(charSeq, locStub), locStub), locStub)
     assertEquals(node2.build, "(?-ABC)")
 
     val node3 =
-      FlagGroup(FlagToggle(Flags(charSeq, locStub), hasDash = false, Flags(Seq(), locStub), locStub), locStub)
+      FlagToggleGroup(FlagToggle(Flags(charSeq, locStub), hasDash = false, Flags(Seq(), locStub), locStub), locStub)
     assertEquals(node3.build, "(?ABC)")
   }
 
