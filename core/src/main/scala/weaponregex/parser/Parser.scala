@@ -60,7 +60,7 @@ class Parser private (val pattern: String) {
     .map { case (loc, (from, to)) => Range(from, to, loc) }
 
   // Nested character class is Scala/Java only
-  def classItem[_: P]: P[RegexTree] = P(range | charClass | charLiteral)
+  def classItem[_: P]: P[RegexTree] = P(range | charClass | preDefinedCharClass | charLiteral)
 
   def positiveCharClass[_: P]: P[CharacterClass] = Indexed("[" ~ classItem.rep(1) ~ "]")
     .map { case (loc, nodes) => CharacterClass(nodes, loc) }
@@ -120,6 +120,7 @@ class Parser private (val pattern: String) {
   def nonCapturingGroup[_: P]: P[Group] = Indexed("(?:" ~ RE ~ ")")
     .map { case (loc, expr) => Group(expr, isCapturing = false, loc) }
 
+  // `.filter()` function from fastparse is wrongly mutated by Stryker4s into `.filterNot()` which does not exist in fastparse
   @SuppressWarnings(Array("stryker4s.mutation.MethodExpression"))
   def flags[_: P](fs: String): P[Flags] = Indexed(charLiteral.filter(c => fs.contains(c.char)).rep)
     .map { case (loc, fs) => Flags(fs, loc) }

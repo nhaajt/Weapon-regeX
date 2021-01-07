@@ -94,6 +94,15 @@ class ParserTest extends munit.FunSuite {
     treeBuildTest(parsedTree, pattern)
   }
 
+  test("Parse character class with predefined character classes") {
+    val pattern = """[\w\W\s\S\d\D]"""
+    val parsedTree = Parser.parseOrError(pattern)
+    assert(clue(parsedTree).isInstanceOf[CharacterClass])
+    parsedTree.children foreach (child => assert(child.isInstanceOf[PredefinedCharClass], clue = parsedTree.children))
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
   test("Parse escape characters") {
     val pattern = """\\\t\n\r\f"""
     val parsedTree = Parser.parseOrError(pattern)
