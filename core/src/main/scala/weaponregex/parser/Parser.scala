@@ -172,13 +172,10 @@ class Parser private (val pattern: String) {
   def quoteChar[_: P]: P[RegexTree] = Indexed("""\""" ~ AnyChar.!)
     .map { case (loc, char) => QuoteChar(char.head, loc) }
 
-  def quoteWithEnd[_: P]: P[RegexTree] = Indexed("""\Q""" ~ (!"""\E""" ~ AnyChar).rep.! ~ """\E""")
-    .map { case (loc, str) => Quote(str, hasEnd = true, loc) }
+  def quoteLong[_: P]: P[RegexTree] = Indexed("""\Q""" ~ (!"""\E""" ~ AnyChar).rep.! ~ """\E""".!.?)
+    .map { case (loc, (str, end)) => Quote(str, end.isDefined, loc) }
 
-  def quoteWithoutEnd[_: P]: P[RegexTree] = Indexed("""\Q""" ~ AnyChar.rep.!)
-    .map { case (loc, str) => Quote(str, hasEnd = false, loc) }
-
-  def quote[_: P]: P[RegexTree] = P(quoteWithEnd | quoteWithoutEnd | quoteChar)
+  def quote[_: P]: P[RegexTree] = P(quoteLong | quoteChar)
 
   def elementaryRE[_: P]: P[RegexTree] = P(
     capturing | anyDot | preDefinedCharClass | boundary | charClass | reference | character | quote

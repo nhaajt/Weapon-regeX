@@ -9,7 +9,7 @@ object GroupToNCGroup extends TokenMutator {
   override val description: String = "Capturing group to non-capturing group"
 
   override def mutate(token: RegexTree): Seq[String] = (token match {
-    case cc @ Group(_, true, _) => Seq(cc.copy(isCapturing = false))
-    case _                      => Nil
+    case group @ Group(_, true, _) => Seq(group.copy(isCapturing = false))
+    case _                         => Nil
   }) map (_.build)
 }
