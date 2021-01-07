@@ -30,7 +30,8 @@ object BuiltinMutators {
     QuantifierNMModification,
     QuantifierShortModification,
     QuantifierShortChange,
-    QuantifierReluctantAddition
+    QuantifierReluctantAddition,
+    GroupToNCGroup
   )
 
   /** Map from mutation level number to token mutators in that level
