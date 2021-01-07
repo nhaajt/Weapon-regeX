@@ -13,6 +13,8 @@ import scala.scalajs.js.annotation._
   */
 object WeaponRegeX {
 
+  /** JavaScript Dictionary that map from token mutator class names to the associating token mutators
+    */
   @JSExportTopLevel("mutators")
   val allMutators: js.Map[String, TokenMutator] =
     BuiltinMutators.all
@@ -25,6 +27,18 @@ object WeaponRegeX {
       val mutationLevels: js.Array[Int] = null
   ) extends js.Object
 
+  /** Mutate using the given mutators in some specific mutation levels
+    *
+    * @param pattern Input regex string
+    * @param options Mutation options
+    * {{{
+    * {
+    *   mutators: [Mutators to be used for mutation],
+    *   mutationLevels: [Target mutation levels. If this is `null`, the `mutators` will not be filtered],
+    * }
+    * }}}
+    * @return A JavaScript Array of [[weaponregex.model.mutation.Mutant]]
+    */
   @JSExportTopLevel("mutate")
   def mutate(pattern: String, options: MutationOptions = new MutationOptions()): js.Array[Mutant] = {
     val mutators =

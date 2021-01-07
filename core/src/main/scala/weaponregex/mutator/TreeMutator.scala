@@ -5,6 +5,12 @@ import weaponregex.model.regextree.RegexTree
 
 object TreeMutator {
   implicit class RegexTreeMutator(tree: RegexTree) {
+
+    /** Filter token mutators based on the given mutation levels
+      * @param mutators Token mutators to be filtered
+      * @param mutationLevels Target mutation levels
+      * @return Sequence of token mutators in the given mutation levels
+      */
     private def filterMutators(mutators: Seq[TokenMutator], mutationLevels: Seq[Int]): Seq[TokenMutator] =
       mutators.filter(mutator => mutationLevels.exists(mutator.levels.contains(_)))
 
