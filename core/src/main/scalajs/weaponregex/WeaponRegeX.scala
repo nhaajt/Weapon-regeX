@@ -9,11 +9,11 @@ import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation._
 
-/** Main facade of Weapon regeX
+/** The API facade of Weapon regeX for JavaScript
   */
 object WeaponRegeX {
 
-  /** JavaScript Dictionary that map from token mutator class names to the associating token mutators
+  /** JavaScript Dictionary that maps from token mutator class names to the associating token mutators
     */
   @JSExportTopLevel("mutators")
   val allMutators: js.Map[String, TokenMutator] =
@@ -27,10 +27,9 @@ object WeaponRegeX {
       val mutationLevels: js.Array[Int] = null
   ) extends js.Object
 
-  /** Mutate using the given mutators in some specific mutation levels
-    *
+  /** Mutate using the given mutators at some specific mutation levels
     * @param pattern Input regex string
-    * @param options Mutation options
+    * @param options JavaScript object for Mutation options
     * {{{
     * {
     *   mutators: [Mutators to be used for mutation],

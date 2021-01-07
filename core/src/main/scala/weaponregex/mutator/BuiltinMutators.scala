@@ -3,7 +3,7 @@ package weaponregex.mutator
 import weaponregex.model.mutation.TokenMutator
 import scala.scalajs.js.annotation._
 
-/** Built-in token mutators
+/** The object that manages all built-in token mutators
   */
 @JSExportTopLevel("BuiltinMutators")
 object BuiltinMutators {
@@ -44,7 +44,7 @@ object BuiltinMutators {
 
   final def apply(mutationLevel: Int): Seq[TokenMutator] = level(mutationLevel)
 
-  /** Get all the tokens mutators given a mutation level number
+  /** Get all the token mutators given a mutation level number
     * @param mutationLevel Mutation level number
     * @return Sequence of all the tokens mutators in that level, if any
     */

@@ -3,6 +3,8 @@ package weaponregex.mutator
 import weaponregex.model.mutation.{Mutant, TokenMutator}
 import weaponregex.model.regextree.RegexTree
 
+/** The object that traverses and mutates a given [[weaponregex.model.regextree.RegexTree]]
+  */
 object TreeMutator {
   implicit class RegexTreeMutator(tree: RegexTree) {
 

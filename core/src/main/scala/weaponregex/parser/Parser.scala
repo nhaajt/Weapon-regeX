@@ -5,13 +5,28 @@ import weaponregex.model._
 import weaponregex.model.regextree._
 import weaponregex.extension.StringExtension.StringIndexExtension
 
+/** Companion object for [[weaponregex.parser.Parser]] class that instantiates [[weaponregex.parser.Parser]] instances
+  */
 object Parser {
+
+  /** Apply the parser to parse the given pattern
+    * @param pattern The regex pattern to be parsed
+    * @return An `Option`al parsed [[weaponregex.model.regextree.RegexTree]]
+    */
   def apply(pattern: String): Option[RegexTree] = new Parser(pattern).parse
 
+  /** Apply the parser to parse the given pattern
+    * @param pattern The regex pattern to be parsed
+    * @return [[weaponregex.model.regextree.RegexTree]] if the given pattern can ber parsed, throw an error otherwise
+    */
   def parseOrError(pattern: String): RegexTree =
     new Parser(pattern).parse.getOrElse(throw new RuntimeException("Failed to parse regex"))
 }
 
+/** @param pattern The regex pattern to be parsed
+  * @note This class constructor is private, instances must be created using the companion [[weaponregex.parser.Parser]] object
+  * @note The parsing rules methods inside this class is created based on the defined grammar
+  */
 class Parser private (val pattern: String) {
   final private val specialChars: String = """[](){}\.^$|?*+"""
 
@@ -181,6 +196,9 @@ class Parser private (val pattern: String) {
 
   def RE[_: P]: P[RegexTree] = P(or | simpleRE)
 
+  /** Parse the given regex pattern
+    * @return An `Option`al parsed [[weaponregex.model.regextree.RegexTree]]
+    */
   def parse: Option[RegexTree] = fastparse.parse(pattern, RE(_)) match {
     case Parsed.Success(regexTree: RegexTree, index) => Some(regexTree)
     case f @ Parsed.Failure(str, index, extra) =>
