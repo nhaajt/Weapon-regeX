@@ -107,8 +107,8 @@ group = '(' RE ')' ;
 
 specialConstruct = '(?<' name '>' RE ')'                      (* named-capturing group *)
                  | '(?:' RE ')'                               (* non-capturing group *)
-                 | '(?' idmsuxU ')'                           (* flag toggle *)
-                 | '(?' [ idmsuxU ] '-' [ idmsuxU ] ')'       (* flag toggle *)
+                 | '(?' idmsuxU ')'                           (* flag toggle group *)
+                 | '(?' [ idmsuxU ] '-' [ idmsuxU ] ')'       (* flag toggle group *)
                  | '(?' idmsux ':' RE ')'                     (* non-capturing group with flags *)
                  | '(?' [ idmsux ] '-' [ idmsux ] ':' RE ')'  (* non-capturing group with flags *)
                  | '(?=' RE ')'                               (* positive lookahead *)

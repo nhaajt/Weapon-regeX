@@ -31,16 +31,16 @@ case class Group(
 case class NamedGroup(expr: RegexTree, name: String, override val location: Location)
     extends Node(Seq(expr), location, s"(?<$name>", ")")
 
+// Non-capturing group with flags
 case class FlagNCGroup(
     flagToggle: FlagToggle,
     expr: RegexTree,
     override val location: Location
 ) extends Node(Seq(flagToggle, expr), location, "(?", ")", ":")
 
-case class FlagGroup(flagToggle: FlagToggle, override val location: Location)
+case class FlagToggleGroup(flagToggle: FlagToggle, override val location: Location)
     extends Node(Seq(flagToggle), location, "(?", ")")
 
-// Non-capturing group with flags
 case class FlagToggle(onFlags: Flags, hasDash: Boolean, offFlags: Flags, override val location: Location)
     extends Node(Seq(onFlags, offFlags), location) {
   override lazy val build: String = onFlags.build + (if (hasDash) "-" else "") + offFlags.build

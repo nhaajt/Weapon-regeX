@@ -109,8 +109,43 @@ class Parser private (val pattern: String) {
 
   def quantifier[_: P]: P[RegexTree] = P(quantifierShort | quantifierLong)
 
+  def group[_: P]: P[Group] = Indexed("(" ~ RE ~ ")")
+    .map { case (loc, expr) => Group(expr, isCapturing = true, loc) }
+
+  def groupName[_: P]: P[String] = P(CharIn("a-z", "A-Z") ~ CharIn("a-z", "A-Z", "0-9").rep).!
+
+  def namedGroup[_: P]: P[NamedGroup] = Indexed("(?<" ~ groupName ~ ">" ~ RE ~ ")")
+    .map { case (loc, (name, expr)) => NamedGroup(expr, name, loc) }
+
+  def nonCapturingGroup[_: P]: P[Group] = Indexed("(?:" ~ RE ~ ")")
+    .map { case (loc, expr) => Group(expr, isCapturing = false, loc) }
+
+  def flags[_: P](fs: String): P[Flags] = Indexed(charLiteral.filter(c => fs.contains(c.char)).rep)
+    .map { case (loc, fs) => Flags(fs, loc) }
+
+  def flagToggle[_: P](fs: String): P[FlagToggle] = Indexed(flags(fs) ~ "-".!.? ~ flags(fs))
+    .map { case (loc, (onFlags, dash, offFlags)) => FlagToggle(onFlags, dash.isDefined, offFlags, loc) }
+
+  def flagToggleGroup[_: P]: P[FlagToggleGroup] = Indexed("(?" ~ flagToggle("idmsuxU") ~ ")")
+    .map { case (loc, ft) => FlagToggleGroup(ft, loc) }
+
+  def flagNCGroup[_: P]: P[FlagNCGroup] = Indexed("(?" ~ flagToggle("idmsux") ~ ":" ~ RE ~ ")")
+    .map { case (loc, (ft, expr)) => FlagNCGroup(ft, expr, loc) }
+
+  def lookaround[_: P]: P[Lookaround] = Indexed("(?" ~ "<".!.? ~ CharIn("=!").! ~ RE ~ ")")
+    .map { case (loc, (angleBracket, posNeg, expr)) => Lookaround(expr, posNeg == "=", angleBracket.isEmpty, loc) }
+
+  def incGroup[_: P]: P[INCGroup] = Indexed("(?>" ~ RE ~ ")")
+    .map { case (loc, expr) => INCGroup(expr, loc) }
+
+  def specialConstruct[_: P]: P[RegexTree] = P(
+    namedGroup | nonCapturingGroup | flagToggleGroup | flagNCGroup | lookaround | incGroup
+  )
+
+  def capturing[_: P]: P[RegexTree] = P(group | specialConstruct)
+
   // ! unfinished
-  def elementaryRE[_: P]: P[RegexTree] = P(anyDot | preDefinedCharClass | boundary | charClass | character)
+  def elementaryRE[_: P]: P[RegexTree] = P(capturing | anyDot | preDefinedCharClass | boundary | charClass | character)
 
   // ! missing quantifier
   def basicRE[_: P]: P[RegexTree] = P(quantifier | elementaryRE)
@@ -127,6 +162,10 @@ class Parser private (val pattern: String) {
 
   def parse: Option[RegexTree] = fastparse.parse(pattern, RE(_)) match {
     case Parsed.Success(regexTree: RegexTree, index) => Some(regexTree)
-    case Parsed.Failure(str, index, extra)           => None
+    case f @ Parsed.Failure(str, index, extra) =>
+      println(str)
+      println(index)
+      println(f.msg)
+      None
   }
 }
