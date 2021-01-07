@@ -120,6 +120,7 @@ class Parser private (val pattern: String) {
   def nonCapturingGroup[_: P]: P[Group] = Indexed("(?:" ~ RE ~ ")")
     .map { case (loc, expr) => Group(expr, isCapturing = false, loc) }
 
+  @SuppressWarnings(Array("stryker4s.mutation.MethodExpression"))
   def flags[_: P](fs: String): P[Flags] = Indexed(charLiteral.filter(c => fs.contains(c.char)).rep)
     .map { case (loc, fs) => Flags(fs, loc) }
 
