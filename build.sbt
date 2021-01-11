@@ -11,19 +11,19 @@ inThisBuild(
         id = "nhat",
         name = "Nhat",
         email = "",
-        url = url("http://gtihub.com/Nhaajt")
+        url = url("http://github.com/Nhaajt")
       ),
       Developer(
         id = "jan",
         name = "Jan",
         email = "",
-        url = url("http://gtihub.com/JSmits-utwente")
+        url = url("http://github.com/JSmits-utwente")
       ),
       Developer(
         id = "wijtse",
         name = "Wijtse",
         email = "",
-        url = url("http://gtihub.com/wijtserekker")
+        url = url("http://github.com/wijtserekker")
       )
     )
   )
