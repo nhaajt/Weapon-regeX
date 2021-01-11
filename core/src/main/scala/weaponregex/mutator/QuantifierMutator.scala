@@ -3,6 +3,11 @@ package weaponregex.mutator
 import weaponregex.model.mutation.TokenMutator
 import weaponregex.model.regextree._
 
+/** Remove any type of quantifier including `?`, `*`, `+`, and `{n,m}`
+  *
+  * ''Mutation level(s):'' 1
+  * @example `a*` ⟶ `a`
+  */
 object QuantifierRemoval extends TokenMutator {
   override val name: String = "Quantifier removal"
   override val levels: Seq[Int] = Seq(1)
@@ -18,6 +23,11 @@ object QuantifierRemoval extends TokenMutator {
   }) map (_.build)
 }
 
+/** Change quantifier `{n}` to `{0,n}`, and `{n,}`
+  *
+  * ''Mutation level(s):'' 2, 3
+  * @example `a{5}` ⟶ `a{0,5}`, ``a{}5,
+  */
 object QuantifierNChange extends TokenMutator {
   override val name: String = "Quantifier `{n}` change"
   override val levels: Seq[Int] = Seq(2, 3)
@@ -34,6 +44,11 @@ object QuantifierNChange extends TokenMutator {
   }) map (_.build)
 }
 
+/** Modify quantifier `{n,}` to `{n-1,}`, and `{n+1,}`
+  *
+  * ''Mutation level(s):'' 2, 3
+  * @example `a{5,}` ⟶ `a{4,}`, `a{6,}`
+  */
 object QuantifierNOrMoreModification extends TokenMutator {
   override val name: String = "Quantifier `{n,}` modification"
   override val levels: Seq[Int] = Seq(2, 3)
@@ -48,6 +63,11 @@ object QuantifierNOrMoreModification extends TokenMutator {
   }) map (_.build)
 }
 
+/** Change quantifier `{n,}` to `{n}`
+  *
+  * ''Mutation level(s):'' 2, 3
+  * @example `a{5,}` ⟶ `a{5}`
+  */
 object QuantifierNOrMoreChange extends TokenMutator {
   override val name: String = "Quantifier `{n,}` change"
   override val levels: Seq[Int] = Seq(2, 3)
@@ -60,6 +80,11 @@ object QuantifierNOrMoreChange extends TokenMutator {
   }) map (_.build)
 }
 
+/** Modify quantifier `{n,m}` to `{n-1,m}`, `{n+1,m}`, `{n,m-1}`, and `{n,m+1}`
+  *
+  * ''Mutation level(s):'' 2, 3
+  * @example `a{5,10}` ⟶ `a{4,10}`, `a{6,10}`, `a{5,9}`, `a{5,11}`
+  */
 object QuantifierNMModification extends TokenMutator {
   override val name: String = "Quantifier `{n,m}` modification"
   override val levels: Seq[Int] = Seq(2, 3)
@@ -84,6 +109,11 @@ object QuantifierNMModification extends TokenMutator {
   }) map (_.build)
 }
 
+/** Modify quantifier `?`, `*`, `+` to `{n,}`, or `{n,m}`
+  *
+  * ''Mutation level(s):'' 2, 3
+  * @example `a*` ⟶ `a{1,1}`, `a{0,0}`, `a{0,2}`
+  */
 object QuantifierShortModification extends TokenMutator {
   override val name: String = "Short quantifier modification"
   override val levels: Seq[Int] = Seq(2, 3)
@@ -108,6 +138,11 @@ object QuantifierShortModification extends TokenMutator {
   }) map (_.build)
 }
 
+/** Change quantifier `*`, `+` to `{n}`
+  *
+  * ''Mutation level(s):'' 2, 3
+  * @example `a*` ⟶ `a{0}`
+  */
 object QuantifierShortChange extends TokenMutator {
   override val name: String = "Short quantifier change"
   override val levels: Seq[Int] = Seq(2, 3)
@@ -123,6 +158,11 @@ object QuantifierShortChange extends TokenMutator {
   }) map (_.build)
 }
 
+/** Add reluctant quantifier type to greedy quantifier
+  *
+  * ''Mutation level(s):'' 3
+  * @example `a+` ⟶ `a+?`
+  */
 object QuantifierReluctantAddition extends TokenMutator {
   override val name: String = "Quantifier reluctant addition"
   override val levels: Seq[Int] = Seq(3)
