@@ -2,6 +2,7 @@
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FNhaajt%2FWeapon-regeX%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/Nhaajt/Weapon-regeX/main)
 [![Build Status](https://github.com/Nhaajt/Weapon-regeX/workflows/Scala%20CI/badge.svg)](https://github.com/Nhaajt/Weapon-regeX/actions?query=workflow%3AScala%20CI+branch%3Amain)
 
+<img src="images/WeaponRegeX_logo.svg" width="50%" alt="Weapon regeX Logo">
 
 With Weapon regeX you can mutate regular expressions which can be used in mutation testing. The 
 generated regular expressions cover edge cases and typos. Weapon regeX is available for both
@@ -38,7 +39,7 @@ Mutate!
 ```Javascript
 const wrx = require('weapon-regex');
 
-val mutants = wrx.mutate("^abc(d+|[xyz])$");
+var mutants = wrx.mutate("^abc(d+|[xyz])$");
 
 mutants.forEach(mutant => {
   console.log(mutant.pattern);
