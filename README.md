@@ -58,7 +58,7 @@ def mutate(
       mutationLevels: Seq[Int] = null
   ): Seq[Mutant]
 ```
-The with the ```mutators``` argument you can give a select list of mutators that should be used in
+With the ```mutators``` argument you can give a select list of mutators that should be used in
 the mutation process. If omitted, all builtin mutators will be used. This list will be filtered
 depending on the ```mutationLevels``` argument.
 
@@ -84,25 +84,281 @@ API section. You can get a map of mutators from the ```mutators``` attribute of 
 a map from string (mutator name) to a mutator object.
 
 # Supported mutators
-Name | Levels
+All the supported mutators and at which mutation level they appear are shown in the table below.
+
+Name | 1 | 2 | 3
+--- | --- | --- | ---
+[BOLRemoval](#BOLRemoval) | ☑️ | ☑️ | ☑️
+[EOLRemoval](#EOLRemoval) | ☑️ | ☑️ | ☑️
+[BOL2BOI](#BOL2BOI) | | ☑️ | ☑️
+[EOL2EOI](#EOL2EOI) | | ☑️ | ☑️
+[CharClassNegation](#CharClassNegation) | ☑️
+[CharClassChildRemoval](#CharClassChildRemoval) | | ☑️ | ☑️
+[CharClassAnyChar](#CharClassAnyChar) | | ☑️ | ☑️
+[CharClassRangeModification](#CharClassRangeModification) | | | ☑️
+[PredefCharClassNegation](#PredefCharClassNegation) | ☑️
+[PredefCharClassNullification](#PredefCharClassNullification) | | ☑️ | ☑️
+[PredefCharClassAnyChar](#PredefCharClassAnyChar) | | ☑️ | ☑️
+[QuantifierRemoval](#QuantifierRemoval) | ☑️
+[QuantifierNChange](#QuantifierNChange) | | ☑️ | ☑️
+[QuantifierNOrMoreModification](#QuantifierNOrMoreModification) | | ☑️ | ☑️
+[QuantifierNOrMoreChange](#QuantifierNOrMoreChange) | | ☑️ | ☑️
+[QuantifierNMModification](#QuantifierNMModification) | | ☑️ | ☑️
+[QuantifierShortModification](#QuantifierShortModification) | | ☑️ | ☑️
+[QuantifierShortChange](#QuantifierShortChange) | | ☑️ | ☑️
+[QuantifierReluctantAddition](#QuantifierReluctantAddition) | | | ☑️
+[GroupToNCGroup](#GroupToNCGroup) | | ☑️ | ☑️
+
+## BOLRemoval
+
+It removes the beginning of line character "```^```"
+
+Original | Mutated
 --- | ---
-BOLRemoval | 1, 2, 3
-EOLRemoval | 1, 2, 3
-BOL2BOI | 2, 3
-EOL2EOI | 2, 3
-CharClassNegation | 1
-CharClassChildRemoval | 2, 3
-CharClassAnyChar | 2, 3
-CharClassRangeModification | 3
-PredefCharClassNegation | 1
-PredefCharClassNullification | 2, 3
-PredefCharClassAnyChar | 2, 3
-QuantifierRemoval | 1
-QuantifierNChange | 2, 3
-QuantifierNOrMoreModification | 2, 3
-QuantifierNOrMoreChange | 2, 3
-QuantifierNMModification | 2, 3
-QuantifierShortModification | 2, 3
-QuantifierShortChange | 2, 3
-QuantifierReluctantAddition | 3
-GroupToNCGroup | 2, 3
+```^abc```|```abc```
+
+[Back to table 🔝](#Supported-mutators)
+
+## EOLRemoval
+
+It removes the end of line character "```$```"
+
+Original | Mutated
+--- | ---
+```abc$```|```abc```
+
+[Back to table 🔝](#Supported-mutators)
+
+## BOL2BOI
+
+It changes the beginning of line character "```^```" to a beginning of input character "```\A```"
+
+Original | Mutated
+--- | ---
+```^abc```|```\Aabc```
+
+[Back to table 🔝](#Supported-mutators)
+
+## EOL2EOI
+
+It changes the end of line character "```^```" to a end of input character "```\z```"
+
+Original | Mutated
+--- | ---
+```abc$```|```abc\z```
+
+[Back to table 🔝](#Supported-mutators)
+
+## CharClassNegation
+
+It flips the sign of a character class.
+
+Original | Mutated
+--- | ---
+```[abc]```|```[^abc]```
+```[^abc]```|```[abc]```
+
+[Back to table 🔝](#Supported-mutators)
+
+## CharClassChildRemoval
+
+It removes a child of a character class.
+
+Original | Mutated
+--- | ---
+```[abc]```|```[bc]```
+```[abc]```|```[ac]```
+```[abc]```|```[ab]```
+
+[Back to table 🔝](#Supported-mutators)
+
+## CharClassAnyChar
+
+It changes a character class to a character class which matches any character.
+
+Original | Mutated
+--- | ---
+```[abc]```|```[\w\W]```
+
+[Back to table 🔝](#Supported-mutators)
+
+## CharClassRangeModification
+
+It changes the high and low of a range by one in both directions if possible.
+
+Original | Mutated
+--- | ---
+```[b-y]```|```[a-y]```
+```[b-y]```|```[c-y]```
+```[b-y]```|```[b-z]```
+```[b-y]```|```[b-x]```
+
+[Back to table 🔝](#Supported-mutators)
+
+## PredefCharClassNegation
+
+It flips the sign of a predefined character class. All the predefined character classes are shown in the table below.
+
+Original | Mutated
+--- | ---
+```\d```|```\D```
+```\D```|```\d```
+```\s```|```\S```
+```\S```|```\s```
+```\w```|```\W```
+```\W```|```\w```
+
+[Back to table 🔝](#Supported-mutators)
+
+## PredefCharClassNullification
+
+It removes the backslash from a predefined character class such as "```\w```".
+
+Original | Mutated
+--- | ---
+```\d```|```d```
+```\D```|```D```
+```\s```|```s```
+```\S```|```S```
+```\w```|```w```
+```\W```|```W```
+
+[Back to table 🔝](#Supported-mutators)
+
+## PredefCharClassAnyChar
+
+It changes a predefined character class to a character class containing the predefined one and its
+negation.
+
+Original | Mutated
+--- | ---
+```\d```|```[\d\D]```
+```\D```|```[\D\d]```
+```\s```|```[\s\S]```
+```\S```|```[\S\s]```
+```\w```|```[\w\W]```
+```\W```|```[\W\w]```
+
+[Back to table 🔝](#Supported-mutators)
+
+## QuantifierRemoval
+
+It removes a quantifier. This is done for all possible quantifiers, even ranges, and the reluctant
+and possessive variants.
+
+Original | Mutated
+--- | ---
+```abc?```|```abc```
+```abc*```|```abc```
+```abc+```|```abc```
+```abc{1,3}```|```abc```
+```abc??```|```abc```
+```abc*?```|```abc```
+```abc+?```|```abc```
+```abc{1,3}?```|```abc```
+```abc?+```|```abc```
+```abc*+```|```abc```
+```abc++```|```abc```
+```abc{1,3}+```|```abc```
+
+[Back to table 🔝](#Supported-mutators)
+
+## QuantifierNChange
+
+It changes the fixed amount quantifier to a couple range variants.
+
+Original | Mutated
+--- | ---
+```abc{9}```|```abc{0,9}```
+```abc{9}```|```abc{9,}```
+
+[Back to table 🔝](#Supported-mutators)
+
+## QuantifierNOrMoreModification
+
+It changes the n to infinity range quantifier to a couple variants where the low of the range is
+incremented an decremented by one.
+
+Original | Mutated
+--- | ---
+```abc{9,}```|```abc{8,}```
+```abc{9,}```|```abc{10,}```
+
+[Back to table 🔝](#Supported-mutators)
+
+## QuantifierNOrMoreChange
+
+It turns an N or more range quantifier into a fixed number quantifier.
+
+Original | Mutated
+--- | ---
+```abc{9,}```|```abc{9}```
+
+[Back to table 🔝](#Supported-mutators)
+
+## QuantifierNMModification
+
+It alters the N to M range quantifier by decrementing or incrementing the high and low of the
+range by one.
+
+Original | Mutated
+--- | ---
+```abc{3,9}```|```abc{2,9}```
+```abc{3,9}```|```abc{4,9}```
+```abc{3,9}```|```abc{3,8}```
+```abc{3,9}```|```abc{3,10}```
+
+[Back to table 🔝](#Supported-mutators)
+
+## QuantifierShortModification
+
+It treats the shorthand quantifiers (`?`, `*`, `+`) as their corresponding range quantifier
+variant (`{0,1}`, `{0,}`, `{1,}`), and applies the same mutations as mentioned in the mutators
+above.
+
+Original | Mutated
+--- | ---
+```abc?```|```abc{1,1}```
+```abc?```|```abc{0,0}```
+```abc?```|```abc{0,2}```
+```abc*```|```abc{1,}```
+```abc+```|```abc{0,}```
+```abc+```|```abc{2,}```
+
+[Back to table 🔝](#Supported-mutators)
+
+## QuantifierShortChange
+
+It changes the shorthand quantifiers `*` and `+` to their fixed range quantifier variant.
+
+Original | Mutated
+--- | ---
+```abc*```|```abc{0}```
+```abc+```|```abc{1}```
+
+[Back to table 🔝](#Supported-mutators)
+
+## QuantifierReluctantAddition
+
+It changes greedy quantifiers to reluctant quantifiers.
+
+Original | Mutated
+--- | ---
+```abc?```|```abc??```
+```abc*```|```abc*?```
+```abc+```|```abc+?```
+```abc{9}```|```abc{9}?```
+```abc{9,}```|```abc{9,}?```
+```abc{9,13}```|```abc{9,13}?```
+
+[Back to table 🔝](#Supported-mutators)
+
+## GroupToNCGroup
+
+It changes a normal group to a non-capturing group.
+
+Original | Mutated
+--- | ---
+```(abc)```|```(?:abc)```
+
+[Back to table 🔝](#Supported-mutators)
