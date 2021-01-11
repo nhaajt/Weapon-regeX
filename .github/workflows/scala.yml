@@ -56,7 +56,7 @@ jobs:
         run: sbt fastLinkJS
 #        run: sbt fullLinkJS
       - name: Npm setup
-        run: npm install
+        run: npm ci
         working-directory: node
       - name: Test
         run: npm test

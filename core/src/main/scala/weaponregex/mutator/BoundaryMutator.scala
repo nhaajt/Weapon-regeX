@@ -45,7 +45,7 @@ object EOLRemoval extends TokenMutator {
   * @example `^a` ⟶ `\Aa`
   */
 object BOL2BOI extends TokenMutator {
-  override val name: String = """Beginning of line `^` to beginning pf input `\A`"""
+  override val name: String = """Beginning of line `^` to beginning of input `\A`"""
   override val levels: Seq[Int] = Seq(2, 3)
   override val description: String = """Change beginning of line `^` to beginning of input `\A`"""
 
@@ -61,9 +61,9 @@ object BOL2BOI extends TokenMutator {
   * @example `a$` ⟶ `a\z`
   */
 object EOL2EOI extends TokenMutator {
-  override val name: String = """End of line `$` to end pf input `\z`"""
+  override val name: String = """End of line `$` to end of input `\z`"""
   override val levels: Seq[Int] = Seq(2, 3)
-  override val description: String = """Change end of line `$` to end pf input `\z`"""
+  override val description: String = """Change end of line `$` to end of input `\z`"""
 
   override def mutate(token: RegexTree): Seq[String] = (token match {
     case _: EOL => Seq(Boundary("z", token.location))
