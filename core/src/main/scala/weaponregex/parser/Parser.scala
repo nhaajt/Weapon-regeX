@@ -9,6 +9,10 @@ import weaponregex.extension.StringExtension.StringIndexExtension
   */
 object Parser {
 
+  /** Regex special characters
+    */
+  final private val specialChars: String = """[](){}\|?*+"""
+
   /** Apply the parser to parse the given pattern
     * @param pattern The regex pattern to be parsed
     * @return An `Option`al parsed [[weaponregex.model.regextree.RegexTree]]
@@ -29,10 +33,6 @@ object Parser {
   */
 class Parser private (val pattern: String) {
 
-  /** Regex special characters
-    */
-  final private val specialChars: String = """[](){}\.^$|?*+"""
-
   /** A higher order parser that add [[weaponregex.model.Location]] index information of the parse of the given parser
     * @param p the parser to be indexed
     * @return A tuple of the [[weaponregex.model.Location]] of the parse, and the return of the given parser `p`
@@ -50,7 +50,7 @@ class Parser private (val pattern: String) {
     * @return [[weaponregex.model.regextree.Character]] tree node
     * @example `"a"`
     */
-  def charLiteral[_: P]: P[Character] = Indexed(CharPred(!specialChars.contains(_)).!)
+  def charLiteral[_: P]: P[Character] = Indexed(CharPred(!Parser.specialChars.contains(_)).!)
     .map { case (loc, c) => Character(c.head, loc) }
 
   /** Intermediate parsing rule for character-related tokens which can parse either `metaCharacter` or `charLiteral`
@@ -342,10 +342,19 @@ class Parser private (val pattern: String) {
     capturing | anyDot | preDefinedCharClass | boundary | charClass | reference | character | quote
   )
 
+  /** Parse a single unknown literal character (unknown syntax)
+    * @return [[weaponregex.model.regextree.Unknown]] tree node
+    * @example `"]"`
+    * @note This is not a complete solution. This only serves to mitigate the effect of unknown syntax.
+    */
+  def unknown[_: P]: P[Unknown] = Indexed(CharPred(c => !"|)?".contains(c)).!)
+//  def unknown[_: P]: P[Unknown] = Indexed(AnyChar.!)
+    .map { case (loc, c) => Unknown(c.head, loc) }
+
   /** Intermediate parsing rule which can parse either `quantifier` or `elementaryRE`
     * @return [[weaponregex.model.regextree.RegexTree]] (sub)tree
     */
-  def basicRE[_: P]: P[RegexTree] = P(quantifier | elementaryRE)
+  def basicRE[_: P]: P[RegexTree] = P(quantifier | elementaryRE | unknown)
 
   /** Parse a concatenation of `basicRE`s
     * @return [[weaponregex.model.regextree.Concat]] tree node
@@ -377,6 +386,6 @@ class Parser private (val pattern: String) {
     */
   def parse: Option[RegexTree] = fastparse.parse(pattern, RE(_)) match {
     case Parsed.Success(regexTree: RegexTree, index) => Some(regexTree)
-    case Parsed.Failure(str, index, extra)           => None
+    case f @ Parsed.Failure(str, index, extra)       => None
   }
 }

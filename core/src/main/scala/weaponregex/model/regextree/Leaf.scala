@@ -32,6 +32,12 @@ abstract class Leaf[A](
   override def buildWhile(pred: RegexTree => Boolean): String = build
 }
 
+/** Unknown character (unknown syntax) literal leaf node
+  * @param char The character literal value
+  * @param location The [[weaponregex.model.Location]] of the node in the regex string
+  */
+case class Unknown(char: Char, override val location: Location) extends Leaf(char, location)
+
 /** Character literal leaf node
   * @param char The character literal value
   * @param location The [[weaponregex.model.Location]] of the node in the regex string

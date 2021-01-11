@@ -531,4 +531,27 @@ class ParserTest extends munit.FunSuite {
 
     treeBuildTest(parsedTree, pattern)
   }
+
+  test("Parse pure unknown syntax") {
+    val pattern = """**"""
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree).isInstanceOf[Concat])
+    parsedTree.children foreach (child => assert(child.isInstanceOf[Unknown], clue = parsedTree.children))
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse unknown syntax mixed with correct syntax") {
+    val pattern = """abc***def"""
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree.children).count(_.isInstanceOf[Unknown]) == 2)
+    assert(clue(parsedTree.children(3)) match {
+      case Unknown('*', _) => true
+      case _               => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
 }
