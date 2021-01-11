@@ -377,10 +377,6 @@ class Parser private (val pattern: String) {
     */
   def parse: Option[RegexTree] = fastparse.parse(pattern, RE(_)) match {
     case Parsed.Success(regexTree: RegexTree, index) => Some(regexTree)
-    case f @ Parsed.Failure(str, index, extra) =>
-      println(str)
-      println(index)
-      println(f.msg)
-      None
+    case Parsed.Failure(str, index, extra)           => None
   }
 }
