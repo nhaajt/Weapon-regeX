@@ -8,6 +8,8 @@ With Weapon regeX you can mutate regular expressions which can be used in mutati
 generated regular expressions cover edge cases and typos. Weapon regeX is available for both
 Javascript and Scala. The Javascript version of the library is generated from Scala using [ScalaJS](https://www.scala-js.org/).
 
+The current supported versions for Scala are: 2.12.12 and 2.13.3.
+
 # Getting started
 
 ## Scala
@@ -88,28 +90,30 @@ All the supported mutators and at which mutation level they appear are shown in 
 
 Name | 1 | 2 | 3
 --- | --- | --- | ---
-[BOLRemoval](#BOLRemoval) | ☑️ | ☑️ | ☑️
-[EOLRemoval](#EOLRemoval) | ☑️ | ☑️ | ☑️
-[BOL2BOI](#BOL2BOI) | | ☑️ | ☑️
-[EOL2EOI](#EOL2EOI) | | ☑️ | ☑️
-[CharClassNegation](#CharClassNegation) | ☑️
-[CharClassChildRemoval](#CharClassChildRemoval) | | ☑️ | ☑️
-[CharClassAnyChar](#CharClassAnyChar) | | ☑️ | ☑️
-[CharClassRangeModification](#CharClassRangeModification) | | | ☑️
-[PredefCharClassNegation](#PredefCharClassNegation) | ☑️
-[PredefCharClassNullification](#PredefCharClassNullification) | | ☑️ | ☑️
-[PredefCharClassAnyChar](#PredefCharClassAnyChar) | | ☑️ | ☑️
-[QuantifierRemoval](#QuantifierRemoval) | ☑️
-[QuantifierNChange](#QuantifierNChange) | | ☑️ | ☑️
-[QuantifierNOrMoreModification](#QuantifierNOrMoreModification) | | ☑️ | ☑️
-[QuantifierNOrMoreChange](#QuantifierNOrMoreChange) | | ☑️ | ☑️
-[QuantifierNMModification](#QuantifierNMModification) | | ☑️ | ☑️
-[QuantifierShortModification](#QuantifierShortModification) | | ☑️ | ☑️
-[QuantifierShortChange](#QuantifierShortChange) | | ☑️ | ☑️
-[QuantifierReluctantAddition](#QuantifierReluctantAddition) | | | ☑️
-[GroupToNCGroup](#GroupToNCGroup) | | ☑️ | ☑️
+[BOLRemoval](#BOLRemoval) | ✅ | ✅ | ✅
+[EOLRemoval](#EOLRemoval) | ✅ | ✅ | ✅
+[BOL2BOI](#BOL2BOI) | | ✅ | ✅
+[EOL2EOI](#EOL2EOI) | | ✅ | ✅
+[CharClassNegation](#CharClassNegation) | ✅
+[CharClassChildRemoval](#CharClassChildRemoval) | | ✅ | ✅
+[CharClassAnyChar](#CharClassAnyChar) | | ✅ | ✅
+[CharClassRangeModification](#CharClassRangeModification) | | | ✅
+[PredefCharClassNegation](#PredefCharClassNegation) | ✅
+[PredefCharClassNullification](#PredefCharClassNullification) | | ✅ | ✅
+[PredefCharClassAnyChar](#PredefCharClassAnyChar) | | ✅ | ✅
+[QuantifierRemoval](#QuantifierRemoval) | ✅
+[QuantifierNChange](#QuantifierNChange) | | ✅ | ✅
+[QuantifierNOrMoreModification](#QuantifierNOrMoreModification) | | ✅ | ✅
+[QuantifierNOrMoreChange](#QuantifierNOrMoreChange) | | ✅ | ✅
+[QuantifierNMModification](#QuantifierNMModification) | | ✅ | ✅
+[QuantifierShortModification](#QuantifierShortModification) | | ✅ | ✅
+[QuantifierShortChange](#QuantifierShortChange) | | ✅ | ✅
+[QuantifierReluctantAddition](#QuantifierReluctantAddition) | | | ✅
+[GroupToNCGroup](#GroupToNCGroup) | | ✅ | ✅
 
-## BOLRemoval
+## Boundary Mutators
+
+### BOLRemoval
 
 It removes the beginning of line character "```^```"
 
@@ -119,7 +123,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## EOLRemoval
+### EOLRemoval
 
 It removes the end of line character "```$```"
 
@@ -129,7 +133,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## BOL2BOI
+### BOL2BOI
 
 It changes the beginning of line character "```^```" to a beginning of input character "```\A```"
 
@@ -139,7 +143,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## EOL2EOI
+### EOL2EOI
 
 It changes the end of line character "```^```" to a end of input character "```\z```"
 
@@ -149,7 +153,9 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## CharClassNegation
+## Character class mutators
+
+### CharClassNegation
 
 It flips the sign of a character class.
 
@@ -160,7 +166,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## CharClassChildRemoval
+### CharClassChildRemoval
 
 It removes a child of a character class.
 
@@ -172,7 +178,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## CharClassAnyChar
+### CharClassAnyChar
 
 It changes a character class to a character class which matches any character.
 
@@ -182,7 +188,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## CharClassRangeModification
+### CharClassRangeModification
 
 It changes the high and low of a range by one in both directions if possible.
 
@@ -195,7 +201,9 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## PredefCharClassNegation
+## Predefined character class mutators
+
+### PredefCharClassNegation
 
 It flips the sign of a predefined character class. All the predefined character classes are shown in the table below.
 
@@ -210,7 +218,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## PredefCharClassNullification
+### PredefCharClassNullification
 
 It removes the backslash from a predefined character class such as "```\w```".
 
@@ -225,7 +233,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## PredefCharClassAnyChar
+### PredefCharClassAnyChar
 
 It changes a predefined character class to a character class containing the predefined one and its
 negation.
@@ -241,7 +249,9 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## QuantifierRemoval
+## Quantifier mutators
+
+### QuantifierRemoval
 
 It removes a quantifier. This is done for all possible quantifiers, even ranges, and the reluctant
 and possessive variants.
@@ -263,7 +273,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## QuantifierNChange
+### QuantifierNChange
 
 It changes the fixed amount quantifier to a couple range variants.
 
@@ -274,7 +284,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## QuantifierNOrMoreModification
+### QuantifierNOrMoreModification
 
 It changes the n to infinity range quantifier to a couple variants where the low of the range is
 incremented an decremented by one.
@@ -286,7 +296,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## QuantifierNOrMoreChange
+### QuantifierNOrMoreChange
 
 It turns an N or more range quantifier into a fixed number quantifier.
 
@@ -296,7 +306,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## QuantifierNMModification
+### QuantifierNMModification
 
 It alters the N to M range quantifier by decrementing or incrementing the high and low of the
 range by one.
@@ -310,7 +320,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## QuantifierShortModification
+### QuantifierShortModification
 
 It treats the shorthand quantifiers (`?`, `*`, `+`) as their corresponding range quantifier
 variant (`{0,1}`, `{0,}`, `{1,}`), and applies the same mutations as mentioned in the mutators
@@ -327,7 +337,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## QuantifierShortChange
+### QuantifierShortChange
 
 It changes the shorthand quantifiers `*` and `+` to their fixed range quantifier variant.
 
@@ -338,7 +348,7 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## QuantifierReluctantAddition
+### QuantifierReluctantAddition
 
 It changes greedy quantifiers to reluctant quantifiers.
 
@@ -353,7 +363,9 @@ Original | Mutated
 
 [Back to table 🔝](#Supported-mutators)
 
-## GroupToNCGroup
+## Group mutators
+
+### GroupToNCGroup
 
 It changes a normal group to a non-capturing group.
 
