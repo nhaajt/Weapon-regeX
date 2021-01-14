@@ -164,24 +164,8 @@ class ParserTest extends munit.FunSuite {
 
     assert(clue(parsedTree) match {
       case CharacterClass(nodes, _, true) => nodes.head.isInstanceOf[QuoteChar]
-      case _ => false
+      case _                              => false
     })
-
-    treeBuildTest(parsedTree, pattern)
-  }
-
-  test("Parse character class with metacharacters") {
-    val pattern = """[\\\t\n\r\f]"""
-    val parsedTree = Parser.parseOrError(pattern)
-
-    assert(clue(parsedTree).isInstanceOf[CharacterClass])
-    // A backslash is added back in to represent the backslash in the pattern
-    (("""\""" + pattern.tail.init.replace("""\""", "")) zip parsedTree.children) foreach { case (char, child) =>
-      assert(clue(child) match {
-        case MetaChar(metaChar, _) => metaChar.head == char
-        case _                     => false
-      })
-    }
 
     treeBuildTest(parsedTree, pattern)
   }
@@ -210,7 +194,7 @@ class ParserTest extends munit.FunSuite {
     (pattern.tail.init zip parsedTree.children) foreach { case (char, child) =>
       assert(clue(child) match {
         case Character(c, _) => c == char
-        case _                     => false
+        case _               => false
       })
     }
 

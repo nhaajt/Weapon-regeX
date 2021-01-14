@@ -135,10 +135,10 @@ class Parser private (val pattern: String) {
     .map { case (loc, (from, to)) => Range(from, to, loc) }
 
   /** Parse a single literal character that is allowed to be in a character class
-   * @return [[weaponregex.model.regextree.Character]] tree node
-   * @example `"{"`
-   * @note The only characters which cannot be in a character class on their own are `[`, `]` and `\`.
-   */
+    * @return [[weaponregex.model.regextree.Character]] tree node
+    * @example `"{"`
+    * @note The only characters which cannot be in a character class on their own are `[`, `]` and `\`
+    */
   def charClassCharLiteral[_: P]: P[Character] = Indexed(CharPred(!"""[]\""".contains(_)).!)
     .map { case (loc, c) => Character(c.head, loc) }
 
@@ -146,7 +146,9 @@ class Parser private (val pattern: String) {
     * @return [[weaponregex.model.regextree.RegexTree]] (sub)tree
     * @note Nested character class is a Scala/Java-only regex syntax
     */
-  def classItem[_: P]: P[RegexTree] = P(charClass | preDefinedCharClass | metaCharacter | range | quoteChar | charClassCharLiteral)
+  def classItem[_: P]: P[RegexTree] = P(
+    charClass | preDefinedCharClass | metaCharacter | range | quoteChar | charClassCharLiteral
+  )
 
   /** Parse a character class
     * @return [[weaponregex.model.regextree.CharacterClass]] tree node
