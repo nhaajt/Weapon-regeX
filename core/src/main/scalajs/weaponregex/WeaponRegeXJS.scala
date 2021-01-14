@@ -10,6 +10,7 @@ import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation._
 
 /** The API facade of Weapon regeX for JavaScript
+  * @note For JavaScript use only
   */
 object WeaponRegeXJS {
 
@@ -42,18 +43,17 @@ object WeaponRegeXJS {
   def mutate(pattern: String, options: MutationOptions = new MutationOptions()): js.Array[MutantJS] = {
     val mutators: Seq[TokenMutator] =
       if (options.hasOwnProperty("mutators") && options.mutators != null)
-        options.mutators.toSeq map (mutator => mutator.tokenMutator)
+        options.mutators.toSeq map (_.tokenMutator)
       else BuiltinMutators.all
+
     val mutationLevels: Seq[Int] =
-      if (options.hasOwnProperty("mutationLevels") && options.mutationLevels != null) options.mutationLevels.toSeq
+      if (options.hasOwnProperty("mutationLevels") && options.mutationLevels != null)
+        options.mutationLevels.toSeq
       else null
 
     (Parser(pattern) match {
-      case Some(tree) =>
-        tree.mutate(mutators, mutationLevels) map { case Mutant(pattern, name, location, levels, description) =>
-          MutantJS(pattern, name, location, levels, description)
-        }
-      case None => Nil
+      case Some(tree) => tree.mutate(mutators, mutationLevels) map MutantJS
+      case None       => Nil
     }).toJSArray
   }
 }

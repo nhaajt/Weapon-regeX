@@ -6,20 +6,30 @@ import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation._
 
-/** A mutation made by the mutator.
-  * @param pattern The replacement pattern
-  * @param name Name of the mutation
-  * @param location [[weaponregex.model.Location]] in the original string where the mutation occurred
-  * @param levels The mutation levels of the mutator
-  * @param description Description on the mutation
+/** A wrapper class for [[weaponregex.model.mutation.Mutant]] for exporting to JavaScript
+  * @param mutant The mutant to be wrapped
+  * @note For JavaScript use only
   */
-case class MutantJS(
-    @JSExport pattern: String,
-    @JSExport name: String,
-    @JSExport location: Location,
-    levels: Seq[Int],
-    @JSExport description: String
-) {
-  @JSExport("levels")
-  val levelsJS: js.Array[Int] = levels.toJSArray
+@JSExportAll
+case class MutantJS(mutant: Mutant) {
+
+  /** The replacement pattern
+    */
+  val pattern: String = mutant.pattern
+
+  /** Name of the mutation
+    */
+  val name: String = mutant.name
+
+  /** [[weaponregex.model.Location]] in the original string where the mutation occurred
+    */
+  val location: Location = mutant.location
+
+  /** The mutation levels of the mutator
+    */
+  val levels: js.Array[Int] = mutant.levels.toJSArray
+
+  /** Description on the mutation
+    */
+  val description: String = mutant.description
 }

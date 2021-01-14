@@ -5,9 +5,11 @@ import scala.scalajs.js.annotation.JSExport
 import scala.scalajs.js.JSConverters._
 import scala.scalajs.js
 
-case class TokenMutatorJS(
-    val tokenMutator: TokenMutator
-) {
+/** A wrapper class for [[weaponregex.model.mutation.TokenMutator]] for exporting to JavaScript
+  * @param tokenMutator The token mutator to be wrapped
+  * @note For JavaScript use only
+  */
+case class TokenMutatorJS(tokenMutator: TokenMutator) {
 
   /** The name of the mutator
     */
@@ -22,7 +24,7 @@ case class TokenMutatorJS(
   /** A short description  of the mutator
     */
   @JSExport
-  val description: String = name
+  val description: String = tokenMutator.description
 
   /** Apply mutation to the given token
     * @param token Target token
