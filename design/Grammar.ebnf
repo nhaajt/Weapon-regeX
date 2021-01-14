@@ -53,9 +53,11 @@ charClass = '[' charClassItem { charClassItem } ']'           (* positive charac
           | '[^' charClassItem { charClassItem } ']'          (* negative character class *)
           ;
 
-charClassItem = character
+charClassItem = charClass
+              | predefinedCharClass
+              | quoteChar
               | character '-' characters                      (* range *)
-              | charClass
+              | character
               | charClassItem '&&' charClassItem              (* intersection *)
               ;
 
@@ -99,9 +101,11 @@ concat = simpleRE basicRE ;
 
 or = RE '|' simpleRE ;
 
-quote = '\\Q' { ? any character ? } [ '\\E' ]                 (* quote from \Q to optional \E *)
-      | '\\' ? any character ?                                (* quote next char *)
-      ;
+quote = quoteLong | quoteChar ;
+
+quoteChar = '\\' ? any character ? ;                          (* quote next char *)
+
+quoteLong = '\\Q' { ? any character ? } [ '\\E' ] ;           (* quote from \Q to optional \E *)
 
 capturing = group | specialConstruct ;
 
