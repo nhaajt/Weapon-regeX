@@ -12,8 +12,8 @@ class GroupMutatorTest extends munit.FunSuite {
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(GroupToNCGroup))
     assertEquals(clue(mutants).length, 1)
 
-    val expected: Seq[String] = Seq("(?:hello)").sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    val expected: Seq[String] = Seq("(?:hello)")
+    assertEquals(clue(mutants).map(_.pattern), expected)
   }
 
   test("Does not change escaped capturing groups") {

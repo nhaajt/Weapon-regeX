@@ -2,29 +2,29 @@ package weaponregex.mutator
 
 import weaponregex.parser.Parser
 import TreeMutator._
-import weaponregex.model.mutation.Mutant
 
 class BoundaryMutatorTest extends munit.FunSuite {
   test("Removes BOL") {
-    val pattern = "^abc^def^ghi\\^"
+    val pattern = "^abc^def^"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(BOLRemoval))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(BOLRemoval)).map(_.pattern)
     assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq(
-      "abc^def^ghi\\^",
-      "^abcdef^ghi\\^",
-      "^abc^defghi\\^"
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+      "abc^def^",
+      "^abcdef^",
+      "^abc^def"
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Does not remove escaped BOL") {
     val pattern = "\\^abc"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(BOLRemoval))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(BOLRemoval)).map(_.pattern)
     assertEquals(clue(mutants).length, 0)
   }
 
@@ -32,22 +32,23 @@ class BoundaryMutatorTest extends munit.FunSuite {
     val pattern = "$abc$def$"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(EOLRemoval))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(EOLRemoval)).map(_.pattern)
     assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq(
       "abc$def$",
       "$abcdef$",
       "$abc$def"
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Does not remove escaped EOL") {
     val pattern = "abc\\$"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(EOLRemoval))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(EOLRemoval)).map(_.pattern)
     assertEquals(clue(mutants).length, 0)
   }
 
@@ -55,22 +56,23 @@ class BoundaryMutatorTest extends munit.FunSuite {
     val pattern = "^abc^def^ghi\\^"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(BOL2BOI))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(BOL2BOI)).map(_.pattern)
     assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq(
       """\Aabc^def^ghi\^""",
       """^abc\Adef^ghi\^""",
       """^abc^def\Aghi\^"""
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Does not change escaped BOL") {
     val pattern = "\\^abc"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(BOL2BOI))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(BOL2BOI)).map(_.pattern)
     assertEquals(clue(mutants).length, 0)
   }
 
@@ -78,22 +80,23 @@ class BoundaryMutatorTest extends munit.FunSuite {
     val pattern = "$abc$def$ghi\\$"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(EOL2EOI))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(EOL2EOI)).map(_.pattern)
     assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq(
       """\zabc$def$ghi\$""",
       """$abc\zdef$ghi\$""",
       """$abc$def\zghi\$"""
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Does not change escaped EOL") {
     val pattern = "abc\\$"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(EOL2EOI))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(EOL2EOI)).map(_.pattern)
     assertEquals(clue(mutants).length, 0)
   }
 }

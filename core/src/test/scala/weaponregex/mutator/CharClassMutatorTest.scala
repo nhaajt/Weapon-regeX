@@ -2,29 +2,29 @@ package weaponregex.mutator
 
 import weaponregex.parser.Parser
 import TreeMutator._
-import weaponregex.model.mutation.Mutant
 
 class CharClassMutatorTest extends munit.FunSuite {
   test("Negates Character Classes") {
     val pattern = "[[abc][^abc]]"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassNegation))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassNegation)).map(_.pattern)
     assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq(
       "[^[abc][^abc]]",
       "[[^abc][^abc]]",
       "[[abc][abc]]"
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Does not mutate escaped Character Classes") {
     val pattern = "\\[abc\\]abc"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassNegation))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassNegation)).map(_.pattern)
     assertEquals(clue(mutants).length, 0)
   }
 
@@ -32,7 +32,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     val pattern = "[ab0-9[A-Z][cd]]"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassChildRemoval))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassChildRemoval)).map(_.pattern)
     assertEquals(clue(mutants).length, 7)
 
     val expected: Seq[String] = Seq(
@@ -43,15 +43,16 @@ class CharClassMutatorTest extends munit.FunSuite {
       "[ab0-9[A-Z]]",
       "[ab0-9[A-Z][d]]",
       "[ab0-9[A-Z][c]]"
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Does not mutate (remove children) escaped Character Classes") {
     val pattern = "\\[abc\\]abc"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassChildRemoval))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassChildRemoval)).map(_.pattern)
     assertEquals(clue(mutants).length, 0)
   }
 
@@ -59,21 +60,22 @@ class CharClassMutatorTest extends munit.FunSuite {
     val pattern = "[abc[0-9]]"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassAnyChar))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassAnyChar)).map(_.pattern)
     assertEquals(clue(mutants).length, 2)
 
     val expected: Seq[String] = Seq(
       """[\w\W]""",
       """[abc[\w\W]]"""
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Does not mutate (change to any char) escaped Character Classes") {
     val pattern = "\\[abc\\]abc"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassAnyChar))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassAnyChar)).map(_.pattern)
     assertEquals(clue(mutants).length, 0)
   }
 
@@ -81,7 +83,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     val pattern = "[b-y][B-Y][1-8]"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassRangeModification)).map(_.pattern)
     assertEquals(clue(mutants).length, 12)
 
     val expected: Seq[String] = Seq(
@@ -100,15 +102,16 @@ class CharClassMutatorTest extends munit.FunSuite {
       "[b-y][B-Y][2-8]",
       "[b-y][B-Y][1-9]",
       "[b-y][B-Y][1-7]"
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Character Class Modify Range [a-y][A-Y][0-8]") {
     val pattern = "[a-y][A-Y][0-8]"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassRangeModification)).map(_.pattern)
     assertEquals(clue(mutants).length, 9)
 
     val expected: Seq[String] = Seq(
@@ -124,15 +127,16 @@ class CharClassMutatorTest extends munit.FunSuite {
       "[a-y][A-Y][1-8]",
       "[a-y][A-Y][0-9]",
       "[a-y][A-Y][0-7]"
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Character Class Modify Range [b-z][B-Z][1-9]") {
     val pattern = "[b-z][B-Z][1-9]"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassRangeModification)).map(_.pattern)
     assertEquals(clue(mutants).length, 9)
 
     val expected: Seq[String] = Seq(
@@ -148,15 +152,16 @@ class CharClassMutatorTest extends munit.FunSuite {
       "[b-z][B-Z][0-9]",
       "[b-z][B-Z][2-9]",
       "[b-z][B-Z][1-8]"
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Character Class Modify Range [a-z][A-Z][0-9]") {
     val pattern = "[a-z][A-Z][0-9]"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassRangeModification)).map(_.pattern)
     assertEquals(clue(mutants).length, 6)
 
     val expected: Seq[String] = Seq(
@@ -169,15 +174,16 @@ class CharClassMutatorTest extends munit.FunSuite {
       // [0-9] -> [1-9] OR [0-8]
       "[a-z][A-Z][1-9]",
       "[a-z][A-Z][0-8]"
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Character Class Modify Range [b-b][B-B][1-1]") {
     val pattern = "[b-b][B-B][1-1]"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassRangeModification)).map(_.pattern)
     assertEquals(clue(mutants).length, 6)
 
     val expected: Seq[String] = Seq(
@@ -190,15 +196,16 @@ class CharClassMutatorTest extends munit.FunSuite {
       // [1-1] -> [0-1] OR [1-2]
       "[b-b][B-B][0-1]",
       "[b-b][B-B][1-2]"
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Character Class Modify Range [a-a][A-A][0-0]") {
     val pattern = "[a-a][A-A][0-0]"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassRangeModification)).map(_.pattern)
     assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq(
@@ -208,15 +215,16 @@ class CharClassMutatorTest extends munit.FunSuite {
       "[a-a][A-B][0-0]",
       // [0-0] -> [0-1]
       "[a-a][A-A][0-1]"
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Character Class Modify Range [z-z][Z-Z][9-9]") {
     val pattern = "[z-z][Z-Z][9-9]"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassRangeModification)).map(_.pattern)
     assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq(
@@ -226,15 +234,16 @@ class CharClassMutatorTest extends munit.FunSuite {
       "[z-z][Y-Z][9-9]",
       // [9-9] -> [8-9]
       "[z-z][Z-Z][8-9]"
-    ).sorted
-    assertEquals(clue(mutants).map(_.pattern).sorted, expected)
+    )
+
+    mutants foreach (m => assert(clue(expected).contains(m), clue = m))
   }
 
   test("Does not modify non alpha numeric ranges") {
     val pattern = "[!-#][a-#][!-z][A-#][!-Z][1-#][!-8]"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassRangeModification)).map(_.pattern)
     assertEquals(clue(mutants).length, 0)
   }
 
@@ -242,7 +251,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     val pattern = "[a-8][1-z][A-8][1-Z]"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassRangeModification)).map(_.pattern)
     assertEquals(clue(mutants).length, 0)
   }
 
@@ -250,7 +259,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     val pattern = "\\[a-z\\]a-z"
     val parsedTree = Parser.parseOrError(pattern)
 
-    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    val mutants: Seq[String] = parsedTree.mutate(Seq(CharClassRangeModification)).map(_.pattern)
     assertEquals(clue(mutants).length, 0)
   }
 }
