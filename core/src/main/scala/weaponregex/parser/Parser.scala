@@ -11,6 +11,7 @@ object Parser {
 
   /** Regex special characters
     */
+  //TODO: `]`, `}` is not a special character
   final private val specialChars: String = """[](){}\.^$|?*+"""
 
   /** Apply the parser to parse the given pattern
@@ -130,14 +131,22 @@ class Parser private (val pattern: String) {
     * @return [[weaponregex.model.regextree.Range]] tree node
     * @example `"a-z"`
     */
-  def range[_: P]: P[Range] = Indexed(charLiteral ~ "-" ~ charLiteral)
+  def range[_: P]: P[Range] = Indexed(charClassCharLiteral ~ "-" ~ charClassCharLiteral)
     .map { case (loc, (from, to)) => Range(from, to, loc) }
 
-  /** Intermediate parsing rule for character class item tokens which can parse either `range`, `charClass`, `preDefinedCharClass` or `charLiteral`
+  /** Parse a single literal character that is allowed to be in a character class
+   * @return [[weaponregex.model.regextree.Character]] tree node
+   * @example `"{"`
+   * @note The only characters which cannot be in a character class on their own are `[`, `]` and `\`.
+   */
+  def charClassCharLiteral[_: P]: P[Character] = Indexed(CharPred(!"""[]\""".contains(_)).!)
+    .map { case (loc, c) => Character(c.head, loc) }
+
+  /** Intermediate parsing rule for character class item tokens which can parse either `charClass`, `preDefinedCharClass`, `metaCharacter`, `range`, `quoteChar`, or `charClassCharLiteral`
     * @return [[weaponregex.model.regextree.RegexTree]] (sub)tree
     * @note Nested character class is a Scala/Java-only regex syntax
     */
-  def classItem[_: P]: P[RegexTree] = P(charClass | preDefinedCharClass | quoteChar | range | character)
+  def classItem[_: P]: P[RegexTree] = P(charClass | preDefinedCharClass | metaCharacter | range | quoteChar | charClassCharLiteral)
 
   /** Parse a character class
     * @return [[weaponregex.model.regextree.CharacterClass]] tree node

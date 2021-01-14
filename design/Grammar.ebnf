@@ -49,15 +49,20 @@ charHex = '\\x' hex hex
         | '\\x{' hex { hex } '}'
         ;
 
+specialCharClassChar = ? []\ ?                                 (* special characters for character classes *)
+
+charClassCharLiteral = - specialCharClassChar
+
 charClass = '[' charClassItem { charClassItem } ']'           (* positive character class *)
           | '[^' charClassItem { charClassItem } ']'          (* negative character class *)
           ;
 
 charClassItem = charClass
               | predefinedCharClass
+              | metaChar
+              | charClassCharLiteral '-' charClassCharLiteral (* range *)
               | quoteChar
-              | character '-' characters                      (* range *)
-              | character
+              | charClassCharLiteral
               | charClassItem '&&' charClassItem              (* intersection *)
               ;
 
