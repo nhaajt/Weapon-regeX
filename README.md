@@ -41,12 +41,13 @@ Mutate!
 ```Javascript
 const wrx = require('weapon-regex');
 
-var mutants = wrx.mutate("^abc(d+|[xyz])$");
+let mutants = wrx.mutate("^abc(d+|[xyz])$");
 
 mutants.forEach(mutant => {
   console.log(mutant.pattern);
 });
 ```
+[Try it!](https://npm.runkit.com/weapon-regex)
 
 # API
 ## Scala
