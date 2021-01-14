@@ -9,8 +9,9 @@
     <link rel="stylesheet" href="css/weapon-regex.css">
 </head>
 <body>
+<script>let exports = window;</script>
 <!-- Include Scala.js compiled code -->
-<script type="text/javascript" src="js/weapon-regex.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/weapon-regex@latest"></script>
 <script
         src="https://code.jquery.com/jquery-3.5.1.min.js"
         integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
@@ -18,6 +19,7 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"></script>
 
 <div id="main-content">
+    <img id="wrx-logo" src="img/wrx_logo.svg" width="10%" alt="Weapon regeX logo">
     <h1 style="font-variant: small-caps">Weapon regeX</h1>
 
     <form onsubmit="runMutator(); return false;">
@@ -56,8 +58,6 @@
             level = document.getElementById('inputLevel');
             counter = 0;
 
-            WeaponRegeX = $m_Lweaponregex_WeaponRegeX$();
-
             function runMutator() {
                 // Clear output
                 output.innerHTML = '';
@@ -65,25 +65,20 @@
                 var selectedLevel = parseInt(level.value);
                 var mutants;
                 if (selectedLevel === 0) {
-                    mutants = WeaponRegeX.mutate(input.value);
+                    mutants = exports.mutate(input.value);
                 } else {
-                    mutants = WeaponRegeX.mutate(input.value, selectedLevel);
+                    mutants = exports.mutate(input.value, {mutationLevels: [selectedLevel]});
                 }
 
                 console.log(mutants);
-                processMutantList(mutants, input.value);
-            }
-
-            function processMutantList(list, orig) {
-                if (list.sci_$colon$colon__f_head === undefined) return
-
-                processMutant(list.sci_$colon$colon__f_head, orig);
-                processMutantList(list.sci_$colon$colon__f_next, orig);
+                mutants.forEach(mutant => {
+                    processMutant(mutant, input.value);
+                });
             }
 
             function processMutant(mutant, orig) {
-                var mutatorStart = mutant.data.location.start.column;
-                var mutatorEnd = mutant.data.location.end.column;
+                var mutatorStart = mutant.location.start.column;
+                var mutatorEnd = mutant.location.end.column;
                 var lengthDiff = mutant.pattern.length - orig.length;
                 var pre = orig.substr(0, mutatorStart);
                 var removed = orig.substr(mutatorStart, mutatorEnd - mutatorStart);
@@ -102,8 +97,8 @@
         <div class="card-body">
             <p class="mutant-decompose">
                 <span class="mut-pre">` + pre + `</span><span class="mut-rem">` + removed + `</span><span class="mut-add">` + added + `</span><span class="mut-pos">` + post + `</span><br>
-            </p>` + mutant.data.name + ` (Level: ` + mutant.data.level + `)<br>
-                ` + mutant.data.description + `
+            </p>` + mutant.name + ` (Levels: ` + mutant.levels + `)<br>
+                ` + mutant.description + `
         </div>
     </div>
 </div>`
