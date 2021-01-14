@@ -230,6 +230,22 @@ class CharClassMutatorTest extends munit.FunSuite {
     assertEquals(clue(mutants).map(_.pattern).sorted, expected)
   }
 
+  test("Does not modify non alpha numeric ranges") {
+    val pattern = "[!-#][a-#][!-z][A-#][!-Z][1-#][!-8]"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    assertEquals(clue(mutants).length, 0)
+  }
+
+  test("Does not modify ranges with letters and digits mixed") {
+    val pattern = "[a-8][1-z][A-8][1-Z]"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
+    assertEquals(clue(mutants).length, 0)
+  }
+
   test("Does not mutate (modify range) escaped Character Classes") {
     val pattern = "\\[a-z\\]a-z"
     val parsedTree = Parser.parseOrError(pattern)
