@@ -13,7 +13,7 @@ import scala.scalajs.js.annotation._
   * @param levels The mutation levels of the mutator
   * @param description Description on the mutation
   */
-case class Mutant(
+case class MutantJS(
     @JSExport pattern: String,
     @JSExport name: String,
     @JSExport location: Location,

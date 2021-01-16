@@ -1,19 +1,27 @@
 package weaponregex.model.mutation
 
 import weaponregex.model.regextree.RegexTree
+import scala.scalajs.js.annotation.JSExport
+import scala.scalajs.js.JSConverters._
+import scala.scalajs.js
 
-trait TokenMutator {
+case class TokenMutatorJS(
+    val tokenMutator: TokenMutator
+) {
 
   /** The name of the mutator
     */
-  val name: String
+  @JSExport
+  val name: String = tokenMutator.name
 
   /** The mutation levels that the token mutator falls under
     */
-  val levels: Seq[Int]
+  @JSExport
+  val levels: js.Array[Int] = tokenMutator.levels.toJSArray
 
   /** A short description  of the mutator
     */
+  @JSExport
   val description: String = name
 
   /** Apply mutation to the given token
@@ -26,5 +34,5 @@ trait TokenMutator {
     * @param token Target token
     * @return Sequence of strings, which are mutations of the original token
     */
-  def mutate(token: RegexTree): Seq[String]
+  def mutate(token: RegexTree): Seq[String] = tokenMutator.mutate(token)
 }
