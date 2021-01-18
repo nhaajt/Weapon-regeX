@@ -10,9 +10,10 @@ class GroupMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(GroupToNCGroup))
-    assertEquals(clue(mutants).length, 1)
 
     val expected: Seq[String] = Seq("(?:hello)")
+
+    assertEquals(clue(mutants).length, expected.length)
     assertEquals(clue(mutants) map (_.pattern), expected)
   }
 
@@ -21,6 +22,7 @@ class GroupMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(GroupToNCGroup))
+
     assertEquals(clue(mutants), Nil)
   }
 }

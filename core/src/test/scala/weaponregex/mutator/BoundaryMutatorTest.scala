@@ -9,7 +9,6 @@ class BoundaryMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(BOLRemoval)) map (_.pattern)
-    assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq(
       "abc^def^",
@@ -17,6 +16,7 @@ class BoundaryMutatorTest extends munit.FunSuite {
       "^abc^def"
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -33,7 +33,6 @@ class BoundaryMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(EOLRemoval)) map (_.pattern)
-    assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq(
       "abc$def$",
@@ -41,6 +40,7 @@ class BoundaryMutatorTest extends munit.FunSuite {
       "$abc$def"
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -57,7 +57,6 @@ class BoundaryMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(BOL2BOI)) map (_.pattern)
-    assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq(
       """\Aabc^def^ghi\^""",
@@ -65,6 +64,7 @@ class BoundaryMutatorTest extends munit.FunSuite {
       """^abc^def\Aghi\^"""
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -81,7 +81,6 @@ class BoundaryMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(EOL2EOI)) map (_.pattern)
-    assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq(
       """\zabc$def$ghi\$""",
@@ -89,6 +88,7 @@ class BoundaryMutatorTest extends munit.FunSuite {
       """$abc$def\zghi\$"""
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 

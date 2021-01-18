@@ -9,7 +9,6 @@ class PredefCharClassMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(PredefCharClassNegation)) map (_.pattern)
-    assertEquals(clue(mutants).length, 6)
 
     val expected: Seq[String] = Seq(
       """\W\W\d\D\s\S""",
@@ -20,6 +19,7 @@ class PredefCharClassMutatorTest extends munit.FunSuite {
       """\w\W\d\D\s\s"""
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -36,7 +36,6 @@ class PredefCharClassMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(PredefCharClassNullification)) map (_.pattern)
-    assertEquals(clue(mutants).length, 6)
 
     val expected: Seq[String] = Seq(
       """w\W\d\D\s\S""",
@@ -47,6 +46,7 @@ class PredefCharClassMutatorTest extends munit.FunSuite {
       """\w\W\d\D\sS"""
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -63,7 +63,6 @@ class PredefCharClassMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(PredefCharClassAnyChar)) map (_.pattern)
-    assertEquals(clue(mutants).length, 6)
 
     val expected: Seq[String] = Seq(
       """[\w\W]\W\d\D\s\S""",
@@ -74,6 +73,7 @@ class PredefCharClassMutatorTest extends munit.FunSuite {
       """\w\W\d\D\s[\S\s]"""
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 

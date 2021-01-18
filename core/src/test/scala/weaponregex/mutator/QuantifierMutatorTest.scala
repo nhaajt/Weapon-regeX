@@ -9,7 +9,6 @@ class QuantifierMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierRemoval)) map (_.pattern)
-    assertEquals(clue(mutants).length, 6)
 
     val expected: Seq[String] = Seq(
       "ab*c+d{1}e{1,}f{1,2}g",
@@ -20,6 +19,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
       "a?b*c+d{1}e{1,}fg"
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -36,7 +36,6 @@ class QuantifierMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierRemoval)) map (_.pattern)
-    assertEquals(clue(mutants).length, 6)
 
     val expected: Seq[String] = Seq(
       "ab*?c+?d{1}?e{1,}?f{1,2}?g",
@@ -47,6 +46,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
       "a??b*?c+?d{1}?e{1,}?fg"
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -63,7 +63,6 @@ class QuantifierMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierRemoval)) map (_.pattern)
-    assertEquals(clue(mutants).length, 6)
 
     val expected: Seq[String] = Seq(
       "ab*+c++d{1}+e{1,}+f{1,2}+",
@@ -74,6 +73,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
       "a?+b*+c++d{1}+e{1,}+f"
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -90,13 +90,13 @@ class QuantifierMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierNChange)) map (_.pattern)
-    assertEquals(clue(mutants).length, 2)
 
     val expected: Seq[String] = Seq(
       "a{0,1}",
       "a{1,}"
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -105,7 +105,6 @@ class QuantifierMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierNOrMoreModification)) map (_.pattern)
-    assertEquals(clue(mutants).length, 3)
 
     val expected: Seq[String] = Seq(
       "a{1,}b{1,}",
@@ -113,6 +112,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
       "a{0,}b{2,}"
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -121,10 +121,10 @@ class QuantifierMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierNOrMoreChange)) map (_.pattern)
-    assertEquals(clue(mutants).length, 1)
 
     val expected: Seq[String] = Seq("a{1}")
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -133,7 +133,6 @@ class QuantifierMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierNMModification)) map (_.pattern)
-    assertEquals(clue(mutants).length, 8)
 
     val expected: Seq[String] = Seq(
       "a{0,1}b{0,1}c{1,2}",
@@ -146,6 +145,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
       "a{0,0}b{0,1}c{1,3}"
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -154,7 +154,6 @@ class QuantifierMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierShortModification)) map (_.pattern)
-    assertEquals(clue(mutants).length, 6)
 
     val expected: Seq[String] = Seq(
       "a{1,1}b*c+",
@@ -165,6 +164,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
       "a?b*c{2,}"
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -173,13 +173,13 @@ class QuantifierMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierShortChange)) map (_.pattern)
-    assertEquals(clue(mutants).length, 2)
 
     val expected: Seq[String] = Seq(
       "a{0}b+",
       "a*b{1}"
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 
@@ -188,7 +188,6 @@ class QuantifierMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierReluctantAddition)) map (_.pattern)
-    assertEquals(clue(mutants).length, 6)
 
     val expected: Seq[String] = Seq(
       "a??b*c+d{1}e{1,}f{1,2}",
@@ -199,6 +198,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
       "a?b*c+d{1}e{1,}f{1,2}?"
     )
 
+    assertEquals(clue(mutants).length, expected.length)
     mutants foreach (m => assert(clue(expected) contains clue(m)))
   }
 }
