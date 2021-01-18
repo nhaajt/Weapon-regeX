@@ -1,6 +1,7 @@
 # Weapon regeX
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FNhaajt%2FWeapon-regeX%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/Nhaajt/Weapon-regeX/main)
 [![Build Status](https://github.com/Nhaajt/Weapon-regeX/workflows/Scala%20CI/badge.svg)](https://github.com/Nhaajt/Weapon-regeX/actions?query=workflow%3AScala%20CI+branch%3Amain)
+[<img src="https://img.shields.io/badge/GitHub Pages-🌐-blue" alt="GitHub Pages">](https://nhaajt.github.io/Weapon-regeX/)
 
 <img src="images/WeaponRegeX_logo.svg" width="50%" alt="Weapon regeX Logo">
 
@@ -8,29 +9,31 @@ With Weapon regeX you can mutate regular expressions which can be used in mutati
 generated regular expressions cover edge cases and typos. Weapon regeX is available for both
 Javascript and Scala. The Javascript version of the library is generated from Scala using [ScalaJS](https://www.scala-js.org/).
 
-The current supported versions for Scala are: 2.12.12 and 2.13.3.
+The current supported versions for Scala are: `2.12.12` and `2.13.3`.
 
 # Getting started
 
 ## Scala
 Add Weapon regeX to your ```build.sbt```.
-```Scala
+```scala
 "io.stryker-mutator" %% "weapon-regex" % "0.1.2"
 ```
 
 Mutate!
 
-```Scala
+```scala
 import weaponregex.WeaponRegeX
+import scala.util.{Success, Failure}
 
-val mutants = WeaponRegeX.mutate("^abc(d+|[xyz])$")
-
-mutants.map(mutant => println(mutant.pattern))
+WeaponRegeX.mutate("^abc(d+|[xyz])$") match {
+  case Success(mutants) => mutants map (_.pattern) map println
+  case Failure(e)       => print(e.getMessage)
+}
 ```
 
 ## Javascript
 
-Install Weapon regeX with npm.
+Install Weapon regeX with `npm`.
 
 ```bash
 npm install weapon-regex
@@ -38,7 +41,7 @@ npm install weapon-regex
 
 Mutate!
 
-```Javascript
+```javascript
 const wrx = require('weapon-regex');
 
 let mutants = wrx.mutate("^abc(d+|[xyz])$");
@@ -55,11 +58,13 @@ mutants.forEach(mutant => {
 The ```mutate``` function has the following signature:
 
 ```scala
+//import scala.util.{Try, Success, Failure}
+
 def mutate(
       pattern: String,
       mutators: Seq[TokenMutator] = BuiltinMutators.all,
       mutationLevels: Seq[Int] = null
-  ): Seq[Mutant]
+  ): Try[Seq[Mutant]]
 ```
 With the ```mutators``` argument you can give a select list of mutators that should be used in
 the mutation process. If omitted, all builtin mutators will be used. This list will be filtered
@@ -67,6 +72,8 @@ depending on the ```mutationLevels``` argument.
 
 A list of ```mutationLevels``` can also be passed to the function. The mutators will be filtered
 based on the levels in the list. If omitted, no filtering takes place.
+
+This function will return a `Success` of of a sequence of `Mutant` if can be parsed, a `Failure` otherwise.
 
 ## Javascript
 
@@ -76,7 +83,7 @@ used in the mutation process:
 ```Javascript
 const wrx = require('weapon-regex');
 
-val mutants = wrx.mutate("^abc(d+|[xyz])$",{
+let mutants = wrx.mutate("^abc(d+|[xyz])$",{
   mutators: Array.from(wrx.mutators.values()),
   mutationLevels: [1, 2, 3]
 });
@@ -85,6 +92,8 @@ val mutants = wrx.mutate("^abc(d+|[xyz])$",{
 Both options can be omitted, and have the same functionality as the options described in the Scala
 API section. You can get a map of mutators from the ```mutators``` attribute of the library. It is
 a map from string (mutator name) to a mutator object.
+
+This function will return a JavaScript Array of `Mutant` if can be parsed, or throw an exception otherwise.
 
 # Supported mutators
 All the supported mutators and at which mutation level they appear are shown in the table below.

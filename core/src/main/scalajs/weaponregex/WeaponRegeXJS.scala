@@ -8,6 +8,7 @@ import weaponregex.mutator.BuiltinMutators
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation._
+import scala.util.{Failure, Success}
 
 /** The API facade of Weapon regeX for JavaScript
   * @note For JavaScript use only
@@ -37,7 +38,7 @@ object WeaponRegeXJS {
     *   mutationLevels: [Target mutation levels. If this is `null`, the `mutators` will not be filtered],
     * }
     * }}}
-    * @return A JavaScript Array of [[weaponregex.model.mutation.Mutant]]
+    * @return A JavaScript Array of [[weaponregex.model.mutation.Mutant]] if can be parsed, or throw an exception otherwise
     */
   @JSExportTopLevel("mutate")
   def mutate(pattern: String, options: MutationOptions = new MutationOptions()): js.Array[MutantJS] = {
@@ -51,9 +52,9 @@ object WeaponRegeXJS {
         options.mutationLevels.toSeq
       else null
 
-    (Parser(pattern) match {
-      case Some(tree) => tree.mutate(mutators, mutationLevels) map MutantJS
-      case None       => Nil
-    }).toJSArray
+    Parser(pattern) match {
+      case Success(tree)                 => (tree.mutate(mutators, mutationLevels) map MutantJS).toJSArray
+      case Failure(throwable: Throwable) => throw throwable
+    }
   }
 }
