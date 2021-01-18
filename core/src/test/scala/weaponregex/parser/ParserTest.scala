@@ -714,8 +714,21 @@ class ParserTest extends munit.FunSuite {
     treeBuildTest(parsedTree, pattern)
   }
 
-  test("Parser failure") {
+  test("Parser failure at start") {
     val pattern = "("
+    val parsedTree = Parser(pattern)
+
+    import scala.util.Failure
+    assert(clue(parsedTree) match {
+      case Failure(exception: RuntimeException) =>
+        println(exception.getMessage)
+        true
+      case _ => false
+    })
+  }
+
+  test("Parser failure mid-regex") {
+    val pattern = "abc(def"
     val parsedTree = Parser(pattern)
 
     import scala.util.Failure

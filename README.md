@@ -9,7 +9,7 @@ With Weapon regeX you can mutate regular expressions which can be used in mutati
 generated regular expressions cover edge cases and typos. Weapon regeX is available for both
 Javascript and Scala. The Javascript version of the library is generated from Scala using [ScalaJS](https://www.scala-js.org/).
 
-The current supported versions for Scala are: 2.12.12 and 2.13.3.
+The current supported versions for Scala are: `2.12.12` and `2.13.3`.
 
 # Getting started
 

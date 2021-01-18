@@ -368,10 +368,15 @@ class Parser private (val pattern: String) {
     */
   def RE[_: P]: P[RegexTree] = P(or | simpleRE)
 
+  /** The entry point of the parser that should parse from the start to the end of the regex string
+   * @return [[weaponregex.model.regextree.RegexTree]] tree
+   */
+  def entry[_: P]: P[RegexTree] = P(Start ~ RE ~ End)
+
   /** Parse the given regex pattern
     * @return A `Success` of parsed [[weaponregex.model.regextree.RegexTree]] if can be parsed, a `Failure` otherwise
     */
-  def parse: Try[RegexTree] = fastparse.parse(pattern, RE(_)) match {
+  def parse: Try[RegexTree] = fastparse.parse(pattern, entry(_)) match {
     case Parsed.Success(regexTree: RegexTree, index) => Success(regexTree)
     case f @ Parsed.Failure(str, index, extra)       => Failure(new RuntimeException("[Error] Parser: " + f.msg))
   }
