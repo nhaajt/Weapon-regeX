@@ -49,13 +49,20 @@ charHex = '\\x' hex hex
         | '\\x{' hex { hex } '}'
         ;
 
+specialCharClassChar = ? []\ ?                                 (* special characters for character classes *)
+
+charClassCharLiteral = - specialCharClassChar
+
 charClass = '[' charClassItem { charClassItem } ']'           (* positive character class *)
           | '[^' charClassItem { charClassItem } ']'          (* negative character class *)
           ;
 
-charClassItem = character
-              | character '-' characters                      (* range *)
-              | charClass
+charClassItem = charClass
+              | predefinedCharClass
+              | metaChar
+              | charClassCharLiteral '-' charClassCharLiteral (* range *)
+              | quoteChar
+              | charClassCharLiteral
               | charClassItem '&&' charClassItem              (* intersection *)
               ;
 
@@ -99,9 +106,11 @@ concat = simpleRE basicRE ;
 
 or = RE '|' simpleRE ;
 
-quote = '\\Q' { ? any character ? } [ '\\E' ]                 (* quote from \Q to optional \E *)
-      | '\\' ? any character ?                                (* quote next char *)
-      ;
+quote = quoteLong | quoteChar ;
+
+quoteChar = '\\' ? any character ? ;                          (* quote next char *)
+
+quoteLong = '\\Q' { ? any character ? } [ '\\E' ] ;           (* quote from \Q to optional \E *)
 
 capturing = group | specialConstruct ;
 

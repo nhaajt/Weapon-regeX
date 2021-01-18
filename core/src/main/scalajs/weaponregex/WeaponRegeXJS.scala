@@ -10,20 +10,21 @@ import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation._
 
 /** The API facade of Weapon regeX for JavaScript
+  * @note For JavaScript use only
   */
-object WeaponRegeX {
+object WeaponRegeXJS {
 
   /** JavaScript Dictionary that maps from token mutator class names to the associating token mutators
     */
   @JSExportTopLevel("mutators")
-  val allMutators: js.Map[String, TokenMutator] =
+  val allMutators: js.Map[String, TokenMutatorJS] =
     BuiltinMutators.all
-      .map(mutator => mutator.getClass.getSimpleName.split("\\$$").head -> mutator)
+      .map(mutator => mutator.getClass.getSimpleName.split("\\$$").head -> TokenMutatorJS(mutator))
       .toMap
       .toJSMap
 
   class MutationOptions(
-      val mutators: js.Array[TokenMutator] = BuiltinMutators.all.toJSArray,
+      val mutators: js.Array[TokenMutatorJS] = null,
       val mutationLevels: js.Array[Int] = null
   ) extends js.Object
 
@@ -39,16 +40,19 @@ object WeaponRegeX {
     * @return A JavaScript Array of [[weaponregex.model.mutation.Mutant]]
     */
   @JSExportTopLevel("mutate")
-  def mutate(pattern: String, options: MutationOptions = new MutationOptions()): js.Array[Mutant] = {
-    val mutators =
-      if (options.hasOwnProperty("mutators") && options.mutators != null) options.mutators.toSeq
+  def mutate(pattern: String, options: MutationOptions = new MutationOptions()): js.Array[MutantJS] = {
+    val mutators: Seq[TokenMutator] =
+      if (options.hasOwnProperty("mutators") && options.mutators != null)
+        options.mutators.toSeq map (_.tokenMutator)
       else BuiltinMutators.all
-    val mutationLevels =
-      if (options.hasOwnProperty("mutationLevels") && options.mutationLevels != null) options.mutationLevels.toSeq
+
+    val mutationLevels: Seq[Int] =
+      if (options.hasOwnProperty("mutationLevels") && options.mutationLevels != null)
+        options.mutationLevels.toSeq
       else null
 
     (Parser(pattern) match {
-      case Some(tree) => tree.mutate(mutators, mutationLevels)
+      case Some(tree) => tree.mutate(mutators, mutationLevels) map MutantJS
       case None       => Nil
     }).toJSArray
   }
