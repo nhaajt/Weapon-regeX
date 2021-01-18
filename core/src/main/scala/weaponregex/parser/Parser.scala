@@ -11,8 +11,7 @@ object Parser {
 
   /** Regex special characters
     */
-  //TODO: `]`, `}` is not a special character
-  final private val specialChars: String = """[](){}\.^$|?*+"""
+  final private val specialChars: String = """()[{\.^$|?*+"""
 
   /** Apply the parser to parse the given pattern
     * @param pattern The regex pattern to be parsed

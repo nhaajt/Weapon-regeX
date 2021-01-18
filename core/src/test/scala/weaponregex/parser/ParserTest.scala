@@ -20,6 +20,34 @@ class ParserTest extends munit.FunSuite {
     treeBuildTest(parsedTree, pattern)
   }
 
+  test("Parse `}` character next to long quantifier") {
+    val pattern = "a{1}}"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree).isInstanceOf[Concat])
+    assert(parsedTree.children(0).isInstanceOf[Quantifier])
+    assert(parsedTree.children(1) match {
+      case Character('}', _) => true
+      case _                 => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
+  test("Parse `]` character next to character class") {
+    val pattern = "[abc]]"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    assert(clue(parsedTree).isInstanceOf[Concat])
+    assert(parsedTree.children(0).isInstanceOf[CharacterClass])
+    assert(parsedTree.children(1) match {
+      case Character(']', _) => true
+      case _                 => false
+    })
+
+    treeBuildTest(parsedTree, pattern)
+  }
+
   test("Parse or of characters") {
     val pattern = "h|e|l|l|o"
     val parsedTree = Parser.parseOrError(pattern)
