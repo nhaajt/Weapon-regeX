@@ -116,6 +116,15 @@ class QuantifierMutatorTest extends munit.FunSuite {
     expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
+  test("QuantifierNOrMoreModification Does not mutate quantifier {n} and {n,m}") {
+    val pattern = "a{3}b{4,9}"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierNOrMoreModification)) map (_.pattern)
+
+    assertEquals(clue(mutants).length, 0)
+  }
+
   test("Changes quantifier {n,}") {
     val pattern = "a{1,}"
     val parsedTree = Parser.parseOrError(pattern)
@@ -126,6 +135,15 @@ class QuantifierMutatorTest extends munit.FunSuite {
 
     assertEquals(clue(mutants).length, expected.length)
     expected foreach (m => assert(clue(mutants) contains clue(m)))
+  }
+
+  test("QuantifierNOrMoreChange Does not mutate quantifier {n} and {n,m}") {
+    val pattern = "a{3}b{4,9}"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierNOrMoreChange)) map (_.pattern)
+
+    assertEquals(clue(mutants).length, 0)
   }
 
   test("Modifies quantifier {n,m}") {
@@ -147,6 +165,15 @@ class QuantifierMutatorTest extends munit.FunSuite {
 
     assertEquals(clue(mutants).length, expected.length)
     expected foreach (m => assert(clue(mutants) contains clue(m)))
+  }
+
+  test("QuantifierNMModification Does not mutate quantifier {n} and {n,}") {
+    val pattern = "a{3}b{4,}"
+    val parsedTree = Parser.parseOrError(pattern)
+
+    val mutants: Seq[String] = parsedTree.mutate(Seq(QuantifierNMModification)) map (_.pattern)
+
+    assertEquals(clue(mutants).length, 0)
   }
 
   test("Modifies short quantifier") {
