@@ -13,7 +13,7 @@ class GroupMutatorTest extends munit.FunSuite {
     assertEquals(clue(mutants).length, 1)
 
     val expected: Seq[String] = Seq("(?:hello)")
-    assertEquals(clue(mutants).map(_.pattern), expected)
+    assertEquals(clue(mutants) map (_.pattern), expected)
   }
 
   test("Does not change escaped capturing groups") {
@@ -21,6 +21,6 @@ class GroupMutatorTest extends munit.FunSuite {
     val parsedTree = Parser.parseOrError(pattern)
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(GroupToNCGroup))
-    assertEquals(clue(mutants).length, 0)
+    assertEquals(clue(mutants), Nil)
   }
 }
