@@ -8,6 +8,7 @@ import weaponregex.mutator.BuiltinMutators
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation._
+import scala.util.{Failure, Success}
 
 /** The API facade of Weapon regeX for JavaScript
   * @note For JavaScript use only

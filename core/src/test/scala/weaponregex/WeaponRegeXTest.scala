@@ -2,7 +2,6 @@ package weaponregex
 
 import weaponregex.mutator.BuiltinMutators
 import weaponregex.model.mutation.Mutant
-import scala.util.{Failure, Success, Try}
 
 class WeaponRegeXTest extends munit.FunSuite {
   test("Can mutate without options") {
