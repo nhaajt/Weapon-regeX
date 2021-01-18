@@ -15,7 +15,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Remove BOL") {
     val pattern = "^abc^def^"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(BOLRemoval))
     assertEquals(clue(mutants).length, 3)
@@ -30,7 +30,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Remove EOL") {
     val pattern = "$abc$def$"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(EOLRemoval))
     assertEquals(clue(mutants).length, 3)
@@ -45,7 +45,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Change BOL to BOI") {
     val pattern = "^abc^def^"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(BOL2BOI))
     assertEquals(clue(mutants).length, 3)
@@ -60,7 +60,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Change EOL to EOI") {
     val pattern = "$abc$def$"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(EOL2EOI))
     assertEquals(clue(mutants).length, 3)
@@ -75,7 +75,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Negate Predefined Character Class") {
     val pattern = """\w\W\d\D\s\S"""
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(PredefCharClassNegation))
     assertEquals(clue(mutants).length, 6)
@@ -93,7 +93,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Nullify Predefined Character Class") {
     val pattern = """\w\W\d\D\s\S"""
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(PredefCharClassNullification))
     assertEquals(clue(mutants).length, 6)
@@ -111,7 +111,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Predefined Character Class to Any Char") {
     val pattern = """\w\W\d\D\s\S"""
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(PredefCharClassAnyChar))
     assertEquals(clue(mutants).length, 6)
@@ -129,7 +129,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Character Class Negation") {
     val pattern = "[[abc][^abc]]"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassNegation))
     assertEquals(clue(mutants).length, 3)
@@ -144,7 +144,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Character Class Remove Child") {
     val pattern = "[ab0-9[A-Z][cd]]"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassChildRemoval))
     assertEquals(clue(mutants).length, 7)
@@ -163,7 +163,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Character Class to any char") {
     val pattern = "[abc[0-9]]"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassAnyChar))
     assertEquals(clue(mutants).length, 2)
@@ -177,7 +177,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Character Class Modify Range [b-y][B-Y][1-8]") {
     val pattern = "[b-y][B-Y][1-8]"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
     assertEquals(clue(mutants).length, 12)
@@ -204,7 +204,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Character Class Modify Range [a-y][A-Y][0-8]") {
     val pattern = "[a-y][A-Y][0-8]"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
     assertEquals(clue(mutants).length, 9)
@@ -228,7 +228,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Character Class Modify Range [b-z][B-Z][1-9]") {
     val pattern = "[b-z][B-Z][1-9]"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
     assertEquals(clue(mutants).length, 9)
@@ -252,7 +252,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Character Class Modify Range [a-z][A-Z][0-9]") {
     val pattern = "[a-z][A-Z][0-9]"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
     assertEquals(clue(mutants).length, 6)
@@ -273,7 +273,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Character Class Modify Range [b-b][B-B][1-1]") {
     val pattern = "[b-b][B-B][1-1]"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
     assertEquals(clue(mutants).length, 6)
@@ -294,7 +294,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Character Class Modify Range [a-a][A-A][0-0]") {
     val pattern = "[a-a][A-A][0-0]"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
     assertEquals(clue(mutants).length, 3)
@@ -312,7 +312,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Character Class Modify Range [z-z][Z-Z][9-9]") {
     val pattern = "[z-z][Z-Z][9-9]"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(CharClassRangeModification))
     assertEquals(clue(mutants).length, 3)
@@ -330,7 +330,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Remove greedy quantifier") {
     val pattern = "a?b*c+d{1}e{1,}f{1,2}"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierRemoval))
     assertEquals(clue(mutants).length, 6)
@@ -348,7 +348,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Remove reluctant quantifier") {
     val pattern = "a??b*?c+?d{1}?e{1,}?f{1,2}?"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierRemoval))
     assertEquals(clue(mutants).length, 6)
@@ -366,7 +366,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Remove possessive quantifier") {
     val pattern = "a?+b*+c++d{1}+e{1,}+f{1,2}+"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierRemoval))
     assertEquals(clue(mutants).length, 6)
@@ -384,7 +384,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Change quantifier {n}") {
     val pattern = "a{1}"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierNChange))
     assertEquals(clue(mutants).length, 2)
@@ -398,7 +398,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Modify quantifier {n,}") {
     val pattern = "a{0,}b{1,}"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierNOrMoreModification))
     assertEquals(clue(mutants).length, 3)
@@ -413,7 +413,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Change quantifier {n,}") {
     val pattern = "a{1,}"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierNOrMoreChange))
     assertEquals(clue(mutants).length, 1)
@@ -424,7 +424,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Modify quantifier {n,m}") {
     val pattern = "a{0,0}b{0,1}c{1,2}"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierNMModification))
     assertEquals(clue(mutants).length, 8)
@@ -444,7 +444,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Modify short quantifier") {
     val pattern = "a?b*c+"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierShortModification))
     assertEquals(clue(mutants).length, 6)
@@ -462,7 +462,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Change short quantifier") {
     val pattern = "a*b+"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierShortChange))
     assertEquals(clue(mutants).length, 2)
@@ -476,7 +476,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Add reluctant to greedy quantifier") {
     val pattern = "a?b*c+d{1}e{1,}f{1,2}"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(QuantifierReluctantAddition))
     assertEquals(clue(mutants).length, 6)
@@ -494,7 +494,7 @@ class MutatorTest extends munit.FunSuite {
 
   test("Change capturing group to non-capturing group") {
     val pattern = "(hello)"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     val mutants: Seq[Mutant] = parsedTree.mutate(Seq(GroupToNCGroup))
     assertEquals(clue(mutants).length, 1)
