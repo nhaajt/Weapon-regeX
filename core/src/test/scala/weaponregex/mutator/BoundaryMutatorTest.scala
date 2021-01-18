@@ -17,7 +17,7 @@ class BoundaryMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not remove escaped BOL") {
@@ -41,7 +41,7 @@ class BoundaryMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not remove escaped EOL") {
@@ -65,7 +65,7 @@ class BoundaryMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not change escaped BOL") {
@@ -89,7 +89,7 @@ class BoundaryMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not change escaped EOL") {

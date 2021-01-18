@@ -17,7 +17,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not mutate escaped Character Classes") {
@@ -45,7 +45,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not mutate (remove children) escaped Character Classes") {
@@ -68,7 +68,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not mutate (change to any char) escaped Character Classes") {
@@ -104,7 +104,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Character Class Modify Range [a-y][A-Y][0-8]") {
@@ -129,7 +129,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Character Class Modify Range [b-z][B-Z][1-9]") {
@@ -154,7 +154,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Character Class Modify Range [a-z][A-Z][0-9]") {
@@ -176,7 +176,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Character Class Modify Range [b-b][B-B][1-1]") {
@@ -198,7 +198,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Character Class Modify Range [a-a][A-A][0-0]") {
@@ -217,7 +217,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Character Class Modify Range [z-z][Z-Z][9-9]") {
@@ -236,7 +236,7 @@ class CharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not modify non alpha numeric ranges") {

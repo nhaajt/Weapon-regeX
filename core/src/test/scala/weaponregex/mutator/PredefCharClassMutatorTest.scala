@@ -20,7 +20,7 @@ class PredefCharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not mutate (negate) similar characters") {
@@ -47,7 +47,7 @@ class PredefCharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not mutate (nullify) similar characters") {
@@ -74,7 +74,7 @@ class PredefCharClassMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not mutate (change) similar characters") {

@@ -20,7 +20,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not remove escaped greedy quantifiers") {
@@ -47,7 +47,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not remove escaped greedy quantifiers") {
@@ -74,7 +74,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Does not remove escaped possessive quantifiers") {
@@ -97,7 +97,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Modifies quantifier {n,}") {
@@ -113,7 +113,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Changes quantifier {n,}") {
@@ -125,7 +125,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
     val expected: Seq[String] = Seq("a{1}")
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Modifies quantifier {n,m}") {
@@ -146,7 +146,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Modifies short quantifier") {
@@ -165,7 +165,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Changes short quantifier") {
@@ -180,7 +180,7 @@ class QuantifierMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 
   test("Adds reluctant to greedy quantifier") {
@@ -199,6 +199,6 @@ class QuantifierMutatorTest extends munit.FunSuite {
     )
 
     assertEquals(clue(mutants).length, expected.length)
-    mutants foreach (m => assert(clue(expected) contains clue(m)))
+    expected foreach (m => assert(clue(mutants) contains clue(m)))
   }
 }
