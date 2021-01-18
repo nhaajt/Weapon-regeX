@@ -5,30 +5,58 @@ import weaponregex.model.mutation.Mutant
 
 class WeaponRegeXTest extends munit.FunSuite {
   test("Can mutate without options") {
-    var mutations = WeaponRegeX.mutate("^a")
-    assertEquals(mutations.length, 2)
+    val mutations = WeaponRegeX.mutate("^a")
+
     assert(mutations.isInstanceOf[Seq[Mutant]])
+    assertEquals(mutations.length, 2)
   }
 
   test("Can mutate with only mutators as option") {
-    var mutations = WeaponRegeX.mutate("^a", BuiltinMutators.all)
-    assertEquals(mutations.length, 2)
+    val mutations = WeaponRegeX.mutate("^a", BuiltinMutators.all)
+
     assert(mutations.isInstanceOf[Seq[Mutant]])
+    assertEquals(mutations.length, 2)
+  }
+
+  test("Can mutate with empty sequence of mutators as option") {
+    val mutations = WeaponRegeX.mutate("^a", Nil)
+
+    assert(mutations.isInstanceOf[Seq[Mutant]])
+    assertEquals(mutations, Nil)
   }
 
   test("Can mutate with only levels as option") {
-    var mutations = WeaponRegeX.mutate("^a", mutationLevels = Seq(1))
-    assertEquals(mutations.length, 1)
+    val mutations = WeaponRegeX.mutate("^a", mutationLevels = Seq(1))
+
     assert(mutations.isInstanceOf[Seq[Mutant]])
+    assertEquals(mutations.length, 1)
+  }
+
+  test("Can mutate with unsupported levels as option") {
+    val mutations = WeaponRegeX.mutate("^a", mutationLevels = Seq(100, 1000))
+
+    assert(mutations.isInstanceOf[Seq[Mutant]])
+    assertEquals(mutations, Nil)
+  }
+
+  test("Can mutate with both mutators and levels as option") {
+    val mutations = WeaponRegeX.mutate("^a", BuiltinMutators.all, Seq(1))
+
+    assert(mutations.isInstanceOf[Seq[Mutant]])
+    assertEquals(mutations.length, 1)
   }
 
   test("Returns an empty sequence if there are no mutants") {
-    var mutations = WeaponRegeX.mutate("a")
-    assertEquals(mutations, Seq())
+    val mutations = WeaponRegeX.mutate("a")
+
+    assert(mutations.isInstanceOf[Seq[Mutant]])
+    assertEquals(mutations, Nil)
   }
 
-  test("Returns an empty array if the RegEx is invalid") {
-    var mutations = WeaponRegeX.mutate("*(a|$]")
-    assertEquals(mutations, Seq())
+  test("Returns an empty sequence if the regex is invalid") {
+    val mutations = WeaponRegeX.mutate("*(a|$]")
+
+    assert(mutations.isInstanceOf[Seq[Mutant]])
+    assertEquals(mutations, Nil)
   }
 }
