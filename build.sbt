@@ -41,7 +41,8 @@ lazy val WeaponRegeX = projectMatrix
     scalaVersions = List("2.13.3", "2.12.12"),
     settings = Seq(
       // Add JVM-specific settings here
-      libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
+      libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided",
+      jacocoReportSettings := JacocoReportSettings().withThresholds(JacocoThresholds(line = 80))
     )
   )
   .jsPlatform(
