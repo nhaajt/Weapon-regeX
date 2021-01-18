@@ -50,6 +50,7 @@ mutants.forEach(mutant => {
   console.log(mutant.pattern);
 });
 ```
+[Try it!](https://npm.runkit.com/weapon-regex)
 
 # API
 ## Scala

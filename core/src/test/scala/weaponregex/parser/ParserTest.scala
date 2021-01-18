@@ -22,7 +22,7 @@ class ParserTest extends munit.FunSuite {
 
   test("Parse `}` character next to long quantifier") {
     val pattern = "a{1}}"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     assert(clue(parsedTree).isInstanceOf[Concat])
     assert(parsedTree.children(0).isInstanceOf[Quantifier])
@@ -36,7 +36,7 @@ class ParserTest extends munit.FunSuite {
 
   test("Parse `]` character next to character class") {
     val pattern = "[abc]]"
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     assert(clue(parsedTree).isInstanceOf[Concat])
     assert(parsedTree.children(0).isInstanceOf[CharacterClass])
@@ -188,7 +188,7 @@ class ParserTest extends munit.FunSuite {
 
   test("Parse character class with quotes") {
     val pattern = """[\]]"""
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     assert(clue(parsedTree) match {
       case CharacterClass(nodes, _, true) => nodes.head.isInstanceOf[QuoteChar]
@@ -200,7 +200,7 @@ class ParserTest extends munit.FunSuite {
 
   test("Parse character class with metacharacters") {
     val pattern = """[\\\t\n\r\f]"""
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     assert(clue(parsedTree).isInstanceOf[CharacterClass])
     // A backslash is added back in to represent the backslash in the pattern
@@ -216,7 +216,7 @@ class ParserTest extends munit.FunSuite {
 
   test("Parse character class with special characters") {
     val pattern = """[(){}.^$|?*+]"""
-    val parsedTree = Parser.parseOrError(pattern)
+    val parsedTree = Parser(pattern).get
 
     assert(clue(parsedTree).isInstanceOf[CharacterClass])
     (pattern.tail.init zip parsedTree.children) foreach { case (char, child) =>
@@ -791,10 +791,8 @@ class ParserTest extends munit.FunSuite {
 
     import scala.util.Failure
     assert(clue(parsedTree) match {
-      case Failure(exception: RuntimeException) =>
-        println(exception.getMessage)
-        true
-      case _ => false
+      case Failure(exception: RuntimeException) => exception.getMessage.startsWith("[Error] Parser:")
+      case _                                    => false
     })
   }
 
@@ -804,10 +802,8 @@ class ParserTest extends munit.FunSuite {
 
     import scala.util.Failure
     assert(clue(parsedTree) match {
-      case Failure(exception: RuntimeException) =>
-        println(exception.getMessage)
-        true
-      case _ => false
+      case Failure(exception: RuntimeException) => exception.getMessage.startsWith("[Error] Parser:")
+      case _                                    => false
     })
   }
 }

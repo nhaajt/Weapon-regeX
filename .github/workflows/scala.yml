@@ -73,8 +73,6 @@ jobs:
         with:
           java-version: 11
       - name: Run stryker
-        run: |
-          echo 'stryker4s{reporters=["console","dashboard"]}' > stryker4s.conf
-          sbt 'project WeaponRegeX; stryker'
+        run: sbt 'project WeaponRegeX; stryker'
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}

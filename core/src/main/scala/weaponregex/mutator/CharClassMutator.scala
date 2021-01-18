@@ -75,8 +75,9 @@ object CharClassRangeModification extends TokenMutator {
   override def mutate(token: RegexTree): Seq[String] = (token match {
     case range @ Range(from: Character, to: Character, _) =>
       (from.char, to.char) match {
-        case (l, r) if isRightBound(l) && isRightBound(r) => Seq(range.copy(from = from.copy(prevChar(l))))
-        case (l, r) if isLeftBound(l) && isLeftBound(r)   => Seq(range.copy(to = to.copy(nextChar(r))))
+        case (l, r) if !(l.isDigit && r.isDigit) && !(l.isLetter && r.isLetter) => Nil
+        case (l, r) if isRightBound(l) && isRightBound(r)                       => Seq(range.copy(from = from.copy(prevChar(l))))
+        case (l, r) if isLeftBound(l) && isLeftBound(r)                         => Seq(range.copy(to = to.copy(nextChar(r))))
         case (l, r) if l == r =>
           Seq(
             range.copy(from = from.copy(prevChar(l))),
