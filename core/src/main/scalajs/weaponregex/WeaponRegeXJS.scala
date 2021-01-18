@@ -53,8 +53,8 @@ object WeaponRegeXJS {
       else null
 
     Parser(pattern) match {
-      case Success(tree)                        => (tree.mutate(mutators, mutationLevels) map MutantJS).toJSArray
-      case Failure(exception: RuntimeException) => throw exception
+      case Success(tree)                 => (tree.mutate(mutators, mutationLevels) map MutantJS).toJSArray
+      case Failure(throwable: Throwable) => throw throwable
     }
   }
 }

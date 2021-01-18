@@ -25,13 +25,19 @@ describe('Weapon regeX', function() {
     });
     
     it('Returns an empty array if there are no mutants', function() {
-      mutants = wrx.mutate('a');
+      let mutants = wrx.mutate('a');
       mocha.deepStrictEqual(mutants, []);
     });
     
-    it('Returns an empty array if the RegEx is invalid', function() {
-      mutants = wrx.mutate('*(a|$]');
-      mocha.deepStrictEqual(mutants, []);
+    it('Catch an exception if the RegEx is invalid', function() {
+      let failed = false;
+      try {
+        wrx.mutate('*(a|$]');
+      } catch(e) {
+        failed = true;
+        mocha.strictEqual(e.message.startsWith("[Error] Parser:"), true)
+      }
+      mocha.strictEqual(failed, true);
     });
   });
   
@@ -45,7 +51,7 @@ describe('Weapon regeX', function() {
     });
     
     it('Contains the mutator name', function() {
-        let mutants = wrx.mutate('^a', {mutationLevels: [1]});
+      let mutants = wrx.mutate('^a', {mutationLevels: [1]});
 
       mocha.strictEqual(mutants.length, 1);
       mocha.strictEqual(mutants[0].name, 'Beginning of line character `^` removal');
