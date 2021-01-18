@@ -37,7 +37,7 @@ object WeaponRegeXJS {
     *   mutationLevels: [Target mutation levels. If this is `null`, the `mutators` will not be filtered],
     * }
     * }}}
-    * @return A JavaScript Array of [[weaponregex.model.mutation.Mutant]]
+    * @return A JavaScript Array of [[weaponregex.model.mutation.Mutant]] if can be parsed, or throw an exception otherwise
     */
   @JSExportTopLevel("mutate")
   def mutate(pattern: String, options: MutationOptions = new MutationOptions()): js.Array[MutantJS] = {
@@ -51,9 +51,9 @@ object WeaponRegeXJS {
         options.mutationLevels.toSeq
       else null
 
-    (Parser(pattern) match {
-      case Some(tree) => tree.mutate(mutators, mutationLevels) map MutantJS
-      case None       => Nil
-    }).toJSArray
+    Parser(pattern) match {
+      case Success(tree)                        => (tree.mutate(mutators, mutationLevels) map MutantJS).toJSArray
+      case Failure(exception: RuntimeException) => throw exception
+    }
   }
 }

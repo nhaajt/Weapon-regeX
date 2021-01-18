@@ -1,9 +1,12 @@
 package weaponregex.parser
 
-import fastparse._, NoWhitespace._
+import fastparse._
+import NoWhitespace._
 import weaponregex.model._
 import weaponregex.model.regextree._
 import weaponregex.extension.StringExtension.StringIndexExtension
+
+import scala.util.{Failure, Success, Try}
 
 /** Companion object for [[weaponregex.parser.Parser]] class that instantiates [[weaponregex.parser.Parser]] instances
   */
@@ -11,16 +14,9 @@ object Parser {
 
   /** Apply the parser to parse the given pattern
     * @param pattern The regex pattern to be parsed
-    * @return An `Option`al parsed [[weaponregex.model.regextree.RegexTree]]
+    * @return A `Success` of parsed [[weaponregex.model.regextree.RegexTree]] if can be parsed, a `Failure` otherwise
     */
-  def apply(pattern: String): Option[RegexTree] = new Parser(pattern).parse
-
-  /** Apply the parser to parse the given pattern
-    * @param pattern The regex pattern to be parsed
-    * @return [[weaponregex.model.regextree.RegexTree]] if the given pattern can ber parsed, throw an error otherwise
-    */
-  def parseOrError(pattern: String): RegexTree =
-    new Parser(pattern).parse.getOrElse(throw new RuntimeException("Failed to parse regex"))
+  def apply(pattern: String): Try[RegexTree] = new Parser(pattern).parse
 }
 
 /** @param pattern The regex pattern to be parsed
@@ -373,10 +369,10 @@ class Parser private (val pattern: String) {
   def RE[_: P]: P[RegexTree] = P(or | simpleRE)
 
   /** Parse the given regex pattern
-    * @return An `Option`al parsed [[weaponregex.model.regextree.RegexTree]]
+    * @return A `Success` of parsed [[weaponregex.model.regextree.RegexTree]] if can be parsed, a `Failure` otherwise
     */
-  def parse: Option[RegexTree] = fastparse.parse(pattern, RE(_)) match {
-    case Parsed.Success(regexTree: RegexTree, index) => Some(regexTree)
-    case Parsed.Failure(str, index, extra)           => None
+  def parse: Try[RegexTree] = fastparse.parse(pattern, RE(_)) match {
+    case Parsed.Success(regexTree: RegexTree, index) => Success(regexTree)
+    case f @ Parsed.Failure(str, index, extra)       => Failure(new RuntimeException("[Error] Parser: " + f.msg))
   }
 }
