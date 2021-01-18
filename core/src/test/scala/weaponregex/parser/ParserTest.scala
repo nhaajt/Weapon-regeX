@@ -791,10 +791,8 @@ class ParserTest extends munit.FunSuite {
 
     import scala.util.Failure
     assert(clue(parsedTree) match {
-      case Failure(exception: RuntimeException) =>
-        println(exception.getMessage)
-        true
-      case _ => false
+      case Failure(exception: RuntimeException) => exception.getMessage.startsWith("[Error] Parser:")
+      case _                                    => false
     })
   }
 
@@ -804,10 +802,8 @@ class ParserTest extends munit.FunSuite {
 
     import scala.util.Failure
     assert(clue(parsedTree) match {
-      case Failure(exception: RuntimeException) =>
-        println(exception.getMessage)
-        true
-      case _ => false
+      case Failure(exception: RuntimeException) => exception.getMessage.startsWith("[Error] Parser:")
+      case _                                    => false
     })
   }
 }
