@@ -369,8 +369,8 @@ class Parser private (val pattern: String) {
   def RE[_: P]: P[RegexTree] = P(or | simpleRE)
 
   /** The entry point of the parser that should parse from the start to the end of the regex string
-   * @return [[weaponregex.model.regextree.RegexTree]] tree
-   */
+    * @return [[weaponregex.model.regextree.RegexTree]] tree
+    */
   def entry[_: P]: P[RegexTree] = P(Start ~ RE ~ End)
 
   /** Parse the given regex pattern
