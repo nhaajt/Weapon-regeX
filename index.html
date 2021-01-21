@@ -84,22 +84,40 @@
             <div class="mutant-container" id="mutants"></div>
         </div>
 
+        <div id="alertFailed" class="alert alert-danger fade" role="alert">
+            <strong>Failed to process input regex!</strong><hr>
+            <div id="alertFailedMsg"></div>
+        </div>
+
         <script>
             input = document.getElementById('inputPattern');
             output = document.getElementById('mutants');
             level = document.getElementById('inputLevel');
-            counter = 0;
+            alertFailed = document.getElementById('alertFailed');
+            alertFailedMsg = document.getElementById('alertFailedMsg');
+
+            function clearOutput() {
+                output.innerHTML = '';
+                alertFailed.classList.remove("show");
+            }
 
             function runMutator() {
-                // Clear output
-                output.innerHTML = '';
+                clearOutput();
 
-                var selectedLevel = parseInt(level.value);
-                var mutants;
-                if (selectedLevel === 0) {
-                    mutants = exports.mutate(input.value);
-                } else {
-                    mutants = exports.mutate(input.value, {mutationLevels: [selectedLevel]});
+                const selectedLevel = parseInt(level.value);
+                let mutants;
+
+                try {
+                    if (selectedLevel === 0) {
+                        mutants = exports.mutate(input.value);
+                    } else {
+                        mutants = exports.mutate(input.value, {mutationLevels: [selectedLevel]});
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alertFailedMsg.innerText = error.message;
+                    alertFailed.classList.add("show");
+                    return;
                 }
 
                 console.log(mutants);
@@ -109,13 +127,15 @@
             }
 
             function processMutant(mutant, orig) {
-                var mutatorStart = mutant.location.start.column;
-                var mutatorEnd = mutant.location.end.column;
-                var lengthDiff = mutant.pattern.length - orig.length;
-                var pre = orig.substr(0, mutatorStart);
-                var removed = orig.substr(mutatorStart, mutatorEnd - mutatorStart);
-                var added = mutant.pattern.substr(mutatorStart, mutatorEnd - mutatorStart + lengthDiff);
-                var post = orig.substr(mutatorEnd)
+                const mutatorStart = mutant.location.start.column;
+                const mutatorEnd = mutant.location.end.column;
+                const lengthDiff = mutant.pattern.length - orig.length;
+                const pre = orig.substr(0, mutatorStart);
+                const removed = orig.substr(mutatorStart, mutatorEnd - mutatorStart);
+                const added = mutant.pattern.substr(mutatorStart, mutatorEnd - mutatorStart + lengthDiff);
+                const post = orig.substr(mutatorEnd);
+
+                let counter = 0;
 
                 output.innerHTML = output.innerHTML + `
 <div class="card">
