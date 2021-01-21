@@ -84,9 +84,13 @@
             <div class="mutant-container" id="mutants"></div>
         </div>
 
-        <div id="alertFailed" class="alert alert-danger fade" role="alert">
+        <div id="alertFailed" class="alert alert-danger d-none" role="alert">
             <strong>Failed to process input regex!</strong><hr>
             <div id="alertFailedMsg"></div>
+        </div>
+
+        <div id="alertNoMutant" class="alert alert-info d-none" role="alert">
+            The input regex has no available mutant 👽
         </div>
 
         <script>
@@ -95,10 +99,13 @@
             level = document.getElementById('inputLevel');
             alertFailed = document.getElementById('alertFailed');
             alertFailedMsg = document.getElementById('alertFailedMsg');
+            alertNoMutant = document.getElementById('alertNoMutant');
+            counter = 0;
 
             function clearOutput() {
                 output.innerHTML = '';
-                alertFailed.classList.remove("show");
+                alertFailed.classList.add("d-none");
+                alertNoMutant.classList.add("d-none");
             }
 
             function runMutator() {
@@ -116,14 +123,15 @@
                 } catch (error) {
                     console.error(error);
                     alertFailedMsg.innerText = error.message;
-                    alertFailed.classList.add("show");
+                    alertFailed.classList.remove("d-none");
                     return;
                 }
 
                 console.log(mutants);
-                mutants.forEach(mutant => {
+                if (mutants.length) mutants.forEach(mutant => {
                     processMutant(mutant, input.value);
                 });
+                else alertNoMutant.classList.remove("d-none");
             }
 
             function processMutant(mutant, orig) {
@@ -134,8 +142,6 @@
                 const removed = orig.substr(mutatorStart, mutatorEnd - mutatorStart);
                 const added = mutant.pattern.substr(mutatorStart, mutatorEnd - mutatorStart + lengthDiff);
                 const post = orig.substr(mutatorEnd);
-
-                let counter = 0;
 
                 output.innerHTML = output.innerHTML + `
 <div class="card">
