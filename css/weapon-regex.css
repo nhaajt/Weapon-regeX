@@ -9,9 +9,9 @@
 }
 
 #main-content {
-    width: 50vw;
-    height: 50vh;
-    margin: 10% auto;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 5%;
 }
 
 .card {
