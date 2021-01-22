@@ -23,9 +23,9 @@ character = metaChar
           | charLiteral
           ;
 
-specialChar = ? [](){}\.^$|?*+ ?                              (* special characters *)
+specialChar = '(' | ')' | '[' | '{' | '\\' | '.' | '^' | '$'  | '|' | '?' | '*' | '+' ;
 
-charLiteral = - specialChar ;                                 (* any non-metacharacters *)
+charLiteral = - specialChar ;                                 (* characters ouside of character classes *)
 
 metaChar = '\\\\'
          | charOct
@@ -49,9 +49,9 @@ charHex = '\\x' hex hex
         | '\\x{' hex { hex } '}'
         ;
 
-specialCharClassChar = ? []\ ?                                 (* special characters for character classes *)
+specialCharClassChar =  '[' | ']' | '\\' ;                    (* special characters for character classes *)
 
-charClassCharLiteral = - specialCharClassChar
+charClassCharLiteral = - specialCharClassChar ;               (* characters inside of character classes *)
 
 charClass = '[' charClassItem { charClassItem } ']'           (* positive character class *)
           | '[^' charClassItem { charClassItem } ']'          (* negative character class *)

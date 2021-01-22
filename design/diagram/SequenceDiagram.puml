@@ -2,6 +2,7 @@
 
 'skinparam monochrome true
 skinparam backgroundcolor white
+'skinparam backgroundcolor transparent
 skinparam shadowing false
 skinparam sequence {
     ArrowColor black
@@ -29,7 +30,7 @@ activate WeaponRegeX
 WeaponRegeX -> Parser: regex string
 
 activate Parser
-Parser -> RegexTree: create
+Parser -> RegexTree: create regex tree
 return parsed regex tree
 
 '== Mutating ==
@@ -49,7 +50,7 @@ activate TreeMutator #application
     loop for each token mutator
         TreeMutator -> TokenMutator: regex tree node
         activate TokenMutator
-        TokenMutator --> TokenMutator: mutated nodes
+        TokenMutator --> TokenMutator: mutate node
 
         loop for each mutated node
             TokenMutator -> RegexTree: build mutated tree
