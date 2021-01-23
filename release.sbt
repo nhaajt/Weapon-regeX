@@ -2,7 +2,7 @@ import scala.sys.process.Process
 
 commands ++= List(
   Command.command("WeaponRegeXPublishSigned")(
-    "fullOptJS" :: "+publishSigned" :: "writePackageJson" :: "publishNpmLatest" :: _
+    "fullLinkJS" :: "+publishSigned" :: "writePackageJson" :: "publishNpmLatest" :: _
   )
 )
 
@@ -33,11 +33,19 @@ generatePackageJson := s"""{
                           |  "name": "${name.value}",
                           |  "version": "${version.value}",
                           |  "description": "${description.value}",
-                          |  "main": "core/target/js-2.13/weapon-regex-opt.js",
+                          |  "main": "core/target/js-2.13/weapon-regex-opt/main.js",
                           |  "repository": {
                           |    "type": "git",
                           |    "url": "${homepage.value.get}"
                           |  },
+                          |  "keywords": [
+                          |    "regex",
+                          |    "regexp",
+                          |    "regular expression",
+                          |    "mutate",
+                          |    "mutation",
+                          |    "mutator"
+                          |  ],
                           |  "license": "Apache-2.0"
                           |}
                           |""".stripMargin
