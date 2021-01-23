@@ -48,3 +48,7 @@
     display: inline-block;
     color: var(--mutant-text);
 }
+
+.btn:hover .gh-logo {
+    filter: invert(1);
+}
