@@ -2,6 +2,7 @@
 
 'skinparam monochrome true
 skinparam backgroundcolor white
+'skinparam backgroundcolor transparent
 skinparam shadowing false
 skinparam class {
     BackgroundColor transparent
@@ -17,14 +18,19 @@ skinparam note {
 
 'title Class Diagram
 
+!startsub Entire
+
 ' ===================== Package structure =====================
 package "weaponregex" {
     class WeaponRegeX <<object>> <<(O, darksalmon)>>
-    note right: Main facade\n <color: red>[NOT FINAL]</color>
+'    note top of WeaponRegeX: API facade for Scala
 
-    package "run" {
-        class Parser <<object>> <<(O, darksalmon)>>
-        class TreeMutator <<object>> <<(O, darksalmon)>>
+    class WeaponRegeXJS <<object>> <<(O, darksalmon)>>
+'    note top of WeaponRegeXJS: API facade for JavaScript
+
+    package "parser" {
+        class Parser
+        class "Parser" as ParserObject <<object>> <<(O, darksalmon)>>
     }
 
     package "model" {
@@ -34,44 +40,46 @@ package "weaponregex" {
         package "regextree" {
             interface RegexTree <<trait>> << (T, thistle) >>
             abstract class Node
-            abstract class "Leaf [A]"
+            abstract class "Leaf [A]" as Leaf
 
             class ConcreteNode
-            class "ConcreteNode " <<object>> <<(O, darksalmon)>>
+            class "ConcreteNode" as ConcreteNodeObject <<object>> <<(O, darksalmon)>>
 
             class ConcreteLeaf
-            class "ConcreteLeaf " <<object>> <<(O, darksalmon)>>
+            class "ConcreteLeaf" as ConcreteLeafObject <<object>> <<(O, darksalmon)>>
         }
 
         package "mutation" {
             class Mutant
-            class MutationData
+            class MutantJS
+            
             interface TokenMutator <<trait>> << (T, thistle) >>
+            class TokenMutatorJS
         }
     }
 
     package "mutator" {
         class BuiltinMutators <<object>> <<(O, darksalmon)>>
         class ConcreteTokenMutator <<object>> <<(O, darksalmon)>>
+        class TreeMutator <<object>> <<(O, darksalmon)>>
     }
 }
 
 ' ===================== Main facade =====================
-WeaponRegeX -- Parser :> use
+WeaponRegeX -- ParserObject :> use
 WeaponRegeX -- TreeMutator :> use
-
 class WeaponRegeX {
-'    -- Parsing --
-'    + parse(pattern : String) : Option[RegexTree]
-'    + parseOrError(pattern : String) : RegexTree
-'    -- Mutating --
-    + mutate(pattern : String, mutationLevel : Int) : Seq[Mutant]
-    + mutate(pattern : String, mutators : Seq[TokenMutator], mutationLevel : Int) : Seq[Mutant]
-    + mutate(pattern : String, mutators : Seq[TokenMutator]) : Seq[Mutant]
+    + mutate(pattern : String, mutators : Seq[TokenMutator] = BuiltinMutators.all, mutationLevels : Seq[Int] = null ) : Try[Seq[Mutant]]
+}
+
+WeaponRegeXJS -l- WeaponRegeX :> wrap
+WeaponRegeXJS -- MutantJS :> return
+class WeaponRegeXJS  #line:darkred {
+    + mutate(pattern : String, options : js.Object) : js.Array[MutantJS]
 }
 
 ' ===================== Data models =====================
-Location "1" *-- "2" Position
+Location "1" *-u- "2" Position
 class Location {
     + start : Position
     + end : Position
@@ -82,89 +90,108 @@ class Position {
    + column : Int
 }
 
-Mutant *-- MutationData
+Mutant *-- Location
 class Mutant {
     + pattern : String
-    + data : MutationData
-}
-
-MutationData *-u- Location
-class MutationData {
     + name : String
     + location : Location
-    + level : Int
+    + level : Seq[Int]
+    + description : String
+}
+
+MutantJS *-l- Location
+MutantJS *-u- Mutant :> wrap
+class MutantJS  #line:darkred {
+    + mutant : Mutant
+    ..
+    + pattern : String
+    + name : String
+    + location : Location
+    + level : js.Array[Int]
     + description : String
 }
 
 ' ===================== RegexTree =====================
 RegexTree "1" *-- "*" RegexTree
 RegexTree <|.. Node
-RegexTree <|.. "Leaf [A]"
+RegexTree <|.. Leaf
 RegexTree *-u- Location
 
 interface RegexTree {
     + {abstract} children : Seq[RegexTree]
     + {abstract} location : Location
     ..
-    + prefix : String
-    + postfix : String
+    + {abstract} prefix : String
+    + {abstract} postfix : String
     ..
-    + <<lazy>> pattern : String
+    + <<lazy>> build : String = buildWhile(_ => true)
     __
-    # {abstract} _build() : String
-    + build() : String
     + {abstract} buildWith(child : RegexTree, childString : String) : String
+    + {abstract} buildWhile(pred : RegexTree => Boolean) : String
 }
 
 abstract class Node {
-    + children : Seq[RegexTree]
-    + location : Location
+    + {abstract} children : Seq[RegexTree]
+    + {abstract} location : Location
+    ..
+    + prefix : String
+    + postfix : String
     + sep : String
-
-    # _build() : String
+    __
     + buildWith(child : RegexTree, childString : String) : String
+    + buildWhile(pred : RegexTree => Boolean) : String
 }
 
-abstract class "Leaf [A]" {
-    + children : Seq[RegexTree]
-    + location : Location
-    + value : A
-
-    # _build() : String
+abstract class Leaf {
+    + children : Seq[RegexTree] = Nil
+    + {abstract} location : Location
+    + {abstract} value : A
+    ..
+    + prefix : String
+    + postfix : String
+    + sep : String
+    ..
+    + <<lazy>> build : String
+    __
     + buildWith(child : RegexTree, childString : String) : String
+    + buildWhile(pred : RegexTree => Boolean) : String
 }
 
 ConcreteNode --|> Node
-ConcreteNode <..> "ConcreteNode ": [optional]\n companion
+ConcreteNode <..> ConcreteNodeObject : [optional]\n companion
 class ConcreteNode
-class "ConcreteNode "
+class ConcreteNodeObject
 
-ConcreteLeaf --|> "Leaf [A]"
-ConcreteLeaf <..> "ConcreteLeaf ": [optional]\n companion
+ConcreteLeaf --|> Leaf
+ConcreteLeaf <..> ConcreteLeafObject : [optional]\n companion
 class ConcreteLeaf
-class "ConcreteLeaf "
+class ConcreteLeafObject
 
 ' ===================== Parser =====================
 Parser -- RegexTree :> generate
 class Parser {
+    + pattern : String
+    __
     .. production rule methods ..
+    + parse() : Try[RegexTree]
+}
 
-    + apply(pattern : String) : Option[RegexTree]
-    + parse(pattern : String) : Option[RegexTree]
-    + parseOrError(pattern : String) : RegexTree
+ParserObject <..> Parser : companion
+class ParserObject {
+    + specialChars : String
+    + apply(pattern : String) : Try[RegexTree]
 }
 
 ' ===================== TreeMutator =====================
 TreeMutator -- BuiltinMutators :> use
 TreeMutator "1" -- "*" TokenMutator :> use
-TreeMutator "1" -- "*" Mutant :> return
+TreeMutator "1" --- "*" Mutant :> return
 TreeMutator -- RegexTree :> traverse & mutate\n extension
 
 class TreeMutator <extension (tree : RegexTree)> {
 '    == extension (tree : RegexTree) ==
-    + mutate(mutationLevel : Int) : Seq[Mutant]
-    + mutate(mutators : Seq[TokenMutator], mutationLevel : Int) : Seq[Mutant]
-    + mutate(mutators : Seq[TokenMutator]) : Seq[Mutant]
+    - filterMutators(mutators : Seq[TokenMutator], mutationLevels : Seq[Int]) : Seq[TokenMutator]
+    + mutate(mutators : Seq[TokenMutator], mutationLevels : Seq[Int]) : Seq[Mutant]
 }
 
 ' ===================== TokenMutator =====================
@@ -177,7 +204,7 @@ class BuiltinMutators {
     + level(mutationLevel : Int) : Seq[TokenMutator]
 }
 
-TokenMutator --- RegexTree :> mutate
+TokenMutator -- RegexTree :> mutate
 interface TokenMutator {
     + {abstract} name : String
     + {abstract} levels : Seq[Int]
@@ -189,5 +216,19 @@ interface TokenMutator {
 
 ConcreteTokenMutator ..|> TokenMutator
 class ConcreteTokenMutator
+
+TokenMutatorJS *-u- TokenMutator :> wrap
+class TokenMutatorJS  #line:darkred {
+    + tokenMutator : TokenMutator
+    ..
+    + name : String
+    + levels : Seq[Int]
+    + description : String
+    __
+    + apply(token : RegexTree) : Seq[String]
+    + mutate(token : RegexTree) : Seq[String]
+}
+
+!endsub
 
 @enduml
