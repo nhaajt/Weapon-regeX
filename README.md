@@ -11,6 +11,11 @@ Javascript and Scala. The Javascript version of the library is generated from Sc
 
 The current supported versions for Scala are: `2.12.12` and `2.13.3`.
 
+# Announcement
+**⚠ Official development of *Weapon regeX* has moved to [stryker-mutator/weapon-regex](https://github.com/stryker-mutator/weapon-regex)**
+
+This repository will no longer receive updates.
+
 # Getting started
 
 ## Scala
